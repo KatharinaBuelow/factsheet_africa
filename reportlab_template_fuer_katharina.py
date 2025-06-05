@@ -85,7 +85,7 @@ class FactSheet(object):
     Bitte eintragen
     """
 
-    def __init__(self, pdf_file, version, region, gerics_logo, wascal_logo, bmbf_logo, title_pic, basic_color, sprache, cs_orange, cs_schwarz,
+    def __init__(self, pdf_file, version, region, gerics_logo, wascal_logo, bmbf_logo, basic_color, sprache, cs_orange, cs_schwarz,
                  title_image_burkinafaso,anzahl_simulationen):
         self.c = canvas.Canvas(pdf_file, pagesize=A4)
         self.c.setFont('Helvetica', 12)
@@ -112,12 +112,10 @@ class FactSheet(object):
         self.gerics_logo = gerics_logo
         self.bmbf_logo = bmbf_logo
         self.wascal_logo = wascal_logo
-        self.title_pic = title_pic
         self.basic_color = basic_color
         self.sprache = sprache
         self.cs_orange = cs_orange
         self.cs_schwarz = cs_schwarz
-        self.bundesland_pic = title_pic
         self.title_image_burkinafaso = title_image_burkinafaso
         self.anzahl_simulationen = anzahl_simulationen
 
