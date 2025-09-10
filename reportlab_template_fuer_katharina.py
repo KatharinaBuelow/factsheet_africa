@@ -50,7 +50,8 @@ from six import string_types
 from netCDF4 import Dataset
 import re
 import pandas as pd
-from title_page_for_katharina import insert_title_page
+#from title_page_for_katharina import insert_title_page
+from title_page_afr import insert_title_page
 #from hintergrundinformationen_katharina import insert_simulation_list, insert_impressum,insert_datasource_disclaimer_acknowledgement
 from hintergrundinformationen_katharina import insert_impressum
 
@@ -86,7 +87,7 @@ class FactSheet(object):
     """
 
     def __init__(self, pdf_file, version, region, gerics_logo, wascal_logo, bmbf_logo, basic_color, sprache, cs_orange, cs_schwarz,
-                 title_image_burkinafaso,anzahl_simulationen):
+                 title_image_burkinafaso, climate_stripes_image, anzahl_simulationen):
         self.c = canvas.Canvas(pdf_file, pagesize=A4)
         self.c.setFont('Helvetica', 12)
         self.styles = getSampleStyleSheet()
@@ -117,6 +118,7 @@ class FactSheet(object):
         self.cs_orange = cs_orange
         self.cs_schwarz = cs_schwarz
         self.title_image_burkinafaso = title_image_burkinafaso
+        self.climate_stripes_image = climate_stripes_image
         self.anzahl_simulationen = anzahl_simulationen
 
     #----------------------------------------------------------------------

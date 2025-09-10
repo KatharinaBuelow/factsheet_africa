@@ -25,11 +25,12 @@ gerics_logo = 'logos/Logo_GERICS_Neu_mit_Unterzeile_EN.png'
 bmbf_logo='logos/BMFTR_en_DTP_CMYK_gef_durch.jpg'
 wascal_logo='logos/WASCAL_Logo.png'
 title_image_burkinafaso = 'country_map/FS_Burkina_Faso.png'
+climate_stripes_image = 'test-pictures/Climatestripes_deviation_to_1971_2000_EOBS_08212_08215_07334_Region_um_Karlsruhe_1200.png'
 basic_color = [233,104,33]
 sprache = 'english'
 cs_orange = colors.Color(basic_color[0]/255., basic_color[1]/255., basic_color[2]/255.)
 cs_schwarz = colors.Color(0 / 255., 0 / 255., 0 / 255., 1)
-doc = FactSheet(final_pdf_name, version, region, gerics_logo, wascal_logo, bmbf_logo, basic_color, sprache, cs_orange, cs_schwarz, title_image_burkinafaso,anzahl_simulationen)
+doc = FactSheet(final_pdf_name, version, region, gerics_logo, wascal_logo, bmbf_logo, basic_color, sprache, cs_orange, cs_schwarz, title_image_burkinafaso, climate_stripes_image, anzahl_simulationen)
 
 doc.createDocument()
 doc.savePDF()
