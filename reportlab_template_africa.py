@@ -4,26 +4,8 @@
 Dies ist der automatische regional Climate-Fact-Sheet-Generator.
 Er erstellt ein pdf-Dokument angelehnt an das GERICS Climate Fact Sheet Design unter Verwendung
 von reportlab.
-Möglichst viel ist automatisiert, so dass ein Großteil der benötigten Informationen über
-Metadaten mit den Abbildungen eingelesen werden können. Angepasst werden müssen folgende Inhalte:
- - abstract
- - text_daten (Angabe der Datenquellen)
- - Seite heutiges Klima
- - Disclaimer
- - ffg. Liste der verwendeten Simulationen
-Benötigt wird Regional_fact_sheets_common_modules.py. Hier sind alle Funktionen/Module ausgelagert,
-benötigt auch config_Klimaausblick2020.py (muss im selben Verzeichnis liegen)
-
-# 1902  conda install reportlab
-# 1911  conda install numpy
-# 1913  conda install scipy
-# 1915  conda install six
-# 1917  conda install netCDF4
-# 1919  conda install pandas
-# 1929  conda install conda-forge::scikit-image
-
-
-
+Die Datenbasis sind AFR22-CORDEX-Simulationen.
+Die Struktur des Dokuments ist in der Klasse FactSheet definiert.
 #
 """
 import os
@@ -50,10 +32,9 @@ from six import string_types
 from netCDF4 import Dataset
 import re
 import pandas as pd
-#from title_page_for_katharina import insert_title_page
-from title_page_afr import insert_title_page
-#from hintergrundinformationen_katharina import insert_simulation_list, insert_impressum,insert_datasource_disclaimer_acknowledgement
-from hintergrundinformationen_katharina import insert_impressum
+from title_page_africa import insert_title_page
+from page_with_table import insert_page_with_table
+from background_information import insert_impressum
 
 #####################################################################
 def get_image(path, height=1*cm):
@@ -87,7 +68,7 @@ class FactSheet(object):
     """
 
     def __init__(self, pdf_file, version, region, gerics_logo, wascal_logo, bmbf_logo, basic_color, sprache, cs_orange, cs_schwarz,
-                 title_image_burkinafaso, climate_stripes_image, anzahl_simulationen):
+                 title_image_burkinafaso, box_era5, table_cc, anzahl_simulationen):
         self.c = canvas.Canvas(pdf_file, pagesize=A4)
         self.c.setFont('Helvetica', 12)
         self.styles = getSampleStyleSheet()
@@ -118,7 +99,8 @@ class FactSheet(object):
         self.cs_orange = cs_orange
         self.cs_schwarz = cs_schwarz
         self.title_image_burkinafaso = title_image_burkinafaso
-        self.climate_stripes_image = climate_stripes_image
+        self.box_era5 = box_era5
+        self.table_cc = table_cc
         self.anzahl_simulationen = anzahl_simulationen
 
     #----------------------------------------------------------------------
@@ -202,14 +184,14 @@ class FactSheet(object):
         self.schrift_fliesstext = 10
         print('Starte mit der Erstellung des Dokuments in make... ')
 # ----------- Header der Titelseite
-        titititi = insert_title_page(self)
+        title_page = insert_title_page(self)
         foot_1 = self.add_footline('ungerade_odd')
 # -------Seitenumbruch auf  Seite 2
         self.c.showPage()
-#        sisisis = insert_current_climate_and_obs_page(self)
+        Table_page = insert_page_with_table(self)
         foot_2 = self.add_footline('gerade_even')
-# Seitenumbruch
-        self.c.showPage
-        dum = insert_impressum(self)
+# -------Seitenumbruch
+        self.c.showPage()
+        impressum_page = insert_impressum(self)
 
 
