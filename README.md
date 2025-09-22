@@ -1,5 +1,11 @@
 # Climate factsheet for countries in West Africa
-This repository contains all python scripts need to produce a climate fact sheet for a selected countra in africa
+This repository contains all python scripts needed to produce a climate fact sheet for a selected country in Africa.
+
+## Documentation
+
+📖 **[View Full Documentation](https://katharinabuelow.github.io/factsheet_africa/)**
+
+The complete documentation is automatically built and deployed using GitHub Actions to GitHub Pages.
 
 ## Environment
 
