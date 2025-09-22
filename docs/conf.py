@@ -2,7 +2,7 @@
 
 # Configuration file for the Sphinx documentation builder.
 
-project = 'factsheet_africa'
+project = 'Factsheet Africa'
 author = 'Katharina Buelow'
 release = '0.1.0'
 
