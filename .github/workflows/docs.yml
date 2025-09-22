@@ -1,0 +1,39 @@
+name: Build and Deploy Docs
+
+on:
+  push:
+    branches:
+      - main  # or your default branch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Set up Python
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      # 3. Install dependencies
+      - name: Install dependencies
+        run: |
+          pip install sphinx sphinx-rtd-theme
+
+      # 4. Build docs
+      - name: Build HTML docs
+        working-directory: docs
+        run: |
+          make html
+
+      # 5. Deploy to GitHub Pages
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: docs/_build/html
