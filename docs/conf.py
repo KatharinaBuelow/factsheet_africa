@@ -35,7 +35,7 @@ sys.path.insert(0, os.path.abspath(".."))
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",  # for Google/NumPy docstrings
-    "sphinx_autodoc_typehints",
+    #"sphinx_autodoc_typehints",
     "sphinx.ext.autosummary",
     "sphinx.ext.viewcode",
     "sphinx.ext.extlinks",
