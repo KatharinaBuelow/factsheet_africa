@@ -34,12 +34,12 @@ sys.path.insert(0, os.path.abspath(".."))
 # ones.
 extensions = [
     "sphinx.ext.autodoc",
+    "sphinx.ext.napoleon",  # for Google/NumPy docstrings
+    "sphinx_autodoc_typehints",
     "sphinx.ext.autosummary",
     "sphinx.ext.viewcode",
     "sphinx.ext.extlinks",
     "sphinx.ext.mathjax",
-    "sphinx.ext.napoleon",
-    "sphinxcontrib.mockautodoc",
     "numpydoc",
     "nbsphinx",
     "nbsphinx_link",
@@ -124,7 +124,7 @@ pygments_style = "sphinx"
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 # html_theme = "sphinx_rtd_theme"
-html_theme = "sphinx_book_theme"
+html_theme = "sphinx_rtd_theme"  # old: sphinx_book_theme"
 html_title = "Factsheet Africa"
 
 # not sure about the license here...
