@@ -277,4 +277,4 @@ simplepdf_vars = {
     'secondary': '#f08100',
     'cover-bg': '#3b7f69',
 }
-simplepdf_file_name = "Broschuere-Stadtwald-Karlsruhe-im-Klimawandel.pdf"
+simplepdf_file_name = "Factsheet_Africa.pdf"
