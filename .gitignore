@@ -11,6 +11,6 @@ Notebooks/EOBS-Plots
 Notebooks/.ipynb_checkpoints
 .ipynb_checkpoints/
 Notebooks/*.csv
-
+docs/_build/*
 
 
