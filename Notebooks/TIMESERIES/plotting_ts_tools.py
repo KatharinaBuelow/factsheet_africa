@@ -119,6 +119,10 @@ def calculate_anomaly(df, baseline_start, baseline_end, value_col):
 
     return df
 
+####################
+# line plot function
+#####################
+
 def line_plot(data,x,y,explore,index, outputpath):
     print(explore)
     # Define unique styles
@@ -196,15 +200,16 @@ def line_plot(data,x,y,explore,index, outputpath):
     y=y.replace(' ', '_')
     # save plot
     outfile = os.path.join(outputpath,'line_plot_'+x+'_'+index+'_'+explore+'.png')
-    plt.savefig(outfile, dpi=300)
+    plt.savefig(outfile, dpi=1200, bbox_inches='tight', pad_inches=0.3)
     
-    #plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
-    
-    
+    #plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')    
     return plt.show()
 
+#############################
+# line plot min max function
+#############################
 
-def line_plot_min_max(df, x, y, index,outputpath, region, ylim=None):
+def line_plot_min_max(df, x, y, index,outputpath, region, dfera5=None, ylim=None):
     """Plot median time series with min-max shading per scenario.
 
     Parameters
@@ -214,6 +219,8 @@ def line_plot_min_max(df, x, y, index,outputpath, region, ylim=None):
     y : str, name of value column
     outputpath : str, directory to save plot
     region : str, region name for title
+    era5 : bool, whether to use ERA5 data
+    dfera5 : DataFrame, optional ERA5 data for comparison
     ylim : tuple(float,float) or None, optional y-limits; if None auto-scale
     """
     if y not in df.columns:
@@ -239,6 +246,7 @@ def line_plot_min_max(df, x, y, index,outputpath, region, ylim=None):
     scenario_colors = {'rcp26': 'darkblue', 'rcp85': 'darkred'}
 
     plt.figure(figsize=(12, 6))
+    
     for scenario in median.columns:
         color = scenario_colors.get(scenario, None)
         if color is None:
@@ -249,8 +257,20 @@ def line_plot_min_max(df, x, y, index,outputpath, region, ylim=None):
         # Optional min/max dashed outlines
         plt.plot(median.index, min_values[scenario], linestyle='--', linewidth=0.6, color=color, alpha=0.7)
         plt.plot(median.index, max_values[scenario], linestyle='--', linewidth=0.6, color=color, alpha=0.7)
-
-    plt.title(f"{region}: Area Mean of {y}", fontsize=16)
+        print(x, y)
+    if dfera5 is not None:
+        # Prepare ERA5 frame to ensure required columns exist
+        if x not in dfera5.columns:
+            raise ValueError(f"ERA5 dataframe missing column '{x}'. Columns available: {list(dfera5.columns)}")
+        if y not in dfera5.columns:
+            raise ValueError(f"ERA5 dataframe missing column '{y}'. Columns available: {list(dfera5.columns)}")
+        era5_years = dfera5[x]
+        # If datetime, convert
+        if np.issubdtype(era5_years.dtype, np.datetime64):
+            era5_years = era5_years.dt.year
+        plt.plot(era5_years, dfera5[y], label='ERA5', color='black', linewidth=2.5, zorder=5)
+            
+    plt.title(f"{region}: Area Mean of {y}", fontsize=20)
     plt.legend(title='CORDEX AFR22 Realizations', loc='upper left', ncol=1, fontsize=8)
     plt.grid(True, alpha=0.3)
     plt.tight_layout()
@@ -274,19 +294,143 @@ def line_plot_min_max(df, x, y, index,outputpath, region, ylim=None):
     for yr in (1991, 2020):
         plt.axvline(yr, color='grey', linestyle='-', linewidth=1)
     plt.fill_betweenx(y=plt.ylim(), x1=1991, x2=2020, color='grey', alpha=0.08)
-    plt.text(1991 + 1, plt.ylim()[0] + 0.02 * (plt.ylim()[1]-plt.ylim()[0]), 'Reference (1991-2020)', color='grey', fontsize=10)
+    plt.text(1991 + 1, plt.ylim()[0] + 0.02 * (plt.ylim()[1]-plt.ylim()[0]), 'Reference (1991-2020)', color='grey', fontsize=14)
      #
     # Save
     safe_x = x.replace(' ', '_')
     #
     safe_region = region.replace(' ', '_')
-    outfile = os.path.join(outputpath, f'line_plot_min_max_{index}_{safe_x}_{safe_region}.png')
-    plt.savefig(outfile, dpi=300)
+    if dfera5 is not None:
+        outfile = os.path.join(outputpath, f'line_plot_min_max_{index}_{safe_x}_{safe_region}_ERA5.png')
+    else:
+        outfile = os.path.join(outputpath, f'line_plot_min_max_{index}_{safe_x}_{safe_region}.png')
+    plt.savefig(outfile, dpi=1200, bbox_inches='tight', pad_inches=0.3)
     print('Saved plot to: ', outfile)
     return plt.show()
 
+#############################
+# Load RCMS data
+#############################
 
-def line_plot_anomaly(data,x,y,outputpath, group, country, index,longname,ylim=None):
+def load_rcms_csv(csv_path, country, index, longname, start_date=None, end_date=None, longnameK=None):
+    """Load a CORDEX AFR-22 country-averaged CSV and return a tidy DataFrame for plotting.
+
+    Expected minimal columns in the CSV: ['region','time','value'] OR already a
+    renamed value column. The function will:
+      * filter the selected country (exact match on 'region')
+      * rename 'time' -> 'year'
+      * for index 'TG' convert Kelvin to Celsius if both longnameK and longname provided
+      * return DataFrame with columns ['year', longname]
+
+    Parameters
+    ----------
+    csv_path : str
+        Path to CORDEX AFR-22 CSV (e.g. climdexCORDEX_AFR22_TG_year_weighted_means.csv)
+    country : str
+        Country name to filter (as used in 'region' column)
+    index : str
+        Index identifier (e.g. 'TG')
+    longname : str
+        Target long name column for plotting (e.g. 'mean temperature [°C]')
+    longnameK : str, optional
+        Column name holding Kelvin values when index == 'TG'
+
+    Returns
+    -------
+    pd.DataFrame
+        Columns: 'year' (int), longname (float)
+    """
+    df = pd.read_csv(csv_path)
+    if 'region' not in df.columns:
+        raise ValueError("CORDEX AFR-22 CSV must contain a 'region' column for country filtering.")
+    df = df[df['region'] == country]
+    if df.empty:
+        raise ValueError(f"No CORDEX AFR-22 rows found for country '{country}'.")
+
+    # If 'time' column exists, rename to 'year'
+    if 'time' in df.columns:
+        df = df.rename(columns={'time': 'year'})
+    if 'year' not in df.columns:
+        raise ValueError("CORDEX AFR-22 CSV needs a 'time' or 'year' column.")
+
+    # Convert to datetime then extract year number if not already int
+    #if not np.issubdtype(df['year'].dtype, np.integer):
+    #    try:
+    #        df['year'] = pd.to_datetime(df['year'], errors='coerce').dt.year
+    #    except Exception:
+    #        raise ValueError("Could not parse year values in CORDEX AFR-22 CSV.")
+
+    
+    rcm_clean=cleanup(df, index, longname, longnameK)
+    rcm_clean=adjust_names(rcm_clean)
+    cut_data=adjust_length(rcm_clean, start_date, end_date)
+    return cut_data
+
+
+#############################
+# ERA5 helper loader
+#############################
+
+def load_era5_csv(csv_path, country, index, longname, start_date=None, longnameK=None):
+    """Load an ERA5 country-averaged CSV and return a tidy DataFrame for plotting.
+
+    Expected minimal columns in the CSV: ['region','time','value'] OR already a
+    renamed value column. The function will:
+      * filter the selected country (exact match on 'region')
+      * rename 'time' -> 'year'
+      * for index 'TG' convert Kelvin to Celsius if both longnameK and longname provided
+      * return DataFrame with columns ['year', longname]
+
+    Parameters
+    ----------
+    csv_path : str
+        Path to ERA5 CSV (e.g. climdexERA5_TG_year_weighted_means.csv)
+    country : str
+        Country name to filter (as used in 'region' column)
+    index : str
+        Index identifier (e.g. 'TG')
+    longname : str
+        Target long name column for plotting (e.g. 'mean temperature [°C]')
+    longnameK : str, optional
+        Column name holding Kelvin values when index == 'TG'
+
+    Returns
+    -------
+    pd.DataFrame
+        Columns: 'year' (int), longname (float)
+    """
+    df = pd.read_csv(csv_path)
+    if 'region' not in df.columns:
+        raise ValueError("ERA5 CSV must contain a 'region' column for country filtering.")
+    df = df[df['region'] == country]
+    if df.empty:
+        raise ValueError(f"No ERA5 rows found for country '{country}'.")
+
+    # If 'time' column exists, rename to 'year'
+    if 'time' in df.columns:
+        df = df.rename(columns={'time': 'year'})
+    if 'year' not in df.columns:
+        raise ValueError("ERA5 CSV needs a 'time' or 'year' column.")
+
+    # Convert to datetime then extract year number if not already int
+    #if not np.issubdtype(df['year'].dtype, np.integer):
+    #    try:
+    #        df['year'] = pd.to_datetime(df['year'], errors='coerce').dt.year
+    #    except Exception:
+    #        raise ValueError("Could not parse year values in ERA5 CSV.")
+
+    
+    era5_clean=cleanup(df, index, longname, longnameK)
+    era5_clean=adjust_names(era5_clean)
+    era5_cut= adjust_length(era5_clean, start_date, '2023-12-31')
+    
+    return era5_cut
+
+################################
+# line plot anomaly function
+################################
+
+def line_plot_anomaly(data,x,y,outputpath, group, country, index, longname,era5=None,ylim=None):
     """make line plot of anomaly
 
     you can either have each realisation in it own color 
@@ -294,7 +438,7 @@ def line_plot_anomaly(data,x,y,outputpath, group, country, index,longname,ylim=N
     if group equals scenario, each scenario has its own color 
     ylim : tuple(float,float) or None, optional y-limits; if None auto-scale
     """
-    plt.figure(figsize=(12, 8))
+    plt.figure(figsize=(12, 6))
     
     # colors:
     colors = ['darkblue', 'darkred']
@@ -307,9 +451,7 @@ def line_plot_anomaly(data,x,y,outputpath, group, country, index,longname,ylim=N
     linestyle_map = dict(zip(gcms, line_styles))
     marker_map = dict(zip(rcms, marker_styles))
 
-    print(data[:3])
-    print(x,y,group,country, longname)
-
+    
     if group =='scenario':
         # Create the plot
         for (scenario, gcm, rcm), group in data.groupby(['scenario', 'GCM', 'RCM']):
@@ -341,15 +483,26 @@ def line_plot_anomaly(data,x,y,outputpath, group, country, index,longname,ylim=N
             group[y],
             label=realization
         )
-
+    if era5 is not None:
+        # Prepare ERA5 frame to ensure required columns exist
+        if x not in era5.columns:
+            raise ValueError(f"ERA5 dataframe missing column '{x}'. Columns available: {list(era5.columns)}")
+        if y not in era5.columns:
+            raise ValueError(f"ERA5 dataframe missing column '{y}'. Columns available: {list(era5.columns)}")
+        era5_years = era5[x]
+        # If datetime, convert
+        if np.issubdtype(era5_years.dtype, np.datetime64):
+            era5_years = era5_years.dt.year
+        plt.plot(era5_years, era5[y], label='ERA5', color='black', linewidth=2.5, zorder=5)
+    
     # title, labels
     plt.title(country+' '+y+ ' of area mean '+longname, fontsize=20)
     plt.legend(title='CORDEX AFR22 Realization', loc='upper left', ncol=1, fontsize=8)
     plt.tight_layout()
     plt.xticks(rotation=0)
-    plt.xlabel(x, fontsize=16)
-    plt.ylabel(y+' of '+longname, fontsize=16)
-    plt.tick_params(axis='both', which='major', labelsize=16)
+    plt.xlabel(x, fontsize=14)
+    plt.ylabel(y+' of '+longname, fontsize=14)
+    plt.tick_params(axis='both', which='major', labelsize=14)
     # Y limits: 
     if ylim is not None:
         plt.ylim(*ylim)
@@ -378,8 +531,11 @@ def line_plot_anomaly(data,x,y,outputpath, group, country, index,longname,ylim=N
     x=x.replace(' ', '_')
     y=y.replace(' ', '_')
     # save plot
-    outfile = os.path.join(outputpath,'line_plot_'+group+'_'+x+'_'+index+'_'+y+'.png')
-    plt.savefig(outfile, dpi=300)
+    if era5 is not None:
+        outfile = os.path.join(outputpath,'line_plot_'+group+'_'+x+'_'+index+'_'+y+'_ERA5.png')
+    else:
+        outfile = os.path.join(outputpath,'line_plot_'+group+'_'+x+'_'+index+'_'+y+'.png')
+    plt.savefig(outfile, bbox_inches='tight' ,pad_inches=0.3, dpi=1200)
     print('file liegt: ', outfile)
     
     return plt.show()
