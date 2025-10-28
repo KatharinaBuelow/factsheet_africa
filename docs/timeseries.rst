@@ -1,22 +1,16 @@
 Timeseries
 ----------
 
+.. image:: plots/line_plot_min_max_TG_year_Burkina_Faso_ERA5.png
+	   
+Before you start, you need to create your environment by
 
-Jede in Tabelle 3 dargestellte Klimakenngröße wurde mit einer Experteneinschätzung ergänzt, die die Belastbarkeit der Ergebnisse beschreibt. Dies ist durch die unterschiedlichen Grautöne in der Tabelle gekennzeichnet: “je dunkler das Grau, um so eindeutiger die Klimaänderung“. Wenn eine Mehrzahl der Ergebnisse der Klimamodelle für eine Kenngröße eine statistisch signifikante Zunahme oder Abnahme zeigt, wird die Änderung im Folgenden als „robust“ bezeichnet (dunkelgrau). Wenn die Mehrzahl der Ergebnisse der Modelle keine deutlichen Änderungen, aber eine eindeutige Richtung der Änderungen angibt, ist eine „Tendenz zur Zu- bzw. Abnahme“ vorhanden (grau). Wenn die Ergebnisse der Klimamodelle etwa zu gleichen Teilen sowohl eine Zunahme als auch eine Abnahme zeigen, gibt es keine eindeutige Änderung (hellgrau/unklar). Unterhalb des Medians der Ergebnisse aller Klimasimulationen (hier fett und groß) befindet sich eine Angabe zur Bandbreite der möglichen Entwicklungen in Form einer minimalen und maximalen Änderung.
+.. code-block:: console
 
-.. image:: plots/Karlsruhe_table_GWL_08212_08215_07334_Region_um_Karlsruhe_median_grey_300.png
+   conda env create -f timeseries.yml
 
-In **Tabelle 3** sind die ausgewählten Klimakenngrößen und deren zukünftige mittlere Veränderungen im Vergleich zum Zeitraum 1971 bis 2000 jeweils für den Fall einer Erhöhung der globalen Mitteltemperatur um +1.5, +2, +3 und +4°C im Vergleich zum vorindustriellen Niveau aufgelistet. In der 1. Spalte steht der mittlere beobachtete Wert über die Jahre von 1971 bis 2000 (E-OBS_). Die Klimaänderungen wurden mit einer Vielzahl von Modellen berechnet, deren Ergebnisse zwischen dem angegebenen Minimum und Maximum (Min-Max) liegen. Darüber steht die Zahl (Median), unter und über der jeweils die Hälfte der Modelle liegen.
+To make the time series plots you use the following notebook, which uses the funktions located in plotting_ts_tools.py . You can decide if you like ERA5_ in the plot or not.
 
-Diese Tabelle kann mit dem folgenden Notebook erstellt werden:
-
-
-Katharina: noch das environment dazu tun
-
-
-
-
-To make the plots you need two programs:
 
 .. code-block:: console
 
@@ -30,7 +24,8 @@ Das Notebook verwendet die Daten die in folgendem Verzeichnis liegen:
 
 .. code-block:: console
 
+# Add link: KB
    $ input_data
 
-
-.. _E-OBS: https://cds.climate.copernicus.eu/cdsapp#!/dataset/insitu-gridded-observations-europe
+# ERA5: KB
+.. _ERA5: https://cds.climate.copernicus.eu/cdsapp#!/dataset
