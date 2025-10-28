@@ -14,9 +14,9 @@ To make the time series plots you use the following notebook, which uses the fun
 
 .. code-block:: console
 
-   $ Notebooks/plotting_ts_tools.py
+   $ Notebooks/TIMESERIES/plotting_ts_tools.py
    
-   $ Notebooks/timeseries_TG_WASCAL.ipynb
+   $ Notebooks/TIMESERIES/timeseries_TG_WASCAL.ipynb
    
 
    

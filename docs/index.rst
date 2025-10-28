@@ -1,18 +1,19 @@
-Welcome to My Project’s documentation!
-======================================
+Welcome to the Climate Fact Sheet Documentation for African Countries
+==========================================================
 
-This is the official documentation for **My Project**.
 
 .. toctree::
    :maxdepth: 2
-   :caption: Table of Contents:
+   :caption: Inhalt:
 
-   installation
-   usage
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   readme
+   introduction
+   environment
+   country
+   regions
+   observed
+   indices
+   ensemble_analysis
+   indices_GWL
+   model_list
+   authors
