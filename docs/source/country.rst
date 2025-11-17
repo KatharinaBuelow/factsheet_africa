@@ -8,7 +8,7 @@ Before you start, you need to create your environment by
 
 .. code-block:: console
 
-   conda env create -f countrymap.yml
+   $ conda env create -f countrymap.yml
 
 To make your plots of africa highlighting a specific country you can apply the following notebook
 

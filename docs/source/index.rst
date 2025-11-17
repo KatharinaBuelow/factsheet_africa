@@ -1,5 +1,5 @@
 Welcome to the Climate Fact Sheet Documentation for African Countries
-==========================================================
+=====================================================================
 
 
 .. toctree::
@@ -15,5 +15,9 @@ Welcome to the Climate Fact Sheet Documentation for African Countries
    indices
    ensemble_analysis
    indices_GWL
+   exposure
+   significance
+   exposure_literature
+   population
    model_list
    authors
