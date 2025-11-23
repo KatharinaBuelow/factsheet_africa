@@ -17,3 +17,17 @@ def diff_exposure(pop_ref, index_ref, diff_pop, diff_index, var):
     exp['exposure'] = p_ref['number_of_people'] * diff_i[var] + i_ref[var] * diff_p['number_of_people'] + diff_i[var] * diff_p['number_of_people']
 
     return exp
+
+def exposure(pop, sim, var):
+
+    """
+    Get exposure for a given index.
+    """
+
+    # Calculate the exposure
+    pop = xr.open_dataset(pop, decode_timedelta=False)
+    sim = xr.open_dataset(sim, decode_timedelta=False)
+    exp = xr.Dataset()
+    exp['person_events'] = pop['number_of_people'] * sim[var]
+
+    return exp

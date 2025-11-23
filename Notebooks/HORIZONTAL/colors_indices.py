@@ -26,7 +26,7 @@ def colorsteps_diff(var):
     """
     # Colors and levels for the plots
     # for difference plots yearly
-    if var in ['TR', 'SU35', 'HSx', 'HSn', 'SU40']:
+    if var in ['TR', 'TR26','SU35', 'HSx', 'HSn', 'SU40']:
         color_steps_diff = ['#d1e5f0', '#ffffff', '#f7f4f9', '#e7e1ef', '#d4b9da', '#c994c7', '#df65b0', '#e7298a',
                             '#ce1256', '#980043', '#67001f']
     elif var in ['HSf', ]:
@@ -54,7 +54,7 @@ def colorsteps_diff(var):
     else:
         print('no colors defined for ', var)
 
-    if var in ['TR', 'SU30', 'SU35', 'HSn', 'SU40']:
+    if var in ['TR', 'TR26','SU30', 'SU35', 'HSn', 'SU40']:
         level_steps_diff = [0, 5, 10, 15, 20, 30, 45, 60, 90, 120]
     elif var == 'SU40':
         level_steps_diff = [0, 2, 4, 6, 8, 10, 15, 20, 30, 40]        
@@ -123,21 +123,23 @@ def colorsteps_absolute(var):
         print('no level_steps for '+ var+' are provided')
     return color_steps, level_steps
 
+
 def colorsteps_exposure(var):
 
     """
     colors and levels for robust exposure plots
     """
 
-    if var in ['exposure']:
+    if var in ['exposure', 'person_events']:
         color_steps_exp=['#d9d9d9',"#fdfde8",'#ffffcc','#ffeda0','#fed976',
             '#feb24c','#fd8d3c','#fc4e2a',
             '#e31a1c','#bd0026','#800026',"#4B0117"]
     else:
         print('no color steps defined')
-    
     if var=='exposure':
         level_steps_exp=[0,1,2,3,4,5,6,7,8,9,10]
+    elif var=='person_events':
+        level_steps_exp=[0,600,1200,1500,1800,2100,2400,2700,3000,3300]
     else:
         print('no level_steps for '+ var+' are provided')
     return color_steps_exp, level_steps_exp
