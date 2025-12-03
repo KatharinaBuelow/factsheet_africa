@@ -32,6 +32,10 @@ def colorsteps_diff(var):
     elif var in ['HSf', ]:
         color_steps_diff = ['#92c5de', '#d1e5f0', '#ffffff', '#ffffff', '#f7f4f9', '#e7e1ef', '#d4b9da', '#c994c7',
                             '#df65b0', '#e7298a', '#ce1256', '#980043', '#67001f']
+    elif var in ['DD']:
+        color_steps_diff = ['#01665e','#35978f','#80cdc1','#c7eae5','#f5f5f5','#f6e8c3','#dfc27d','#bf812d','#8c510a']
+    elif var in ['R20mm']:
+        color_steps_diff = ['#7f3b08','#b35806','#e08214','#fdb863','#fee0b6','#f7f7f7','#d8daeb','#b2abd2','#8073ac','#542788','#2d004b']
     elif var in ['HWf', ]:
         color_steps_diff = ['#92c5de', '#d1e5f0', '#ffffff', '#ffffff', '#ffffcc', '#ffeda0', '#fed976',
                             '#feb24c', '#fd8d3c', '#fc4e2a', '#e31a1c', '#bd0026', '#800026']
@@ -56,6 +60,10 @@ def colorsteps_diff(var):
 
     if var in ['TR', 'TR26','SU30', 'SU35', 'HSn', 'SU40']:
         level_steps_diff = [0, 5, 10, 15, 20, 30, 45, 60, 90, 120]
+    elif var in ['DD']:
+        level_steps_diff = [-35,-25,-15, -5,5,15,25,35]
+    elif var in ['R20mm']:
+        level_steps_diff = [-5,-4,-3,-2, -1, 1, 2,3,4,5]
     elif var == 'SU40':
         level_steps_diff = [0, 2, 4, 6, 8, 10, 15, 20, 30, 40]        
     elif var == 'HWn':
@@ -89,6 +97,10 @@ def colorsteps_absolute(var):
 
     if var in ['TR','TR26','SU35','SU30','SU40','HSn']:
         color_steps=['#d9d9d9','#ffffff','#fff7f3','#fde0dd','#fcc5c0','#fa9fb5','#f768a1','#dd3497','#ae017e','#7a0177','#807dba','#6a51a3','#54278f','#3f007d']
+    elif var in ['DD']:
+        color_steps=['#ffffe5','#fff7bc','#fee391','#fec44f','#fe9929','#ec7014','#cc4c02','#993404','#662506','#67000d']
+    elif var in ['R20mm']:
+        color_steps=['#d9d9d9','#f7fbff','#deebf7','#c6dbef','#9ecae1','#6baed6','#4292c6','#2171b5','#08519c','#08306b']
     elif var in ['TG','DTR']:
         color_steps=['#d9d9d9','#ffffff','#ffffcc','#ffeda0','#fed976','#feb24c','#fd8d3c','#fc4e2a','#e31a1c','#bd0026','#800026']
     elif var in ['HSx','HSf','HWf','HWn','HWx']:
@@ -98,6 +110,9 @@ def colorsteps_absolute(var):
             '#80cdc1','#66c2a4','#35978f','#01665e','#003c30',
             '#f6e8c3',
             '#dfc27d','#bf812d',"#a35414","#854e0c",'#543005',]
+    elif var =='ev_coin_sdu_median':
+        color_steps=['#d9d9d9','#5e4fa2','#3288bd','#66c2a5','#abdda4','#e6f598','#ffffbf','#fee08b','#fdae61','#f46d43','#d53e4f','#9e0142']
+        color_steps=['#d9d9d9','#fff7f3','#fde0dd','#fcc5c0','#fa9fb5','#f768a1','#dd3497','#ae017e','#7a0177','#49006a']
     else:
         print('no color steps defined')
 
@@ -105,8 +120,12 @@ def colorsteps_absolute(var):
         level_steps=[0,30,60,90,120,150,180,210,240,270,300,330,360]
     elif var=='TR26':
         level_steps=[0,30,60,90,120,150,180,210,240,270,300,330,360]
+    elif var=='R20mm':
+        level_steps=[0,5,10,15,20,25,30,35,40]
     elif var=='TG':
         level_steps=[0,10,15,18,21,24,27,30,33]
+    elif var=='DD':
+        level_steps=[90,120,150,180,210,240,270,300,330]
     elif var=='DTR':
         level_steps=[0,6,8,10,12,14,16,17,18]
     elif var in ['SU30','SU35','HSn']:
@@ -119,6 +138,10 @@ def colorsteps_absolute(var):
     # set the colors, special case for population:
     elif var in ['number_of_people']:
         level_steps=[0,5,10,20,30,60,90,120,150,180,210,240,270]
+    elif var=='ev_coin_sdu_median':
+        level_steps = [0,30,60,90,120,150,180,210]
+        #heavy precip
+        #level_steps = [0,1,2,3,4,5,6,7]
     else:
         print('no level_steps for '+ var+' are provided')
     return color_steps, level_steps
@@ -137,6 +160,7 @@ def colorsteps_exposure(var):
     else:
         print('no color steps defined')
     if var=='exposure':
+        #level_steps_exp=[0,2,4,6,8,10,12,14,16,18,20]
         level_steps_exp=[0,1,2,3,4,5,6,7,8,9,10]
     elif var=='person_events':
         level_steps_exp=[0,600,1200,1500,1800,2100,2400,2700,3000,3300]

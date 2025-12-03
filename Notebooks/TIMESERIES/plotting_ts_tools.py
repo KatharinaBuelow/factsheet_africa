@@ -8,6 +8,9 @@ import os
 import sys
 import numpy as np  
 
+# Consistent dark grey for lines previously using 'black'
+DARKGREY = "#525151"
+
 def cleanup(data, index, longname, longnameK):
     # adjust dataframe for plotting
     # drop column ci_package_name
@@ -268,9 +271,9 @@ def line_plot_min_max(df, x, y, index,outputpath, region, dfera5=None, ylim=None
         # If datetime, convert
         if np.issubdtype(era5_years.dtype, np.datetime64):
             era5_years = era5_years.dt.year
-        plt.plot(era5_years, dfera5[y], label='ERA5', color='black', linewidth=2.5, zorder=5)
+        plt.plot(era5_years, dfera5[y], label='ERA5', color=DARKGREY, linewidth=2.5, zorder=5)
             
-    plt.title(f"{region}: Area Mean of {y}", fontsize=20)
+    plt.title(f"Area mean for {region}: of {y}", fontsize=20)
     plt.legend(title='CORDEX AFR22 Realizations', loc='upper left', ncol=1, fontsize=8)
     plt.grid(True, alpha=0.3)
     plt.tight_layout()
@@ -493,10 +496,10 @@ def line_plot_anomaly(data,x,y,outputpath, group, country, index, longname,era5=
         # If datetime, convert
         if np.issubdtype(era5_years.dtype, np.datetime64):
             era5_years = era5_years.dt.year
-        plt.plot(era5_years, era5[y], label='ERA5', color='black', linewidth=2.5, zorder=5)
+        plt.plot(era5_years, era5[y], label='ERA5', color=DARKGREY, linewidth=2.5, zorder=5)
     
     # title, labels
-    plt.title(country+' '+y+ ' of area mean '+longname, fontsize=20)
+    plt.title(f"Area mean for {country}: {y} of {longname}", fontsize=20)
     plt.legend(title='CORDEX AFR22 Realization', loc='upper left', ncol=1, fontsize=8)
     plt.tight_layout()
     plt.xticks(rotation=0)
@@ -514,7 +517,7 @@ def line_plot_anomaly(data,x,y,outputpath, group, country, index, longname,era5=
         plt.ylim(ymin - 0.02 * span, ymax + 0.02 * span)
         ytext=ymin+0.1
     plt.xlim(1971, 2100)
-    plt.axhline(0, color='grey', linestyle='-', linewidth=1)
+    plt.axhline(0, color=DARKGREY, linestyle='-', linewidth=1)
     plt.axvline(1991, color='grey', linestyle='-', linewidth=1)
     plt.axvline(2020, color='grey', linestyle='-', linewidth=1)
     # Fill between the vertical lines for the reference period
@@ -530,11 +533,12 @@ def line_plot_anomaly(data,x,y,outputpath, group, country, index, longname,era5=
     # rename x and y for plotname
     x=x.replace(' ', '_')
     y=y.replace(' ', '_')
+    country=country.replace(' ', '_')
     # save plot
     if era5 is not None:
-        outfile = os.path.join(outputpath,'line_plot_'+group+'_'+x+'_'+index+'_'+y+'_ERA5.png')
+        outfile = os.path.join(outputpath,'line_plot_'+group+'_'+x+'_'+index+'_'+y+'_'+country+'_ERA5.png')
     else:
-        outfile = os.path.join(outputpath,'line_plot_'+group+'_'+x+'_'+index+'_'+y+'.png')
+        outfile = os.path.join(outputpath,'line_plot_'+group+'_'+x+'_'+index+'_'+y+'_'+country+'.png')
     plt.savefig(outfile, bbox_inches='tight' ,pad_inches=0.3, dpi=1200)
     print('file liegt: ', outfile)
     

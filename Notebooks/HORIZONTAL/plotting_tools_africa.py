@@ -368,7 +368,7 @@ def plot_4diff(
             robust_rcp85=file.replace(what,robust) #'time-mean_ensemble-diff-median.nc','ensemble-robustness.nc')
             datar = xr.open_dataset(robust_rcp85)
             datar_variable = datar[var]
-            significant = xr.where(~datar_variable.isin([-1, 1, 0]), 1, 0).squeeze()
+            significant = xr.where(~datar_variable.isin([-1, 1, 0]), 1, 0).squeeze().astype(int)
             significant.plot.contourf(
                     ax=axes[1,i],
                     levels=[-.5, .5],
@@ -485,13 +485,19 @@ def plot_absolut(
     
         # Select labels // Units frome metadata
         # Set title of plot
-        if var !='number_of_people':
+        if var not in ['number_of_people','ev_coin_sdu_median']:
             varname=data[var].long_name
             add_unit(data,var)
             unit=data[var].units
-        else:
+        elif var == 'number_of_people':
             varname='Number of people'
             unit='Number'
+        elif var == 'ev_coin_sdu_median':
+            varname=''
+            unit='events per year'
+        else:
+            print('var-long_name not found')
+        
         
         
         s = "{} {}".format(title,varname)
@@ -512,7 +518,10 @@ def plot_absolut(
                             #alpha=.8,
                             )
         # This is not very clever, need to be adjusted according to file_name :-(
-        axes[0, i].set_title(f'RCP26: {file.split("_")[6]}-{file.split("_")[7]}',fontsize=12)
+        if var =='ev_coin_sdu_median':
+            axes[0, i].set_title(f'RCP26: {file.split("_")[9].split(".")[0]}', fontsize=12)
+        else:
+            axes[0, i].set_title(f'RCP26: {file.split("_")[6]}-{file.split("_")[7]}',fontsize=12)
 
     # Plot data for rcp85
     for i, file in enumerate(sims_rcp85):
@@ -529,8 +538,10 @@ def plot_absolut(
                            add_colorbar=False,
                            #alpha=.8,
                            )
-        
-        axes[1, i].set_title(f'RCP85: {file.split("_")[6]}-{file.split("_")[7]}',fontsize=12)
+        if var =='ev_coin_sdu_median':
+            axes[1, i].set_title(f'RCP85: {file.split("_")[9].split(".")[0]}',fontsize=12)
+        else:
+            axes[1, i].set_title(f'RCP85: {file.split("_")[6]}-{file.split("_")[7]}',fontsize=12)
 
     cbar_ax = fig.add_axes([0.15, 0.02, 0.7, 0.03])
     fig.colorbar(im, cax=cbar_ax, orientation="horizontal", label='[ '+unit+' ]')
