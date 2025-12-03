@@ -15,9 +15,8 @@ Welcome to the Climate Fact Sheet Documentation for African Countries
    indices
    ensemble_analysis
    indices_GWL
-   exposure
    significance
-   exposure_literature
+   exposure
    population
    model_list
    authors
