@@ -27,6 +27,6 @@ The results of the selected model ensemble are accompanied by information on sta
 
 .. _xclim: https://github.com/Ouranosinc/xclim
 
-.. _`Mann-Whitney-U-Tests`: https://de.wikipedia.org/wiki/Wilcoxon-Mann-Whitney-Test
+.. _`Mann-Whitney-U-Test`: https://de.wikipedia.org/wiki/Wilcoxon-Mann-Whitney-Test
 
 .. _`Uncertainties`: https://link.springer.com/chapter/10.1007/978-3-662-66696-8_5#Sec3

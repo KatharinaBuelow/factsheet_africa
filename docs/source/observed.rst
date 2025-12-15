@@ -1,29 +1,34 @@
-Beobachtete Veränderungen in der Vergangenheit
-----------------------------------------------
+ERA5
+----
 
-In den letzten Jahren litt Karlsruhe unter extrem trockenen und heißen Sommern.
+Example Burkina Faso
 
-Die hier verwendeten Temperatur- und Niederschlagsdaten gehören zu dem europäischen Klimaüberwachungsprodukt `E-OBS`_, welches auf In-situ-Bodenbeobachtungen beruht. Die Daten werden von bodengestützten Beobachtungsnetzen gesammelt, die den nationalen Wetterdiensten und anderen gehören und von ihnen betrieben werden. `E-OBS`_ bietet einen langen Zeitraum seit 1950 an.
+ `ERA5`_
 
-.. image:: plots/EOBS_Annual_anomaly_deviation-2023_to_1971_2000_08212_08215_07334_Region_um_Karlsruheneu.png
+.. image:: ../../PLOTS/ERA5_Annual_anomaly_deviation_to_1991_2020_Burkina_Faso_nc.png
 
 
-**Abbildung 2** zeigt die Temperatur- und Niederschlagsanomlien von 1950 bis 2023 im Vergleich zu dem 30-jährigen Mittel über die Jahre 1971 bis 2000 für das Gebiet Karlsruhe. Wie an den roten Balken zu erkennen ist, steigt die bodennahe Lufttemperatur in den letzten beiden Jahrzehnten besonders stark an. Im unteren Teil werden hingegen die Niederschläge betrachtet. Es ist zu sehen, dass sie unter anderem in den Jahren 2003, 2015 sowie 2018 bis 2020 deutlich niedriger als in dem Zeitraum 1971-2000 waren. Für die Datenauswertung erfolgte unter Verwendung des E-OBS-Datensatzes aus dem EU-FP6-Projekt UERRA, Copernicus Climate Change Service und dem ECA&D-Projekt.
+**Figure XX**  The figure shows annual temperature and precipitation anomalies for Burkina Faso from 1941 to 2023, based on ERA5 reanalysis data. The anomalies are calculated relative to the 1991–2020 reference period, which is indicated by the vertical dashed lines."\
+        "In the upper panel, temperature anomalies (in °C) reveal a clear long-term warming trend. Most years before the 1980s were cooler than the reference period, with anomalies often below –1 °C, especially during the 1950s and 1960s. Starting in the late 1980s, anomalies approach zero, and from the 2000s onward, nearly all years are warmer than the 1991–2020 average. \
+        The most recent decade shows persistent positive anomalies, exceeding +1 °C in several years, highlighting significant warming compared to the reference period."\
+        "The lower panel displays precipitation anomalies (in %). Early decades, particularly the 1940s and 1950s, were generally wetter than the reference period, with anomalies reaching +40 % or more. From the 1970s onward, negative anomalies become more frequent, indicating drier conditions relative to 1991–2020. The Sahel drought period in the 1980s is evident, with anomalies below –20%. Recent years show mixed variability, but overall, precipitation tends to show high annual variability."\
+        "This visualization underscores that the 1991–2020 reference period itself is already warmer than earlier decades, meaning current anomalies represent additional warming beyond an already elevated baseline."\
+       
 
-Abbildung 2 kann mit dem folgenden Notebook erstellt werden:
+Figure XX can be created with the following Notebook:
 
 
 .. code-block:: console
 
-   $ Notebooks/EOBS/Plot_EOBS_annual_anomaly-new_color.ipynb
+   $ Notebooks/ERA5/Plot_ERA5_annual_anomaly-new_color.ipynb
 
-Das Notebook verwendet die Daten aus folgendem Verzeichnis:
+The Notebook uses the aggreated data:
 
 .. code-block:: console
 
    $ input_data/eobs
 
+ "Data source: ERA5 global reanalysis (Hersbach et al., 2020). 
 
-
-.. _`E-OBS`: https://cds.climate.copernicus.eu/cdsapp#!/dataset/insitu-gridded-observations-europe
+.. _`ERA5`: Hersbach, H., Bell, B., Berrisford, P., Biavati, G., Horányi, A., Muñoz Sabater, J., Nicolas, J., Peubey, C., Radu, R., Rozum, I., Schepers, D., Simmons, A., Soci, C., Dee, D., Thépaut, J-N. (2023): ERA5 hourly data on pressure levels from 1940 to present. Copernicus Climate Change Service (C3S) Climate Data Store (CDS), DOI: 10.24381/cds.bd0915c6 
 

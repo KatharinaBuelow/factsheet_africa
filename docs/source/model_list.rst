@@ -1,144 +1,55 @@
-Liste der Klimasimulationen
----------------------------
+Clmate Simulation
+-----------------
 
-Tabelle mit den verwendeten EURO-CORDEX Simulationen
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Im Rahmen der Europäischen Initiative `EURO-CORDEX`_ (Coordinated Downscaling Experiment for Europe) werden globale Klimasimulationen der weltweiten CMIP5-Initiative (Coupled Model Intercomparison Project Phase 5) mit dynamischen regionalen Klimamodellen regionalisiert.
+CORDEX CORE Africa Simulations
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The climate simulations for Africa are based on `CORDEX-CORE_AFR22`_ data.  More information about CORDEX-CORE is described in the following papers [1]_, [2]_, [3]_, [4]_).
 
-In den hier erläuterten Untersuchungen wurden die `EURO-CORDEX`_ Simulationen mit einer horizontalen Auflösung von 12 Km (EUR11) verwendet. 
+The data is available on 0.22 deg horizontal resolution and can be downloaded from the Earth System Grid Federation (esgf_). Model details and detials to the data format can be found here_. More gerneal information on climate models and `model diagnostic`_ are documented `Diez-Sierra et al., 2022`_.
 
-Diese Daten stehen im Earth System Grid Federation (esgf_) zum Herunterladen zur Verfügung. Details zu den einzelnen Modellen und ihrem Datenformat sind dokumentiert_. Weitere Informationen zu den Klimamodellen und `Modell-Diagnostik`_ sind in `Diez-Sierra et al., 2022`_ nachzulesen.
+The following table documents the high resolution climate model available for africa.
 
-Die folgende Liste (Tabelle 1) umfasst eine Auswahl der insgesamt zur Verfügung stehenden Klimasimulationen. Die Vorgehensweise der Auswahl der Simulationen ist im folgenden Kapitel **globale Erwärmungsstufen** dokumentiert.
-
-+---------------------+-------------------+-----------+-------------+----------------+
-| Regionales          | Globales          | Szenario  | Realisation | GWL            |
-| Klimamodel          | Klimamodel        |           |             |                |
-+=====================+===================+===========+=============+================+
-| CLMcom-CCLM4-8-17   | CCCma-CanESM2     | RCP8.5    | r1i1p1      | 1.5, 2, 3, 4°C |
-+---------------------+-------------------+-----------+-------------+----------------+
-| CLMcom-CCLM4-8-17   | CNRM-CM5          | RCP8.5    | r1i1p1      | 1.5, 2, 3 °C   |
-+---------------------+-------------------+-----------+-------------+----------------+
-| CLMcom-CCLM4-8-17   | ICHEC-EC-EARTH    | RCP8.5    | r12i1p1     | 1.5, 2, 3, 4°C |
-+---------------------+-------------------+-----------+-------------+----------------+
-| CLMcom-CCLM4-8-17   | MIROC-MIROC5      | RCP8.5    | r1i1p1      | 1.5, 2, 3°C    |
-+---------------------+-------------------+-----------+-------------+----------------+
-| CLMcom-CCLM4-8-17   | MOHC-HadGEM2-ES   | RCP8.5    | r1i1p1      | 1.5, 2, 3, 4°C |
-+---------------------+-------------------+-----------+-------------+----------------+
-| CLMcom-CCLM4-8-17   | MPI-M-MPI-ESM-LR  | RCP8.5    | r1i1p1      | 1.5, 2, 3, 4°C |
-+---------------------+-------------------+-----------+-------------+----------------+
-| CLMcom-ETH-COSMO    | CNRM-CM5          | RCP8.5    | r1i1p1      | 1.5, 2, 3°C    |
-+---------------------+-------------------+-----------+-------------+----------------+
-| CLMcom-ETH-COSMO    | ICHEC-EC-EARTH    | RCP8.5    | r12i1p1     | 1.5, 2, 3, 4°C |
-+---------------------+-------------------+-----------+-------------+----------------+
-| CLMcom-ETH-COSMO    | MOHC-HadGEM2-ES   | RCP8.5    | r1i1p1      | 1.5, 2, 3, 4°C |
-+---------------------+-------------------+-----------+-------------+----------------+
-| CLMcom-ETH-COSMO    | MPI-M-MPI-ESM-LR  | RCP8.5    | r1i1p1      | 1.5, 2, 3, 4°C |
-+---------------------+-------------------+-----------+-------------+----------------+
-| CLMcom-ETH-COSMO    | NCC-NorESM1-M     | RCP8.5    | r1i1p1      | 1.5, 2, 3°C    |
-+---------------------+-------------------+-----------+-------------+----------------+
-| CNRM-ALADIN63       | CNRM-CM5          | RCP8.5    | r1i1p1      | 1.5, 2, 3°C    |
-+---------------------+-------------------+-----------+-------------+----------------+
-| CNRM-ALADIN63       | MOHC-HadGEM2-ES   | RCP8.5    | r1i1p1      | 1.5, 2, 3, 4°C |
-+---------------------+-------------------+-----------+-------------+----------------+
-| CNRM-ALADIN63       | MPI-M-MPI-ESM-LR  | RCP8.5    | r1i1p1      | 1.5, 2, 3, 4°C |
-+---------------------+-------------------+-----------+-------------+----------------+
-| CNRM-ALADIN63       | NCC-NorESM1-M     | RCP8.5    | r1i1p1      | 1.5, 2, 3°C    |
-+---------------------+-------------------+-----------+-------------+----------------+
-| DMI-HIRHAM5         | CNRM-CM5          | RCP8.5    | r1i1p1      | 1.5, 2, 3°C    |
-+---------------------+-------------------+-----------+-------------+----------------+
-| DMI-HIRHAM5         | ICHEC-EC-EARTH    | RCP8.5    | r12i1p1     | 1.5, 2, 3, 4°C |
-+---------------------+-------------------+-----------+-------------+----------------+
-| DMI-HIRHAM5         | IPSL-CM5A-MR      | RCP8.5    | r1i1p1      | 1.5, 2, 3, 4°C |
-+---------------------+-------------------+-----------+-------------+----------------+
-| DMI-HIRHAM5         | MOHC-HadGEM2-ES   | RCP8.5    | r1i1p1      | 1.5, 2, 3, 4°C |
-+---------------------+-------------------+-----------+-------------+----------------+
-| DMI-HIRHAM5         | MPI-M-MPI-ESM-LR  | RCP8.5    | r1i1p1      | 1.5, 2, 3, 4°C |
-+---------------------+-------------------+-----------+-------------+----------------+
-| DMI-HIRHAM5         | NCC-NorESM1-M     | RCP8.5    | r1i1p1      | 1.5, 2, 3°C    |
-+---------------------+-------------------+-----------+-------------+----------------+
-| GERICS-REMO2015     | CCCma-CanESM2     | RCP8.5    | r1i1p1      | 1.5, 2, 3, 4°C |
-+---------------------+-------------------+-----------+-------------+----------------+
-| GERICS-REMO2015     | CNRM-CM5          | RCP8.5    | r1i1p1      | 1.5, 2, 3°C    |
-+---------------------+-------------------+-----------+-------------+----------------+
-| GERICS-REMO2015     | ICHEC-EC-EARTH    | RCP8.5    | r12i1p1     | 1.5, 2, 3, 4°C |
-+---------------------+-------------------+-----------+-------------+----------------+
-| GERICS-REMO2015     | IPSL-CM5A-MR      | RCP8.5    | r1i1p1      | 1.5, 2, 3, 4°C |
-+---------------------+-------------------+-----------+-------------+----------------+
-| GERICS-REMO2015     | MIROC-MIROC5      | RCP8.5    | r1i1p1      | 1.5, 2, 3°C    |
-+---------------------+-------------------+-----------+-------------+----------------+
-| GERICS-REMO2015     | MOHC-HadGEM2-ES   | RCP8.5    | r1i1p1      | 1.5, 2, 3, 4°C |
-+---------------------+-------------------+-----------+-------------+----------------+
-| GERICS-REMO2015     | NCC-NorESM1-M     | RCP8.5    | r1i1p1      | 1.5, 2, 3°C    |
-+---------------------+-------------------+-----------+-------------+----------------+
-| ICTP-RegCM4-6       | CNRM-CM5          | RCP8.5    | r1i1p1      | 1.5, 2, 3°C    |
-+---------------------+-------------------+-----------+-------------+----------------+
-| ICTP-RegCM4-6       | ICHEC-EC-EARTH    | RCP8.5    | r12i1p1     | 1.5, 2, 3, 4°C |
-+---------------------+-------------------+-----------+-------------+----------------+
-| ICTP-RegCM4-6       | MOHC-HadGEM2-ES   | RCP8.5    | r1i1p1      | 1.5, 2, 3, 4°C |
-+---------------------+-------------------+-----------+-------------+----------------+
-| ICTP-RegCM4-6       | MPI-M-MPI-ESM-LR  | RCP8.5    | r1i1p1      | 1.5, 2, 3, 4°C |
-+---------------------+-------------------+-----------+-------------+----------------+
-| ICTP-RegCM4-6       | NCC-NorESM1-M     | RCP8.5    | r1i1p1      | 1.5, 2, 3°C    |
-+---------------------+-------------------+-----------+-------------+----------------+
-| IPSL-WRF381P        | CNRM-CM5          | RCP8.5    | r1i1p1      | 1.5, 2, 3°C    |
-+---------------------+-------------------+-----------+-------------+----------------+
-| IPSL-WRF381P        | ICHEC-EC-EARTH    | RCP8.5    | r12i1p1     | 1.5, 2, 3, 4°C |
-+---------------------+-------------------+-----------+-------------+----------------+
-| IPSL-WRF381P        | IPSL-IPSL-CM5A-MR | RCP8.5    | r1i1p1      | 1.5, 2, 3, 4°C |
-+---------------------+-------------------+-----------+-------------+----------------+
-| IPSL-WRF381P        | MOHC-HadGEM2-ES   | RCP8.5    | r1i1p1      | 1.5, 2, 3, 4°C |
-+---------------------+-------------------+-----------+-------------+----------------+
-| IPSL-WRF381P        | MPI-M-MPI-ESM-LR  | RCP8.5    | r1i1p1      | 1.5, 2, 3, 4°C |
-+---------------------+-------------------+-----------+-------------+----------------+
-| IPSL-WRF381P        | NCC-NorESM1-M     | RCP8.5    | r1i1p1      | 1.5, 2, 3°C    |
-+---------------------+-------------------+-----------+-------------+----------------+
-| KNMI-RACMO22E       | CNRM-CM5          | RCP8.5    | r1i1p1      | 1.5, 2, 3°C    |
-+---------------------+-------------------+-----------+-------------+----------------+
-| KNMI-RACMO22E       | ICHEC-EC-EARTH    | RCP8.5    | r12i1p1     | 1.5, 2, 3, 4°C |
-+---------------------+-------------------+-----------+-------------+----------------+
-| KNMI-RACMO22E       | IPSL-IPSL-CM5A-MR | RCP8.5    | r1i1p1      | 1.5, 2, 3, 4°C |
-+---------------------+-------------------+-----------+-------------+----------------+
-| KNMI-RACMO22E       | MOHC-HadGEM2-ES   | RCP8.5    | r1i1p1      | 1.5, 2, 3, 4°C |
-+---------------------+-------------------+-----------+-------------+----------------+
-| KNMI-RACMO22E       | MPI-M-MPI-ESM-LR  | RCP8.5    | r1i1p1      | 1.5, 2, 3, 4°C |
-+---------------------+-------------------+-----------+-------------+----------------+
-| KNMI-RACMO22E       | NCC-NorESM1-M     | RCP8.5    | r1i1p1      | 1.5, 2, 3°C    |
-+---------------------+-------------------+-----------+-------------+----------------+
-| MOHC-HadREM3-GA7-05 | CNRM-CM5          | RCP8.5    | r1i1p1      | 1.5, 2, 3°C    |
-+---------------------+-------------------+-----------+-------------+----------------+
-| MOHC-HadREM3-GA7-05 | ICHEC-EC-EARTH    | RCP8.5    | r12i1p1     | 1.5, 2, 3, 4°C |
-+---------------------+-------------------+-----------+-------------+----------------+
-| MOHC-HadREM3-GA7-05 | MOHC-HadGEM2-ES   | RCP8.5    | r1i1p1      | 1.5, 2, 3, 4°C |
-+---------------------+-------------------+-----------+-------------+----------------+
-| MOHC-HadREM3-GA7-05 | MPI-M-MPI-ESM-LR  | RCP8.5    | r1i1p1      | 1.5, 2, 3, 4°C |
-+---------------------+-------------------+-----------+-------------+----------------+
-| MOHC-HadREM3-GA7-05 | NCC-NorESM1-M     | RCP8.5    | r1i1p1      | 1.5, 2, 3°C    |
-+---------------------+-------------------+-----------+-------------+----------------+
-| MPI-CSC-REMO2009    | MPI-M-MPI-ESM-LR  | RCP8.5    | r1i1p1      | 1.5, 2, 3, 4°C |
-+---------------------+-------------------+-----------+-------------+----------------+
-| SMHI-RCA4           | CNRM-CM5          | RCP8.5    | r1i1p1      | 1.5, 2, 3°C    |
-+---------------------+-------------------+-----------+-------------+----------------+
-| SMHI-RCA4           | ICHEC-EC-EARTH    | RCP8.5    | r12i1p1     | 1.5, 2, 3, 4°C |
-+---------------------+-------------------+-----------+-------------+----------------+
-| SMHI-RCA4           | IPSL-IPSL-CM5A-MR | RCP8.5    | r1i1p1      | 1.5, 2, 3, 4°C |
-+---------------------+-------------------+-----------+-------------+----------------+
-| SMHI-RCA4           | MOHC-HadGEM2-ES   | RCP8.5    | r1i1p1      | 1.5, 2, 3, 4°C |
-+---------------------+-------------------+-----------+-------------+----------------+
-| SMHI-RCA4           | MPI-M-MPI-ESM-LR  | RCP8.5    | r1i1p1      | 1.5, 2, 3, 4°C |
-+---------------------+-------------------+-----------+-------------+----------------+
-| SMHI-RCA4           | NCC-NorESM1-M     | RCP8.5    | r1i1p1      | 1.5, 2, 3°C    |
-+---------------------+-------------------+-----------+-------------+----------------+
-
-**Tabelle 1** führt die verwendeten Simulationen auf. Jede Zeile enthält den Regionalmodellnamen, Globalmodellnamen, Szenarionamen, die Realisation des Globalmodells und die globalen Erwärmungsstufen, welche von den jeweiligen Ergebnissen der globalen Simulation erreicht werden und somit in die Ensemble Analyse eingehen.
++-----------------------+------------------+----------------+-------------+
+| Regional              | Global           | Szenario       | Realisation |
+| Climate Model         | Climate Model    |                |             |  
++=======================+==================+================+=============+
+| CLMcom-KIT-CCLM5-0-15 | MOHC-HadGEM2-ES  | RCP2.6, RCP8.5 | r1i1p1      |
++-----------------------+------------------+----------------+-------------+
+| CLMcom-KIT-CCLM5-0-15 | MPI-M-MPI-ESM-LR | RCP2.6, RCP8.5 | r1i1p1      | 
++-----------------------+------------------+----------------+-------------+
+| CLMcom-KIT-CCLM5-0-15 | NCC-NorESM1-M    | RCP2.6,RCP8.5  | r12i1p1     |
++-----------------------+------------------+----------------+-------------+
+| GERICS-REMO2015       | MOHC-HadGEM2-ES  | RCP2.6,RCP8.5  | r1i1p1      | 
++-----------------------+------------------+----------------+-------------+
+| GERICS-REMO2015       | MPI-M-MPI-ESM-LR | RCP2.6, RCP8.5 | r1i1p1      | 
++-----------------------+------------------+----------------+-------------+
+| GERICS-REMO2015       | NCC-NorESM1-M    | RCP2.6, RCP8.5 | r12i1p1     | 
++-----------------------+------------------+----------------+-------------+
+| ICTP-RegCM4-7         | MOHC-HadGEM2-E   | RCP2.6,RCP8.5  | r1i1p1      |
++-----------------------+------------------+----------------+-------------+
+| ICTP-RegCM4-7         | MPI-M-MPI-ESM-MR | RCP2.6,RCP8.5  | r1i1p1      | 
++-----------------------+------------------+----------------+-------------+
+| ICTP-RegCM4-7         | NCC-NorESM1-M    | RCP2.6, RCP8.5 | r12i1p1     | 
++-----------------------+------------------+----------------+-------------+
 
 
-.. _dokumentiert: https://confluence.ecmwf.int/display/CKB/CORDEX%3A+Regional+climate+projections
+**Tabelle 1** list of climate simulations used.
 
-.. _`Modell-Diagnostik`: https://confluence.ecmwf.int/display/CKB/Evaluation+of+CDS+climate+projections
+
+.. _here: https://confluence.ecmwf.int/display/CKB/CORDEX%3A+Regional+climate+projections
+
+.. _`model diagnostic`: https://confluence.ecmwf.int/display/CKB/Evaluation+of+CDS+climate+projections
 
 .. _`Diez-Sierra et al., 2022`:  https://journals.ametsoc.org/view/journals/bams/103/12/BAMS-D-22-0111.1.xml
 
 .. _esgf: https://esgf-data.dkrz.de/search/cordex-dkrz
 
-.. _`EURO-CORDEX`: https://www.euro-cordex.net/index.php.en
+.. _`CORDEX-CORE_AFR22`: https://cordex.org/experiment-guidelines/cordex-cmip5/cordex-core/cordex-core-simulations/
+
+.. [1] Giorgi, F., and Coauthors, 2022: The CORDEX-CORE EXP-I Initiative: Description and Highlight Results from the Initial Analysis. Bull. Amer. Meteor. Soc., 103, E293–E310, https://doi.org/10.1175/BAMS-D-21-0119.1.
+
+.. [2] *Remedio, A.R.; Teichmann, C.; Buntemeyer, L.; Sieck, K.; Weber, T.; Rechid, D.; Hoffmann, P.; Nam, C.; Kotova, L.; Jacob, D. Evaluation of New CORDEX Simulations Using an Updated Köppen–Trewartha Climate Classification. Atmosphere 2019, 10, 726. https://doi.org/10.3390/atmos10110726*
+
+.. [3] Teichmann, C., Jacob, D., Remedio, A.R. et al. Assessing mean climate change signals in the global CORDEX-CORE ensemble. Clim Dyn 57, 1269–1292 (2021). https://doi.org/10.1007/s00382-020-05494-x*
+
+.. [4] Coppola, E., and Coauthors, 2021b: Climate hazard indices projections based on CORDEX-CORE, CMIP5 and CMIP6 ensemble. Climate Dyn., 57, 1293–1383, https://doi.org/10.1007/s00382-021-05640-z.

@@ -325,14 +325,14 @@ def insert_impressum(self):
         self.c.setFillColor(self.cs_schwarz)
         # -------------
         if self.sprache == 'english':
-            self.c.drawString(self.text_offset_links, einfuegehoehe, "Information, Literature and Weblinks:")
+            self.c.drawString(self.text_offset_links, einfuegehoehe, "Information, Literature , Softwareand Weblinks:")
             link_text = Paragraph('<para><span name=Helvetica color=blue size = 10>\
-                <link href="https://www.gerics.de/klimaausblick-landkreise">https://www.gerics.de/klimaausblick-landkreise</link></span></para>',
+                <link href="https://github.com/climate-service-center">https://github.com/climate-service-center</link></span></para>',
                 self.styles['Justify'], encoding='utf8')
         else:
             self.c.drawString(self.text_offset_links, einfuegehoehe, "Weiterführende Information, Literatur und Weblinks zum Thema unter:")
             link_text = Paragraph('<para> <span name=Helvetica color=blue size = 10>\
-                <u><link href="https://www.gerics.de/klimaausblick-landkreise">https://www.gerics.de/klimaausblick-landkreise</link></u></span></para>',
+                <u><link href="https://github.com/climate-service-center">https://github.com/climate-service-center</link></u></span></para>',
                 self.styles['Justify'], encoding='utf8')
         link_width, link_height = link_text.wrapOn(self.c, self.width - self.text_offset_links - self.text_offset_rechts, self.height)
         link_text.drawOn(self.c, self.text_offset_links, einfuegehoehe - link_height - self.kleiner_abstand*0.75)
@@ -357,48 +357,28 @@ def insert_impressum(self):
         einfuegehoehe = einfuegehoehe -  link_height - self.kleiner_abstand*0.75 - self.abstand_zu_subtitle
         if self.sprache == 'english':
             self.c.drawString(self.text_offset_links, einfuegehoehe, "Authors:")
-            link_text = Paragraph('<para> <span name=Helvetica color=black size = 10>\
-                Dr.&nbsp;Katharina Bülow, Dr.&nbsp;Torsten Weber, Dr.&nbsp;Susanne Pfeifer | Helmholtz-Zentrum hereon GmbH, Climate Service Center Germany (GERICS)</span></para>',
+            link_text = Paragraph('<para> <span name=Helvetica color=black size = 10></span></para>',
                 self.styles['Justify'], encoding='utf8')
         else:
             self.c.drawString(self.text_offset_links, einfuegehoehe, "Autorinnen und Autoren:")
-            link_text = Paragraph('<para> <span name=Helvetica color=black size = 10>\
-                Dr.&nbsp;Katharina Bülow, Dr.&nbsp;Torsten Weber, Dr.&nbsp;Susanne Pfeifer | Helmholtz-Zentrum hereon GmbH, Climate Service Center Germany (GERICS)</span></para>',
+            link_text = Paragraph('<para> <span name=Helvetica color=black size = 10></span></para>',
                 self.styles['Justify'], encoding='utf8')
         link_width, link_height = link_text.wrapOn(self.c, self.width - self.text_offset_links - self.text_offset_rechts, self.height)
         link_text.drawOn(self.c, self.text_offset_links, einfuegehoehe - link_height - self.kleiner_abstand*0.75)
         # --------------------------------------
         einfuegehoehe = einfuegehoehe -  link_height - self.kleiner_abstand*0.75 - self.abstand_zu_subtitle
-        if self.sprache == 'english':
-            self.c.drawString(self.text_offset_links, einfuegehoehe, "LEGAL INFORMATION:")
-            link_text = Paragraph('<para> <span name=Helvetica-Bold color=black size = 10>\
-                Herausgeber:</span><span name=Helvetica color=black size = 10> <br></br>Helmholtz-Zentrum hereon GmbH<br></br>Climate Service Center Germany (GERICS)<br></br> Fischertwiete 1<br></br>\
-                20095 Hamburg<br></br>www.climate-service-center.de<br></br>+49 (0) 40 226 338 0</span></para>',
-                self.styles['Justify'], encoding='utf8')
-        else:
-            self.c.drawString(self.text_offset_links, einfuegehoehe, "IMPRESSUM:")
-            link_text = Paragraph('<para> <span name=Helvetica-Bold color=black size = 10>\
-                Herausgeber:</span><span name=Helvetica color=black size = 10> <br></br>Helmholtz-Zentrum hereon GmbH<br></br>Climate Service Center Germany (GERICS)<br></br> Fischertwiete 1<br></br>\
-                20095 Hamburg<br></br>www.climate-service-center.de<br></br>+49 (0) 40 226 338 0</span></para>',
-                self.styles['Justify'], encoding='utf8')
-        link_width, link_height = link_text.wrapOn(self.c, self.width - self.text_offset_links - self.text_offset_rechts, self.height)
-        link_text.drawOn(self.c, self.text_offset_links, einfuegehoehe - link_height - self.kleiner_abstand*0.75)
+        # IMPRESSUM/Herausgeber section removed per request
+        link_height = 0
        # ----------------------------------------
         # Literaturverzeichnis / References block inserted between Impressum and Zitierhinweis
         einfuegehoehe = einfuegehoehe -  link_height - self.kleiner_abstand*0.75 - self.abstand_zu_subtitle
         if self.sprache == 'english':
             self.c.drawString(self.text_offset_links, einfuegehoehe, "References:")
-            link_text = Paragraph('<para> <span name=Helvetica color=black size = 10>\
-                Hersbach, H., Bell, B., Berrisford, P., et al. (2020). The ERA5 Global Reanalysis. Quarterly Journal of the Royal Meteorological Society, 146(730), 1999–2049. https://doi.org/10.1002/qj.3803.<br></br>\
-                Dataset citation (data source): Copernicus Climate Change Service (C3S) (2018): ERA5 hourly data on single levels from 1940 to present. DOI: 10.24381/cds.adbb2d47.\
-                </span></para>',
+            link_text = Paragraph('<para> <span name=Helvetica color=black size = 10></span></para>',
                 self.styles['Justify'], encoding='utf8')
         else:
             self.c.drawString(self.text_offset_links, einfuegehoehe, "Literaturverzeichnis:")
-            link_text = Paragraph('<para> <span name=Helvetica color=black size = 10>\
-                Hersbach, H., Bell, B., Berrisford, P., et al. (2020). The ERA5 Global Reanalysis. Quarterly Journal of the Royal Meteorological Society, 146(730), 1999–2049. https://doi.org/10.1002/qj.3803.<br></br>\
-                Datensatz-Zitation (Datenquelle): Copernicus Climate Change Service (C3S) (2018): ERA5 hourly data on single levels from 1940 to present. DOI: 10.24381/cds.adbb2d47.\
-                </span></para>',
+            link_text = Paragraph('<para> <span name=Helvetica color=black size = 10></span></para>',
                 self.styles['Justify'], encoding='utf8')
         link_width, link_height = link_text.wrapOn(self.c, self.width - self.text_offset_links - self.text_offset_rechts, self.height)
         link_text.drawOn(self.c, self.text_offset_links, einfuegehoehe - link_height - self.kleiner_abstand*0.75)
@@ -427,15 +407,11 @@ def insert_impressum(self):
         website_link = '<u><link href=\"' +  'https://www.gerics.de/factsheet-west-africa'+'">'+'https://www.gerics.de/factsheet-west-africa'+'</link></u>'
         if self.sprache == 'english':
             self.c.drawString(self.text_offset_links, einfuegehoehe, "Reference:")
-            link_text = Paragraph('<para> <span name=Helvetica color=black size = 10>\
-                Dr.&nbsp;Katharina Bülow,Dr.&nbsp;Torsten Weber, Dr.&nbsp;Susanne Pfeifer; Climate Factsheet '+self.region+'. August 2025, Climate Service Center Germany (GERICS), eine Einrichtung der Helmholtz-Zentrum hereon GmbH.\
-                <br></br></span><span name=Helvetica color=blue size = 10>' + website_link + '<br></br> </span></para>',
+            link_text = Paragraph('<para> <span name=Helvetica color=black size = 10></span><span name=Helvetica color=blue size = 10>' + website_link + '<br></br> </span></para>',
                 self.styles['Justify'], encoding='utf8')
         else:
             self.c.drawString(self.text_offset_links, einfuegehoehe, "Zitierhinweis:")
-            link_text = Paragraph('<para> <span name=Helvetica color=black size = 10>\
-                Dr.&nbsp;Katharina Bülow, Dr.&nbsp;Torsten Weber, Dr.&nbsp;Susanne Pfeifer: Climate Factsheet '+self.regions+'. Juni 2025, Climate Service Center Germany (GERICS), eine Einrichtung der Helmholtz-Zentrum hereon GmbH.\
-                <br></br></span><span name=Helvetica color=blue size = 10>' + website_link + '<br></br> </span></para>',
+            link_text = Paragraph('<para> <span name=Helvetica color=black size = 10></span><span name=Helvetica color=blue size = 10>' + website_link + '<br></br> </span></para>',
                 self.styles['Justify'], encoding='utf8')
         link_width, link_height = link_text.wrapOn(self.c, self.width - self.text_offset_links - self.text_offset_rechts, self.height)
         link_text.drawOn(self.c, self.text_offset_links, einfuegehoehe - link_height - self.kleiner_abstand*0.75)

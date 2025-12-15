@@ -35,6 +35,8 @@ import pandas as pd
 from title_page_africa import insert_title_page
 from page_with_table import insert_page_with_table
 from page_temperature import insert_page_temperature
+from page_precipitation import insert_page_precipitation
+from page_comp_ev import insert_page_compound_event
 from background_information import insert_impressum
 
 #####################################################################
@@ -69,8 +71,9 @@ class FactSheet(object):
     """
 
     def __init__(self, pdf_file, version, region, gerics_logo, wascal_logo, bmbf_logo, basic_color, sprache, cs_orange, cs_schwarz,
-                 title_image_burkinafaso, box_era5, table_cc, anzahl_simulationen,
-                 ts_TG_era5=None, ts_su40_era5=None, ts_RRm_era5=None, ts_DD_era5=None, ts_R20mm_era5=None, hori_SU40_abs=None):
+                 title_image, box_era5, table_cc, anzahl_simulationen,
+                 ts_TG_era5=None, ts_su40_era5=None, ts_RRm_era5=None, 
+                 ts_DD_era5=None, ts_R20mm_era5=None, hori_SU40_abs=None, copev_su40_DD=None, copev_su40_tr26=None):
         self.c = canvas.Canvas(pdf_file, pagesize=A4)
         self.c.setFont('Helvetica', 12)
         self.styles = getSampleStyleSheet()
@@ -100,7 +103,7 @@ class FactSheet(object):
         self.sprache = sprache
         self.cs_orange = cs_orange
         self.cs_schwarz = cs_schwarz
-        self.title_image_burkinafaso = title_image_burkinafaso
+        self.title_image = title_image
         self.box_era5 = box_era5
         self.table_cc = table_cc
         self.anzahl_simulationen = anzahl_simulationen
@@ -110,6 +113,8 @@ class FactSheet(object):
         self.ts_DD_era5 = ts_DD_era5
         self.ts_R20mm_era5 = ts_R20mm_era5
         self.hori_SU40_abs = hori_SU40_abs
+        self.copev_su40_DD = copev_su40_DD
+        self.copev_su40_tr26 = copev_su40_tr26
 
     #----------------------------------------------------------------------
     def savePDF(self):
@@ -123,11 +128,24 @@ class FactSheet(object):
 
         self.c.save()
 
+    def draw_watermark(self, text="DRAFT"):
+        """Draw a light grey watermark across the page center."""
+        self.c.saveState()
+        self.c.setFillColor(colors.Color(0.85, 0.85, 0.85, 1))
+        self.c.setFont('Helvetica-Bold', 80)
+        # Rotate and position roughly center
+        self.c.translate(self.width/2.0, self.height/2.0)
+        self.c.rotate(30)
+        text_width = stringWidth(text, 'Helvetica-Bold', 80)
+        self.c.drawString(-text_width/2.0, 0, text)
+        self.c.restoreState()
+
     def add_footline(self, left_right):
-        logo = get_image(self.gerics_logo, height =  1.2 * cm)
-        logo_breite = logo.drawWidth
-        logo_hoehe = logo.drawHeight
-        second_foot = ([[logo]])
+        logo_gerics = get_image(self.gerics_logo, height =  1.2 * cm)
+        logo_wascal = get_image(self.wascal_logo, height =  1.2 * cm)
+        logo_breite = logo_gerics.drawWidth + logo_wascal.drawWidth + 6  # small gap
+        logo_hoehe = max(logo_gerics.drawHeight, logo_wascal.drawHeight)
+        second_foot = ([[logo_gerics, logo_wascal]])
         foot_style = ([("VALIGN", (0, 0), (0, 0), "BOTTOM"),
                       ("ALIGN", (0, 0), (0, 0), "CENTER"),])
         page_num = self.c.getPageNumber()
@@ -192,26 +210,38 @@ class FactSheet(object):
         self.schrift_fliesstext = 10
         print('Starte mit der Erstellung des Dokuments in make... ')
 # ----------- Header der Titelseite
+        # Page 1 content → watermark → footline
         title_page = insert_title_page(self)
+        self.draw_watermark("DRAFT")
         foot_1 = self.add_footline('ungerade_odd')
 # -------Seitenumbruch auf  Seite 2
         self.c.showPage()
+        # Page 2 content → watermark → footline
         Table_page = insert_page_with_table(self)
+        self.draw_watermark("DRAFT")
         foot_2 = self.add_footline('gerade_even')
 # -------Seitenumbruch auf  Seite 3
         self.c.showPage()
-        Table_page = insert_page_temperature(self)
+        # Page 3 content → watermark → footline
+        temperature_page = insert_page_temperature(self)
+        self.draw_watermark("DRAFT")
         foot_2 = self.add_footline('ungerade_odd')
 # -------Seitenumbruch auf  Seite 4
         self.c.showPage()
-        Table_page = insert_page_with_table(self)
+        # Page 4 content → watermark → footline
+        precipitation_page = insert_page_precipitation(self)
+        self.draw_watermark("DRAFT")
         foot_2 = self.add_footline('gerade_even')
  # -------Seitenumbruch auf  Seite 5
         self.c.showPage()
-        Table_page = insert_page_with_table(self)
+        # Page 5 content → watermark → footline
+        compound_event_page = insert_page_compound_event(self)
+        self.draw_watermark("DRAFT")
         foot_2 = self.add_footline('ungerade_odd')               
-# -------Seitenumbruch
-        self.c.showPage()
+# -------Impressum-Seite einfügen (insert_impressum erzeugt selbst einen Seitenumbruch)
         impressum_page = insert_impressum(self)
+        self.draw_watermark("DRAFT")
+        foot_2 = self.add_footline('gerade_even')
+        print('Fertig mit der Erstellung des Dokuments')
 
 

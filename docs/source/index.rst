@@ -9,14 +9,16 @@ Welcome to the Climate Fact Sheet Documentation for African Countries
    readme
    introduction
    environment
+   reportlab
    country
    regions
    observed
    indices
+   timeseries
+   table_with_indices
    ensemble_analysis
-   indices_GWL
-   significance
    exposure
    population
    model_list
    authors
+   history

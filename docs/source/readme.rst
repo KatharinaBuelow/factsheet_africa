@@ -1,12 +1,13 @@
 ==========================
-GERICS Factsheets - Africa
+GERICS Factsheet - Africa
 ==========================
 
 |license|  |doi|
 
 .. image:: plots/FS_Burkina_Faso.png
+   :scale: 50%
 	   
-In diesem Repositorium sind die Klimadatenanalysen zusammengestellt, die in der GERICS Broschüre *Climate Factsheet Africa* enthalten sind. Die Skripte zur Datenverarbeitung sind hier ebenfalls zu finden, und sie ermöglichen die Reproduktion der Grafiken und Tabellen aus der GERICS Broschüre. Darüber hinaus enthält das Repositorium Hintergrundinformationen zu den Berechnungen der globalen Erwärmungsstufen und zusätzliche Analysen.
+This repository contains the climate data analyses included in the GERICS Climate Factsheet Africa. The scripts for data processing are also provided here, enabling the reproduction of the graphics and tables from the GERICS fact sheet. 
 
 
 Kontakt

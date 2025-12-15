@@ -1,7 +1,7 @@
 Maps of the country
 ...................
 
-.. image:: plots/FS_Burkina_Faso.png
+.. image:: ../../PLOTS/FS_Burkina_Faso.png
 	   
 
 Before you start, you need to create your environment by

@@ -24,7 +24,7 @@ exclude_patterns = []
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = "sphinx_book_theme"
+html_theme = "alabaster"
 htm_title = "Factsheet Africa"
 
 html_theme_options = {
@@ -37,6 +37,6 @@ html_theme_options = {
     "logo_only": False,
 }
 
-html_logo = "logos/Logo_GERICS_Neu_mit_Unterzeile_EN.png"
+html_logo = "logos/GERICS.png"
 
 html_static_path = ['_static']

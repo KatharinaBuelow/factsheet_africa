@@ -43,7 +43,7 @@ def draw_bottom_rounded_rect(self, x, y, width, height, radius):
     self.c.drawPath(p, fill=1, stroke=0)
 
 def draw_orange_box_with_text(self, x, y, width, bheight):
-    # Draw orange rectangle: 
+    # Draw orange rectangle: revert to original position
     y = self.height - 8.2 * cm
     draw_bottom_rounded_rect(self, self.text_offset_links, y, self.width + 5, bheight, radius=20)
     # Define styles for each line
@@ -55,14 +55,22 @@ def draw_orange_box_with_text(self, x, y, width, bheight):
     line0 = Paragraph(self.region.title(), style0)
     line1 = Paragraph("CLIMATE FACTSHEET", style1)
     line2 = Paragraph("Climate Service Center Germany (GERICS)", style2)
+    line3 = Paragraph("WASCAL Competence Centre", style2)
+    #line3 = Paragraph("West African Science Service Centre on Climate Change and Adapted Land Use (WASCAL)", style2)
 
     # Calculate positions
     line0.wrapOn(self.c, self.width - self.text_offset_links -self.text_offset_rechts, bheight)
     line1.wrapOn(self.c, self.width - self.text_offset_links -self.text_offset_rechts, bheight)
     line2.wrapOn(self.c, self.width - self.text_offset_links -self.text_offset_rechts, bheight)
-    line0.drawOn(self.c, self.text_offset_links, y+bheight-bheight/3)
-    line1.drawOn(self.c, self.text_offset_links, y+bheight-((bheight/3)*2))
-    line2.drawOn(self.c, self.text_offset_links, y+0.3*cm)
+    line3.wrapOn(self.c, self.width - self.text_offset_links -self.text_offset_rechts, bheight)
+    # Raise region and CLIMATE FACTSHEET slightly
+    line0.drawOn(self.c, self.text_offset_links, y + bheight - bheight/3 + 0.6*cm)
+    line1.drawOn(self.c, self.text_offset_links, y + bheight - ((bheight/3)*2) + 0.5*cm)
+    # Place line3 directly under CLIMATE FACTSHEET
+    
+    # GERICS below
+    line2.drawOn(self.c, self.text_offset_links, y+0.9*cm)
+    line3.drawOn(self.c, self.text_offset_links, y + 0.4*cm)
     return
 
 
@@ -93,12 +101,13 @@ def insert_title_page(self):
     
     # Country map
     einfuegehoehe_map = self.height - 7 * cm
-    map_image = get_image(self.title_image_burkinafaso, height = 6.5*cm)
+    map_image = get_image(self.title_image, height = 6.5*cm)
     map_image.wrapOn(self.c, self.width, self.height)
     map_image.drawOn(self.c, self.text_offset_links +12.5 *cm, einfuegehoehe_map - map_image.drawHeight)
 
     if self.sprache == 'english':
-        abstract = Paragraph('<span name=Helvetica color=black size='+str(self.schrift_fliesstext)+'>The Regional Climate Factsheet provides brief\
+        abstract = Paragraph('<span name=Helvetica color=black size='+str(self.schrift_fliesstext)+'>The Regional Climate Factsheet \
+                            provides brief\
                              and concise information on possible future climate developments for '+self.region+' in the 21st century.\
                              They are based on the results of %s regional climate model simulations, which are\
                              based on the Representative Concentration Pathways (RCPs). RCP8.5 represents a high \
@@ -115,53 +124,73 @@ def insert_title_page(self):
     abstract.drawOn(self.c, self.text_offset_links, titleheight_page1 - self.kleiner_abstand - abstract_height)
 
     # Zweispaltiger Text nach dem Abstract, ohne Tabelle, über die ganze Seite verteilt
-
+    print('titelseite:', self.region)
     # Beispieltext für die beiden Spalten
-    col1_text = (
-        "General introduction to "+self.region+ \
-        "General introduction to "+self.region+ \
-        "General introduction to "+self.region+ \
-        "General introduction to "+self.region+ \
-        "General introduction to "+self.region+ \
-        "General introduction to "+self.region+ \
-        "General introduction to "+self.region+ \
-        "General introduction to "+self.region+ \
-        "General introduction to "+self.region+ \
-        "General introduction to "+self.region+ \
-        "content content content content content" \
-        "content content content content content" \
-        "content content content content content" \
-        "General introduction to "+self.region+ " climate. " \
-        "General introduction to "+self.region+ " climate. " \
-        "General introduction to "+self.region+ " climate. " \
-        "General introduction to "+self.region+ " climate. " \
-    
-        "General introduction to "+self.region+ " climate. "
+    if self.region == "Burkina Faso":
+        col1_text = (
+        self.region +" is located in West Africa and is influenced by the dynamics of the West \
+        African Monsoon system. This system drives seasonal rainfall, with precipitation levels generally increasing \
+        from the arid Sahelian north to the humid coastal south. "+self.region+" is located inland and has a semi-arid \
+        to tropical climate, characterized by a long dry season and a short rainy season from June to September. \
+        In recent decades, "+self.region+" has faced increasing climate variability and extreme weather events, \
+        such as prolonged droughts in (notably during the 1970s and 1980s). These trends are consistent with broader regional patterns linked to climate change."
     )
+    elif self.region == "Togo":
+        col1_text = (
+        self.region +" is located in West Africa and is influenced by the dynamics of the West \
+        African Monsoon system. This system drives seasonal rainfall, with precipitation levels generally increasing \
+        from the arid Sahelian north to the humid coastal south."+self.region+" experiences humid, tropical climates, \
+        especially in their southern \
+        regions, with two rainy seasons (typically from March to July and September to November).\
+        The southern coastal areas receive high annual rainfall, while the northern parts are drier.\
+        In recent decades, "+self.region+" has faced increasing climate variability and extreme weather events, \
+        with urban and rural flooding." 
+    )
+        #kein platz mehr
+        #These trends are consistent with broader regional patterns linked to climate change."
+    
+    elif self.region == "Ivory Coast":
+        col1_text = (
+        self.region +" is located in West Africa and is influenced by the dynamics of the West \
+        African Monsoon system. This system drives seasonal rainfall, with precipitation levels generally increasing \
+        from the arid Sahelian north to the humid coastal south."+self.region+" experiences humid, tropical climates, \
+        especially in their southern \
+        regions, with two rainy seasons (typically from March to July and September to November).\
+        The southern coastal areas receive high annual rainfall, while the northern parts are drier.\
+        In recent decades, "+self.region+" has faced increasing climate variability and extreme weather events, \
+        with urban and rural flooding."
+        #These trends are consistent with broader regional patterns linked to climate change."
+    )
+    else:
+        col1_text = (
+        self.region +" is located in Africa."
+    )
+    
     col2_text = (
-        "The figure shows annual temperature and precipitation anomalies for Burkina Faso from 1941 to 2023, based on ERA5 reanalysis data. The anomalies are calculated relative to the 1991–2020 reference period, which is indicated by the vertical dashed lines."\
-        "In the upper panel, temperature anomalies (in °C) reveal a clear long-term warming trend. Most years before the 1980s were cooler than the reference period, with anomalies often below –1 °C, especially during the 1950s and 1960s. Starting in the late 1980s, anomalies approach zero, and from the 2000s onward, nearly all years are warmer than the 1991–2020 average. The most recent decade shows persistent positive anomalies, exceeding +1 °C in several years, highlighting significant warming compared to the reference period."\
+            "<b>Figure 1:</b> The figure shows annual temperature and precipitation anomalies for "+self.region+" from 1941 to 2023, based on ERA5 reanalysis data. The anomalies are calculated relative to the 1991–2020 reference period, which is indicated by the vertical dashed lines."\
+        "In the upper panel, temperature anomalies (in °C) reveal a clear long-term warming trend. Most years before the 1980s were cooler than the reference period, with anomalies often below –1 °C, especially during the 1950s and 1960s. Starting in the late 1980s, anomalies approach zero, and from the 2000s onward, nearly all years are warmer than the 1991–2020 average. \
+        The most recent decade shows persistent positive anomalies, exceeding +1 °C in several years, highlighting significant warming compared to the reference period."\
         "The lower panel displays precipitation anomalies (in %). Early decades, particularly the 1940s and 1950s, were generally wetter than the reference period, with anomalies reaching +40 % or more. From the 1970s onward, negative anomalies become more frequent, indicating drier conditions relative to 1991–2020. The Sahel drought period in the 1980s is evident, with anomalies below –20%. Recent years show mixed variability, but overall, precipitation tends to show high annual variability."\
         "This visualization underscores that the 1991–2020 reference period itself is already warmer than earlier decades, meaning current anomalies represent additional warming beyond an already elevated baseline."\
         "Data source: ERA5 global reanalysis (Hersbach et al., 2020). "
     )
 
     # Stil für den Text
-    
     style = ParagraphStyle(
-    'TwoCol',
-    parent=self.styles['Justify'],
-    fontName='Helvetica',
-    fontSize=10,
-    textColor='black'
+        'TwoCol',
+        parent=self.styles['Justify'],
+        fontName='Helvetica',
+        fontSize=10,
+        textColor='black'
     )
+
     # Spaltenbreite berechnen
     total_width = self.width - self.text_offset_links - self.text_offset_rechts - 0.5*cm
     col_width = total_width / 2
-    col_height = 20*cm  # Höhe der Spalte (ggf. anpassen)
+    col_height = 20*cm
 
     # Position unterhalb des Abstracts berechnen
-    textbox_y = titleheight_page1 - self.kleiner_abstand - abstract_height - 7.5*cm
+    textbox_y = titleheight_page1 - self.kleiner_abstand - abstract_height - 6.0*cm
 
     # Paragraphs erzeugen und platzieren
     p1 = Paragraph(col1_text, style)
@@ -183,7 +212,25 @@ def insert_title_page(self):
     p2.drawOn(self.c, self.text_offset_links + col_width + 1*cm, p2_y)
 
 # Annual anamolie vor precipitation and Temperature
-    einfuegehoehe_balken = self.height - 20* cm
+    einfuegehoehe_balken = self.height - 18.5* cm  # add small gap below col1_text by lowering figure slightly
     map_image = get_image(self.box_era5, height = 8*cm)
     map_image.wrapOn(self.c, self.width, self.height)
     map_image.drawOn(self.c, self.text_offset_links, einfuegehoehe_balken - map_image.drawHeight)
+
+    # Caption below Figure 1 (ERA5 anomalies), aligned to col1_text width
+    caption_style = ParagraphStyle(
+        'FigCaption',
+        parent=self.styles['Justify'],
+        fontName='Helvetica',
+        fontSize=8,
+        textColor='black'
+    )
+    caption_text = (
+        "<b>Figure 1:</b> Annual mean anomalies of observed temperature and precipitation for "
+        + self.region +
+        " from 1950 to 2023, relative to the 1991–2020 average."
+    )
+    caption = Paragraph(caption_text, caption_style)
+    cap_w, cap_h = caption.wrapOn(self.c, col_width, self.height)
+    graphic_baseline_y = einfuegehoehe_balken - map_image.drawHeight
+    caption.drawOn(self.c, self.text_offset_links, graphic_baseline_y - cap_h - 0.2*cm)
