@@ -81,7 +81,6 @@ def plot_2diff(
     colors=color_steps_diff
     hatchcolor='grey'
     plt.rcParams.update({'hatch.color': hatchcolor})
-
    
     font = {
         'family' : 'sans-serif',
@@ -123,6 +122,12 @@ def plot_2diff(
         print(file)
         data = xr.open_dataset(file,decode_timedelta=False)
         data_variable = data[var]
+        # If variable is timedelta, convert to numeric days for plotting
+        try:
+            if np.issubdtype(data_variable.dtype, np.timedelta64):
+                data_variable = data_variable.dt.days
+        except Exception:
+            pass
         # Mask out ocean data using land-sea mask
         data_variable = only_land_points(data_variable)
 
@@ -157,10 +162,11 @@ def plot_2diff(
             robust_rcp26=file.replace(what,robust) #'_time-mean_ensemble-diff-median.nc','_ensemble-robustness.nc')
             datar = xr.open_dataset(robust_rcp26)
             datar_variable = datar[var]
-            
+
             # Mask out ocean data using land-sea mask
             datar_variable = only_land_points(datar_variable)
-            significant = xr.where(~datar_variable.isin([-1, 1, 0]), 1, 0).squeeze()
+            # Significant only when robustness equals ±2
+            significant = xr.where(xr.ufuncs.absolute(datar_variable) == 2, 1, 0).squeeze()
             significant = only_land_points(significant)
             significant.plot.contourf(
                         ax=ax1,
@@ -180,6 +186,12 @@ def plot_2diff(
         print(file)
         data = xr.open_dataset(file,decode_timedelta=False)
         data_variable = data[var]
+        # If variable is timedelta, convert to numeric days for plotting
+        try:
+            if np.issubdtype(data_variable.dtype, np.timedelta64):
+                data_variable = data_variable.dt.days
+        except Exception:
+            pass
         data_variable = only_land_points(data_variable)
         im = data_variable.plot(ax=ax2,
                            levels=levels,
@@ -194,7 +206,8 @@ def plot_2diff(
             robust_rcp85=file.replace(what,robust) #'time-mean_ensemble-diff-median.nc','ensemble-robustness.nc')
             datar = xr.open_dataset(robust_rcp85)
             datar_variable = datar[var]
-            significant = xr.where(~datar_variable.isin([-1, 1, 0]), 1, 0).squeeze()
+            # Significant only when robustness equals ±2
+            significant = xr.where(xr.ufuncs.absolute(datar_variable) == 2, 1, 0).squeeze()
             significant = only_land_points(significant)
             significant.plot.contourf(
                     ax=ax2,
@@ -332,10 +345,14 @@ def plot_4diff(
                             alpha=.8,
                             )
         if robustness is True:
-            robust_rcp26=file.replace(what,robust) #'time-mean_ensemble-diff-median.nc','ensemble-robustness.nc')
-            datar = xr.open_dataset(robust_rcp26)
+            r_rcp26=file.replace(what,robust) #'time-mean_ensemble-diff-median.nc','ensemble-robustness.nc')
+            datar = xr.open_dataset(r_rcp26,decode_timedelta=False)
+            print('file',file)
+            print('halla',r_rcp26)
+            
             datar_variable = datar[var]  
-            significant = xr.where(~datar_variable.isin([-1, 1, 0]), 1, 0).squeeze()
+            #significant = xr.where(~datar_variable.isin([-1, 1, 0]), 1, 0).squeeze().astype(int)
+            significant = xr.where(xr.ufuncs.absolute(datar_variable) == 2, 1, 0).squeeze()
             significant.plot.contourf(
                         ax=axes[0,i],
                         levels=[-.5, .5],
@@ -366,9 +383,11 @@ def plot_4diff(
         
         if robustness is True:
             robust_rcp85=file.replace(what,robust) #'time-mean_ensemble-diff-median.nc','ensemble-robustness.nc')
-            datar = xr.open_dataset(robust_rcp85)
+            datar = xr.open_dataset(robust_rcp85,decode_timedelta=False)
             datar_variable = datar[var]
-            significant = xr.where(~datar_variable.isin([-1, 1, 0]), 1, 0).squeeze().astype(int)
+            #significant = xr.where(~datar_variable.isin([-1, 1, 0]), 1, 0).squeeze().astype(int)
+            significant = xr.where(xr.ufuncs.absolute(datar_variable) >= 1.5, 1, 0).squeeze()
+            #significant.plot()
             significant.plot.contourf(
                     ax=axes[1,i],
                     levels=[-.5, .5],
