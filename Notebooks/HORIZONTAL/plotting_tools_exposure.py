@@ -12,6 +12,7 @@ import pandas as pd
 import seaborn as sns
 import xarray as xr
 
+
 def savefig(plot, name, dpi):
     plot.savefig(name, dpi=dpi, bbox_inches='tight')
     print('plot ist saved in : ', name)
@@ -34,7 +35,7 @@ def plot_diff_pop(
         color_steps_diff, 
         plotdir,
         title="",
-        var="",
+        varp="",
         westafrica=None,
         user_dpi=1200,
         rows=2,
@@ -49,10 +50,6 @@ def plot_diff_pop(
     
     color_steps_diff = color_steps_diff[::-1]
 
-    font = {
-        'family' : 'sans-serif',
-        'weight' : 'normal',
-        }
 
     if westafrica is True:
         height=5.6
@@ -100,8 +97,9 @@ def plot_diff_pop(
     # Plot data for ssp1
     for i, file in enumerate(pop_diff_ssp1):
         print('file: ',file)
+
         data = xr.open_dataset(file,decode_timedelta=False)
-        data_variable = data[var]/1000
+        data_variable = data[varp]/1000
         
         varname='Number of People'
         unit='Number*10³'
@@ -129,7 +127,7 @@ def plot_diff_pop(
     for i, file in enumerate(pop_diff_ssp3):
 
         data = xr.open_dataset(file,decode_timedelta=False)
-        data_variable = data[var]/1000
+        data_variable = data[varp]/1000
         im = data_variable.plot(ax=axes[1, i],
                            levels=level_steps_diff,
                            colors=color_steps_diff,
@@ -144,7 +142,7 @@ def plot_diff_pop(
     cbar_ax = fig.add_axes([0.15, 0.02, 0.7, 0.03])
     fig.colorbar(im, cax=cbar_ax, orientation="horizontal", label='[ '+unit+' ]')
 
-    name="{}/{}_diff_{}_{}.png".format(plotdir, var, region, user_dpi)
+    name="{}/{}_diff_{}_{}.png".format(plotdir, varp, region, user_dpi)
 
     savefig(plt, "{}".format(name),user_dpi) 
     return
@@ -157,7 +155,7 @@ def plot_absolute_pop(
         color_steps,   
         plotdir,
         title="",
-        var="",
+        varp="",
         lsm="",
         westafrica=None,
         user_dpi=300,
@@ -208,16 +206,18 @@ def plot_absolute_pop(
 
     for i, file in enumerate(pop_ssp1):
         print(file)
+        print(lsm)
         data = xr.open_dataset(file,decode_timedelta=False)
-        data_variable=data[var]/1000  
-        mask_data = only_land_points(lsm, data_variable)  
+        data_variable=data[varp]/1000  
+        mask_data=data_variable.copy()
+        ##mask_data = only_land_points(lsm, data_variable)  
         # Select labels // Units frome metadata
         # Set title of plot
-        if var =='number_of_people':
+        if varp =='number_of_people':
             varname='Number of People'
             unit='Number * 10³'
-        if var =='person_events':
-            print(var)
+        if varp =='person_events':
+            print(varp)
             varname='Person Events'
             unit='Person Events * 10³'
 
@@ -239,7 +239,7 @@ def plot_absolute_pop(
                             #alpha=.8,
                             )
         # This is not very clever, need to be adjusted according to file_name :-(
-        if var =='person_events':
+        if varp =='person_events':
             axes[0, i].set_title(f'ssp1/rcp26: {file.split("_")[2]}-{file.split("_")[3]}',fontsize=12)
         else:
             axes[0, i].set_title(f'ssp1: {file.split("_")[1]}-{file.split("_")[2]}',fontsize=12)
@@ -248,13 +248,13 @@ def plot_absolute_pop(
     # Plot data for ssp3
     for i, file in enumerate(pop_ssp3):
         data = xr.open_dataset(file,decode_timedelta=False)
-        data_variable=data[var]/1000
+        data_variable=data[varp]/1000
         mask_data = only_land_points(lsm, data_variable)  
-        if var =='number_of_people':
+        if varp =='number_of_people':
             varname='Number of People'
             unit='Number *10³'
-        if var =='person_events':
-            print(var)
+        if varp =='person_events':
+            print(varp)
             varname='Person Events'
             unit='Person Events * 10³'
 
@@ -267,7 +267,7 @@ def plot_absolute_pop(
                            #alpha=.8,
                            )
         
-        if var =='person_events':
+        if varp =='person_events':
             axes[1, i].set_title(f'ssp3/rcp85: {file.split("_")[2]}-{file.split("_")[3]}',fontsize=12)
         else:
             axes[1, i].set_title(f'ssp3: {file.split("_")[1]}-{file.split("_")[2]}',fontsize=12)
@@ -275,7 +275,7 @@ def plot_absolute_pop(
     cbar_ax = fig.add_axes([0.15, 0.02, 0.7, 0.03])
     fig.colorbar(im, cax=cbar_ax, orientation="horizontal", label='[ '+unit+' ]')
 
-    name="{}/{}_absolut_{}_{}.png".format(plotdir, var, region, user_dpi)
+    name="{}/{}_absolut_{}_{}.png".format(plotdir, varp, region, user_dpi)
 
     savefig(plt, "{}".format(name),user_dpi)
     return
@@ -358,7 +358,7 @@ def plot_diff_exposure(
                 region='Africa'
                 ax.set_extent([-20, 60, -35, 35])
     
-    # we need the path for later (probably easier way to handl this?)
+    # we need the path for later (probably easier way to handle this?)
     pathe=get_file_path(exposure_ssp1[0])
     pathr=get_file_path(robust_rcp26[0])
     
@@ -371,8 +371,6 @@ def plot_diff_exposure(
         #mask_data=data[var]/1000000
         mask_data = only_land_points(lsm, data_variable)
 
-        #mask_data= data_variable.where(data[var] != 0)
-        #varname='Exposure'
         unit='Person-Events *10⁶'
 
         climate_index=varr

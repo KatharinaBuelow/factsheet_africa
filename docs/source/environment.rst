@@ -5,7 +5,7 @@ Environments
 ============
 
 
-The environment to creat the fact sheet document:
+The environment to create the fact sheet document:
 
 .. code-block:: bash
 
@@ -24,5 +24,14 @@ The environment to regridd the population data:
 .. code-block:: bash
 
    afrheat
+
+The environment to plot the shape files :
+
+.. code-block:: bash
+
+   cfworld
+
+
+   
 
    

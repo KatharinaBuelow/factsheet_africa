@@ -233,11 +233,9 @@ def plot_2diff(
     return
 
 
-def plot_4diff(
+def plot_diff(
         sims_rcp26,
         sims_rcp85,
-        robust_rcp26,
-        robust_rcp85,
         level_steps_diff, 
         color_steps_diff,
         what,
@@ -265,11 +263,6 @@ def plot_4diff(
     hatchcolor='grey'
     plt.rcParams.update({'hatch.color': hatchcolor})
         
-    font = {
-        'family' : 'sans-serif',
-        'weight' : 'normal',
-        }
-
     if westafrica is True:
         height=5.8
     else:
@@ -347,12 +340,10 @@ def plot_4diff(
         if robustness is True:
             r_rcp26=file.replace(what,robust) #'time-mean_ensemble-diff-median.nc','ensemble-robustness.nc')
             datar = xr.open_dataset(r_rcp26,decode_timedelta=False)
-            print('file',file)
-            print('halla',r_rcp26)
             
             datar_variable = datar[var]  
-            #significant = xr.where(~datar_variable.isin([-1, 1, 0]), 1, 0).squeeze().astype(int)
-            significant = xr.where(xr.ufuncs.absolute(datar_variable) == 2, 1, 0).squeeze()
+            significant = xr.where(~datar_variable.isin([-1, 1, 0]), 1, 0).squeeze().astype(int)
+            #significant = xr.where(xr.ufuncs.absolute(datar_variable) == 2, 1, 0).squeeze()
             significant.plot.contourf(
                         ax=axes[0,i],
                         levels=[-.5, .5],
@@ -368,10 +359,7 @@ def plot_4diff(
     # Plot data for rcp85
     for i, file in enumerate(sims_rcp85):
         data = xr.open_dataset(file,decode_timedelta=False)
-        
         data_variable = data[var]
-        
-        #data_variable = data['SU35'].dt.days
         im = data_variable.plot(ax=axes[1, i],
                            levels=levels,
                            colors=colors,
@@ -382,21 +370,21 @@ def plot_4diff(
                            )
         
         if robustness is True:
-            robust_rcp85=file.replace(what,robust) #'time-mean_ensemble-diff-median.nc','ensemble-robustness.nc')
-            datar = xr.open_dataset(robust_rcp85,decode_timedelta=False)
-            datar_variable = datar[var]
-            #significant = xr.where(~datar_variable.isin([-1, 1, 0]), 1, 0).squeeze().astype(int)
-            significant = xr.where(xr.ufuncs.absolute(datar_variable) >= 1.5, 1, 0).squeeze()
-            #significant.plot()
+            r_rcp85=file.replace(what,robust) #'_time-mean_ensemble-diff-median.nc','_ensemble-robustness.nc')
+            datar = xr.open_dataset(r_rcp85,decode_timedelta=False)
+            
+            datar_variable = datar[var]  
+            significant = xr.where(~datar_variable.isin([-1, 1, 0]), 1, 0).squeeze().astype(int)
+            #significant = xr.where(xr.ufuncs.absolute(datar_variable) == 2, 1, 0).squeeze()
             significant.plot.contourf(
-                    ax=axes[1,i],
-                    levels=[-.5, .5],
-                    colors='none',
-                    hatches=[ None,None,"//", ],
-                    add_colorbar=False,
-                    extend='both',
-                    transform=ccrs.PlateCarree()
-            )
+                        ax=axes[1,i],
+                        levels=[-.5, .5],
+                        colors='none',
+                        hatches=[None, None, "//", ],
+                        add_colorbar=False,
+                        extend='both',
+                        transform=ccrs.PlateCarree()
+                        )
         axes[1, i].set_title(f'RCP85: {file.split("_")[6]}-{file.split("_")[7]}',fontsize=12)
 
     # Add colorbar axis; position may need tuning depending on row_gap
