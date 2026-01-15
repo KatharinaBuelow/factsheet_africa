@@ -3,6 +3,11 @@
 
 Environments
 ============
+Before you start, you need to create your environment by
+
+.. code-block:: console
+
+   $ conda env create -f environment-name.yml
 
 
 The environment to create the fact sheet document:

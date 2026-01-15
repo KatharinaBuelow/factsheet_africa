@@ -5,12 +5,12 @@ GERICS Factsheet - Africa
 |license|  |doi|
 
 .. image:: plots/FS_Burkina_Faso.png
-   :scale: 10%
-	   
-This repository contains the climate data analyses included in the GERICS Climate Factsheet Africa. The scripts for data processing are also provided here, enabling the reproduction of the graphics and tables from the GERICS fact sheet. 
+   :scale: 20%
+
+This repository contains the climate data analyses featured in the GERICS Climate Factsheet for Africa. It also includes the scripts used for data processing, enabling the reproduction of the graphics and tables presented in the GERICS factsheet.      
 
 
-Kontakt
+Contact
 .......
 
 If you have any issues or requests, please do not hesitate to contact us:
