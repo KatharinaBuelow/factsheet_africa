@@ -32,18 +32,29 @@ The exposure of the population to extreme event and their possible futre changes
 Exposure calculation and plotting
 .................................
 
-The following Notebook produces the horizontal exposure maps for ssp1/rcp2 and ssp3/rcp85 of population to extrem days. The plots show the timeslice
+The environment to create the plots in the factsheet:
 
+.. code-block:: bash
 
+   conda env create -f plotting_fs.yml
 
+The following Notebook produces the horizontal exposure maps for ssp1/rcp2 and ssp3/rcp85 of population to extrem days. The plots show the timeslice.
 
-    Notebooks/HORIZONTAL/horiplot-exposure-diff-robust.ipynb
+.. code-block:: bash
+
+   Notebooks/HORIZONTAL/horiplot-exposure-diff-robust.ipynb
     
-    functions are used from:
-    Notebooks/plotting_tools_exposure.py
-    Notebooks/plotting_tools_africa.py
-    Notebooks/format_data_tools.py
-    Notebooks/colors_indices.py
+functions are used from:
+
+.. code-block:: bash
+		
+   Notebooks/plotting_tools_exposure.py
+
+   Notebooks/plotting_tools_africa.py
+
+   Notebooks/format_data_tools.py
+
+   Notebooks/colors_indices.py
 
 
 
