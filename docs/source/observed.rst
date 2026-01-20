@@ -1,9 +1,7 @@
-ERA5
-----
+Past Climate
+------------
 
 Example Burkina Faso
-
- `ERA5`_
 
 .. image:: ../../PLOTS/ERA5_Annual_anomaly_deviation_to_1991_2020_Burkina_Faso_nc.png
 
@@ -28,7 +26,7 @@ The Notebook uses the aggreated data:
 
    $ input_data/eobs
 
- "Data source: ERA5 global reanalysis (Hersbach et al., 2020). 
+Data source: ERA5 global reanalysis (`Hersbach et al., 2020`_). 
 
-.. _`ERA5`: Hersbach, H., Bell, B., Berrisford, P., Biavati, G., Horányi, A., Muñoz Sabater, J., Nicolas, J., Peubey, C., Radu, R., Rozum, I., Schepers, D., Simmons, A., Soci, C., Dee, D., Thépaut, J-N. (2023): ERA5 hourly data on pressure levels from 1940 to present. Copernicus Climate Change Service (C3S) Climate Data Store (CDS), DOI: 10.24381/cds.bd0915c6 
+.. _`Hersbach et al., 2020`: Hersbach, H., Bell, B., Berrisford, P., Biavati, G., Horányi, A., Muñoz Sabater, J., Nicolas, J., Peubey, C., Radu, R., Rozum, I., Schepers, D., Simmons, A., Soci, C., Dee, D., Thépaut, J-N. (2023): ERA5 hourly data on pressure levels from 1940 to present. Copernicus Climate Change Service (C3S) Climate Data Store (CDS), DOI: 10.24381/cds.bd0915c6 
 

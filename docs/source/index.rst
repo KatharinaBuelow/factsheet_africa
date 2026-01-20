@@ -8,17 +8,19 @@ Welcome to the Climate Fact Sheet Documentation for African Countries
 
    readme
    introduction
-   environment
    reportlab
+   overview
    country
    regions
    observed
-   indices
-   timeseries
    table_with_indices
-   ensemble_analysis
+   timeseries
+   compound_events
    exposure
    population
+   indices
+   ensemble_analysis
    model_list
+   environment
    authors
    history

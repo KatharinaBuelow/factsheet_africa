@@ -1,8 +1,8 @@
-.. _`environment`
+.. _`environments`:
 
 
 Environments
-============
+------------
 Before you start, you need to create your environment by
 
 .. code-block:: console

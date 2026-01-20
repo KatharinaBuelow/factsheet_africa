@@ -1,5 +1,8 @@
+.. _`weighted means`:
+
+
 Weighted Means
---------------
+~~~~~~~~~~~~~~
 
 The weighted means for each african country are calculated with xweights_ .
 

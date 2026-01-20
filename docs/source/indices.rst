@@ -1,49 +1,47 @@
-Klimaparameter
---------------
+.. _`climate indicators`:
 
-Die verwendeten Klimaparamter werden mit dem GERICS `index_calculator`_ berechnet. Der *Index Calculator* verwendet xclim_.
+Climate indicators
+------------------
 
-+-------+--------------------------------+--------------------------+---------+
-| Index | Name                           | Variable                 | Ausgabe |
-+=======+================================+==========================+=========+
-|  TG   | Mittlere Temperatur            | Temperatur               | Jahr    |
-+-------+--------------------------------+--------------------------+---------+
-|  FD   | Anzahl der Frosttage           | Minimumtemperatur < 0°C  | Jahr    |
-+-------+--------------------------------+--------------------------+---------+
-|  LFD  | Anzahl der Spätfrosttage       | Minimumtemperatur < 0°C  | Jahr    |
-+-------+--------------------------------+--------------------------+---------+
-|       | zwischen April und Juni        |                          |         |
-+-------+--------------------------------+--------------------------+---------+
-|  SU30 | Anzahl der Hitzetage           | Maximumtemperatur > 30°C | Jahr    |
-+-------+--------------------------------+--------------------------+---------+
-|  SU35 | Anzahl der Hitzetage           | Maximumtemperatur > 35°C | Jahr    |
-+-------+--------------------------------+--------------------------+---------+
-|  RRm  | mittlerer Tagesniederschlag    | Niederschlag             | Jahr    |
-+-------+--------------------------------+--------------------------+---------+
-|       |                                |                          | Saison  |
-+-------+--------------------------------+--------------------------+---------+
-|  DD   | Anzahl der Trockentage         | Niederschlag < 1mm/day   | Jahr    |
-+-------+--------------------------------+--------------------------+---------+
-|       |                                |                          | Saison  | 
-+-------+--------------------------------+--------------------------+---------+
-|  DSx  | Max. Länge der Trockenperioden | Niederschlag             | Jahr    |
-+-------+--------------------------------+--------------------------+---------+
-|       | Länge >= 5 Tage                |                          |         |
-+-------+--------------------------------+--------------------------+---------+
-|  DSf  | Anzahl der Trockenperioden     | Niederschlag             | Jahr    |
-+-------+--------------------------------+--------------------------+---------+
-|       | Länge >= 5 Tage                |                          |         |
-+-------+--------------------------------+--------------------------+---------+
-|  HSx  | Max. Länge der Hitzeperioden   | Maximumtemperatur >30°C  | Jahr    |
-+-------+--------------------------------+--------------------------+---------+
-|       | Länge >= 3 Tage                |                          |         |
-+-------+--------------------------------+--------------------------+---------+
-|  HSf  | Anzahl der Hitzeperioden       | Maximumtemperatur >30°C  | Jahr    |
-+-------+--------------------------------+--------------------------+---------+
-|       | Länge >= 3 Tage                |                          |         |
-+-------+--------------------------------+--------------------------+---------+
+The climate parameters used are calculated with the GERICS `index_calculator`_ berechnet. *Index Calculator* uses xclim_.
 
-Die in **Tabelle 2** aufgeführten Klimaparameter werden auf Grundlage der Ergebnisse der EURO-CORDEX Simulationen berechnet.
++-------+----------------------------+---------------------------+---------+
+| Index | Name                       | Variable                  | Output  |
++=======+============================+===========================+=========+
+|  TG   | Mean temperature           | Temperature               | Year    |
++-------+----------------------------+---------------------------+---------+
+|  FD   | Number of frost days       | Minimumtemperature < 0°C  | Year    |
++-------+----------------------------+---------------------------+---------+
+|  SU30 | Number of heat days        | Maximumtemperature > 30°C | Year    |
++-------+----------------------------+---------------------------+---------+
+|  SU35 | Numer of heat days         | Maximumtemperatur > 35°C  | Year    |
++-------+----------------------------+---------------------------+---------+
+|  RRm  | mean daily precipitation   | Precipitation             | Year    |
++-------+----------------------------+---------------------------+---------+
+|       |                            |                           | Season  |
++-------+----------------------------+---------------------------+---------+
+|  DD   | Number of dry days         | Precipitation < 1mm/day   | Year    |
++-------+----------------------------+---------------------------+---------+
+|       |                            |                           | Season  | 
++-------+----------------------------+---------------------------+---------+
+|  DSx  | Maximum length of dry days | Precipitation             | Year    |
++-------+----------------------------+---------------------------+---------+
+|       | Länge >= 5 Tage            |                           |         |
++-------+----------------------------+---------------------------+---------+
+|  DSf  | Number of dry periods      | Precipitation             | Year    |
++-------+----------------------------+---------------------------+---------+
+|       | Length >= 5 Tage           |                           |         |
++-------+----------------------------+---------------------------+---------+
+|  HSx  | Max. length of heat wave   | Maximumtemperature >30°C  | Year    |
++-------+----------------------------+---------------------------+---------+
+|       | Length >= 3 Tage           |                           |         |
++-------+----------------------------+---------------------------+---------+
+|  HSf  | Number of heat waves       | Maximumtemperature >30°C  | Year    |
++-------+----------------------------+---------------------------+---------+
+|       | Length >= 3 Tage           |                           |         |
++-------+----------------------------+---------------------------+---------+
+
+**Tabelle xx** lists the climate parameter calculated on the basis of CORDEX AFRICA and ERA5 data.
 
 
 

@@ -1,7 +1,13 @@
 Introduction
-============
+------------
+Workflow
+~~~~~~~~
+ .. image:: workflow-factsheet.png
+	    
+Figure 1: Workflow of the climate factsheetsfor africa Text Text Text Text
+	    
 Climatic Conditions
--------------------
+~~~~~~~~~~~~~~~~~~~
 Bukina Faso is located in West Africa and is influenced by the
 dynamics of the West African Monsoon system. This system drives
 seasonal rainfall, with precipitation levels generally increasing

@@ -1,5 +1,5 @@
 Maps of the country
-...................
+~~~~~~~~~~~~~~~~~~~
 
 .. image:: ../../PLOTS/FS_Burkina_Faso.png
 	   

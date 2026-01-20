@@ -1,8 +1,9 @@
-Clmate Simulation
------------------
+.. _`list of climate simulations`:
 
-CORDEX CORE Africa Simulations
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Climate Simulations
+-------------------
+
 The climate simulations for Africa are based on `CORDEX-CORE_AFR22`_ data.  More information about CORDEX-CORE is described in the following papers [1]_, [2]_, [3]_, [4]_).
 
 The data is available on 0.22 deg horizontal resolution and can be downloaded from the Earth System Grid Federation (esgf_). Model details and detials to the data format can be found here_. More gerneal information on climate models and `model diagnostic`_ are documented `Diez-Sierra et al., 2022`_.
@@ -17,17 +18,17 @@ The following table documents the high resolution climate model available for af
 +-----------------------+------------------+----------------+-------------+
 | CLMcom-KIT-CCLM5-0-15 | MPI-M-MPI-ESM-LR | RCP2.6, RCP8.5 | r1i1p1      | 
 +-----------------------+------------------+----------------+-------------+
-| CLMcom-KIT-CCLM5-0-15 | NCC-NorESM1-M    | RCP2.6,RCP8.5  | r12i1p1     |
+| CLMcom-KIT-CCLM5-0-15 | NCC-NorESM1-M    | RCP2.6, RCP8.5 | r12i1p1     |
 +-----------------------+------------------+----------------+-------------+
-| GERICS-REMO2015       | MOHC-HadGEM2-ES  | RCP2.6,RCP8.5  | r1i1p1      | 
+| GERICS-REMO2015       | MOHC-HadGEM2-ES  | RCP2.6, RCP8.5 | r1i1p1      | 
 +-----------------------+------------------+----------------+-------------+
 | GERICS-REMO2015       | MPI-M-MPI-ESM-LR | RCP2.6, RCP8.5 | r1i1p1      | 
 +-----------------------+------------------+----------------+-------------+
 | GERICS-REMO2015       | NCC-NorESM1-M    | RCP2.6, RCP8.5 | r12i1p1     | 
 +-----------------------+------------------+----------------+-------------+
-| ICTP-RegCM4-7         | MOHC-HadGEM2-E   | RCP2.6,RCP8.5  | r1i1p1      |
+| ICTP-RegCM4-7         | MOHC-HadGEM2-ES  | RCP2.6, RCP8.5 | r1i1p1      |
 +-----------------------+------------------+----------------+-------------+
-| ICTP-RegCM4-7         | MPI-M-MPI-ESM-MR | RCP2.6,RCP8.5  | r1i1p1      | 
+| ICTP-RegCM4-7         | MPI-M-MPI-ESM-MR | RCP2.6, RCP8.5 | r1i1p1      | 
 +-----------------------+------------------+----------------+-------------+
 | ICTP-RegCM4-7         | NCC-NorESM1-M    | RCP2.6, RCP8.5 | r12i1p1     | 
 +-----------------------+------------------+----------------+-------------+
