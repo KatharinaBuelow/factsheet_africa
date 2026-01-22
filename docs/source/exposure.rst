@@ -1,5 +1,5 @@
 Population Exposure to Extremes in Africa
-.........................................
+=========================================
 
 The exposure of the population (chapter :ref:`population`) to extreme climate indicators (chapter :ref:`climate indicators`) for Africa based on `CORDEX-CORE_AFR22`_ data.  More information about CORDEX-CORE is described in the following papers [4]_, [5]_, [6]_). For calculating the exposure the workflow described in the paper by Weber_ is followed.
 

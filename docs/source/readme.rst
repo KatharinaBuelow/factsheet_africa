@@ -11,7 +11,7 @@ This repository contains the climate data analyses featured in the GERICS Climat
 
 
 Contact
-.......
+-------
 
 If you have any issues or requests, please do not hesitate to contact us:
 

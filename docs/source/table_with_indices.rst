@@ -1,5 +1,5 @@
-Indizes for ERA5 and Climate Simulations for differen time slices
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Indizes for ERA5 and Climate Simulations for different time slices
+------------------------------------------------------------------
 
 Each climate indicator shown in Table 3 has been supplemented with an expert assessment describing the reliability of the results. This is indicated by different shades of gray in the table: “the darker the gray, the clearer the climate change.”
 If the majority of climate model results for an indicator show a statistically significant increase or decrease, the change is referred to as “robust” (dark gray). If most model results do not show clear changes but indicate a definite direction of change, there is a “tendency toward increase or decrease” (gray). If the climate model results are roughly evenly split between showing an increase and a decrease, there is no clear change (light gray/uncertain).

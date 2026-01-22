@@ -1,5 +1,5 @@
 Timeseries
-~~~~~~~~~~
+----------
 
 .. image:: plots/line_plot_min_max_TG_year_Burkina_Faso_ERA5.png
 	   
@@ -23,7 +23,9 @@ To make the time series plots you use the following notebook, which uses the fun
 Das Notebook verwendet die Daten die in folgendem Verzeichnis liegen:
 
 .. code-block:: console
+
    $ input_data
 
-# ERA5:
+
+   
 .. _ERA5: https://cds.climate.copernicus.eu/cdsapp#!/dataset

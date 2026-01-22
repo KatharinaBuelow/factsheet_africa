@@ -2,7 +2,7 @@
 
 
 Climate Simulations
--------------------
+===================
 
 The climate simulations for Africa are based on `CORDEX-CORE_AFR22`_ data.  More information about CORDEX-CORE is described in the following papers [1]_, [2]_, [3]_, [4]_).
 

@@ -1,7 +1,7 @@
 .. _`population`:
 
 Population
-~~~~~~~~~~
+----------
 
 Download link:
 
@@ -18,7 +18,7 @@ For the exposure maps *rcp* climate simulations are combined with the population
 
 
 SSP and RCP Scenarios
-"""""""""""""""""""""
+~~~~~~~~~~~~~~~~~~~~~
 
 +----------+--------------------------------------+
 | Scenario |                                      |

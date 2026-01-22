@@ -1,7 +1,7 @@
 .. _`climate indicators`:
 
 Climate indicators
-------------------
+==================
 
 The climate parameters used are calculated with the GERICS `index_calculator`_ berechnet. *Index Calculator* uses xclim_.
 

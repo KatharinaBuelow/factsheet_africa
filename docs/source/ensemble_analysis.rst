@@ -1,5 +1,5 @@
 Calculation of Statistical Significance and Robustness of Climate Change Signals
---------------------------------------------------------------------------------
+================================================================================
 
 An ensemble of climate simulations is employed to account for uncertainties in model projections and to enhance the robustness of the results.
 
@@ -8,7 +8,7 @@ The statistical significance of projected climate changes is assessed for each i
 
 
 Expert Assessment
-.................
+-----------------
 The results of the selected model ensemble are accompanied by information on statistical significance and robustness. Calculations were performed using xclim_.
 
 **Robust Increase:** At least two-thirds of the simulations indicate an increase, and at least 50% of the simulations show a statistically significant increase.

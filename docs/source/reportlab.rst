@@ -1,5 +1,5 @@
 Introduction to reportlab
--------------------------
+=========================
 
 This is the automatic regional Climate Fact Sheet generator.
 It creates a PDF document based on the GERICS Climate Fact Sheet design using ReportLab.
@@ -19,7 +19,7 @@ followed by individual pages for temperature, precipitation, compound events and
 
 
 Usage
-~~~~~
+-----
 
 You have to execute:
 
