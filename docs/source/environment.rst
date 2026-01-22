@@ -10,7 +10,7 @@ Before you start, you need to create your environment by
    $ conda env create -f environment-name.yml
 
 
-The environment to create the fact sheet document:
+The environment to create the fact sheet document (using reportlab):
 
 .. code-block:: bash
 
