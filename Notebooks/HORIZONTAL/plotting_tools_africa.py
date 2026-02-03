@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
 
 import os
-import pandas as pd
-
 import numpy as np
 import glob
+import geopandas as gpd
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 import xarray as xr
+from typing import Optional
+
+from plotting_shape_file import add_scalebar
+
 
 def savefig(plot, name, dpi):
     plot.savefig(name, dpi=dpi, bbox_inches='tight')
@@ -249,7 +252,7 @@ def plot_diff(
         rows=2,
         columns=2,
         row_gap: float = 0.35,
-        wspace: float | None = None,
+        wspace: Optional[float] = None,
         ):
 
     from cartopy import crs as ccrs
@@ -411,12 +414,16 @@ def plot_absolut(
         title="",
         var="",
         westafrica=None,
+        shapefile=None,
+        country=None,
         user_dpi=300,
         rows=2,
         columns=2,
+        fancy=None,
         row_gap: float = 0.35,
-        wspace: float | None = None,
+        wspace: Optional[float] = None,
         ):
+    
     """Plot absolute values for RCP26/RCP85 in a grid.
 
     Parameters
@@ -436,11 +443,22 @@ def plot_absolut(
     # set the colors:
     levels=level_steps
     colors=color_steps
-    
+
+    if shapefile is not None:
+        print('shapefile provided:')
+        try:
+            shapefile = shapefile.to_crs(epsg=4326)
+        except Exception:
+            pass
+
+    if rows == 2:
+        height=6
+
     if westafrica is True:
         height=6
     else:
         height=7
+
     if columns == 2:
         width=7
     elif columns == 3:
@@ -457,7 +475,7 @@ def plot_absolut(
     if wspace is not None:
         fig.subplots_adjust(hspace=row_gap, wspace=wspace)
     else:
-        fig.subplots_adjust(hspace=row_gap)
+         fig.subplots_adjust(hspace=row_gap)
     
     for row in axes:
         for ax in row:
@@ -468,13 +486,24 @@ def plot_absolut(
                 y_inline=False,
                 linewidth=0.5,
             )
-            ax.coastlines(resolution="50m", color="black", linewidth=1)
-            ax.add_feature(cf.BORDERS)
-            
-            #west Afrika
-            #lon : -25.87 to 20 by 0.11 degrees
-            #lat : -0.75 to 27.3 by 0.11 degrees
-            if westafrica is True:
+            #ax.coastlines(resolution="50m", color="lightgrey", linewidth=1)
+            ax.coastlines(resolution="10m", color="black", linewidth=1)
+
+            if shapefile is not None:
+                print('adding borders from shapefile')  
+            else:
+                print('adding default borders')
+                ax.add_feature(cf.BORDERS)
+                #ax.add_feature(cf.OCEAN, facecolor='#f0f0f0')
+
+            if shapefile is not None and country is not None:
+                ax.set_extent([shapefile.total_bounds[0]-0.25, 
+                               shapefile.total_bounds[2]+0.25, 
+                               shapefile.total_bounds[1]-0.25, 
+                               shapefile.total_bounds[3]+0.25])
+                
+
+            elif westafrica is True:
                 region='West_Africa'
                 ax.set_extent([-25, 20, -0.75, 27.3])
             else:
@@ -486,9 +515,7 @@ def plot_absolut(
     for i, file in enumerate(sims_rcp26):
         print(file)
         data = xr.open_dataset(file,decode_timedelta=False)
-        #cha_var(data,var)
         data_variable=get_variable(data,var)
-        #data_variable = data[var]
     
         # Select labels // Units frome metadata
         # Set title of plot
@@ -504,18 +531,17 @@ def plot_absolut(
             unit='events per year'
         else:
             print('var-long_name not found')
-        
-        
-        
+               
         s = "{} {}".format(title,varname)
     
         fig.suptitle(s+": ", 
                  fontsize=14, 
                  #fontweight='bold', 
                  x=0.5,
-                 position=(0.5, 0.93)
+                 position=(0.5, 0.95)
                  )  
-                
+
+        
         im = data_variable.plot(ax=axes[0, i],
                             levels=levels,
                             colors=colors,
@@ -524,17 +550,31 @@ def plot_absolut(
                             add_colorbar=False,
                             #alpha=.8,
                             )
+        # Plot shapefile on current axis only if provided
+        if shapefile is not None:
+            shapefile.plot(ax=axes[0, i], edgecolor='black', linewidth=0.5, facecolor='none')
         # This is not very clever, need to be adjusted according to file_name :-(
         if var =='ev_coin_sdu_median':
             axes[0, i].set_title(f'RCP26: {file.split("_")[9].split(".")[0]}', fontsize=12)
         else:
             axes[0, i].set_title(f'RCP26: {file.split("_")[6]}-{file.split("_")[7]}',fontsize=12)
+    
+        if fancy:
+            # Add north arrow and scalebar to all subplots
+            arrowprops = dict(facecolor='black', edgecolor='black', width=1, headwidth=8, headlength=10)
+            # If a shapefile is provided, build union geometry for accurate scalebar
+            union_geom = shapefile.unary_union if shapefile is not None else None
+            for ax in axes.flat:
+                # Arrow pointing up in axes coordinates
+                ax.annotate('', xy=(0.08, 0.85), xytext=(0.08, 0.65), xycoords='axes fraction', arrowprops=arrowprops)
+                # Label "N" above the arrow
+                ax.text(0.08, 0.86, 'N', transform=ax.transAxes, ha='center', va='bottom', fontsize=12)#, fontweight='bold')
+                if union_geom is not None:
+                    add_scalebar(ax, geom=union_geom, location='lower right', segments=4)
 
     # Plot data for rcp85
     for i, file in enumerate(sims_rcp85):
         data = xr.open_dataset(file,decode_timedelta=False)
-        #cha_var(data,var)
-        #data_variable = data[var]
         data_variable=get_variable(data,var)
         
         im = data_variable.plot(ax=axes[1, i],
@@ -545,6 +585,9 @@ def plot_absolut(
                            add_colorbar=False,
                            #alpha=.8,
                            )
+         
+        if shapefile is not None:
+            shapefile.plot(ax=axes[1, i], edgecolor='black', linewidth=0.5, facecolor='none')
         if var =='ev_coin_sdu_median':
             axes[1, i].set_title(f'RCP85: {file.split("_")[9].split(".")[0]}',fontsize=12)
         else:
@@ -552,11 +595,15 @@ def plot_absolut(
 
     cbar_ax = fig.add_axes([0.15, 0.02, 0.7, 0.03])
     fig.colorbar(im, cax=cbar_ax, orientation="horizontal", label='[ '+unit+' ]')
+   
+    # Layout (space for colorbar at bottom)(left,bottom,right, top)
+    fig.tight_layout(rect=[0.03, 0.01, 0.97, 0.99])
 
-    # Layout (space for colorbar at bottom)
-    fig.tight_layout(rect=[0.03, 0.08, 0.97, 0.93])
-    name="{}/{}_absolut_{}_{}.png".format(plotdir, var, region, user_dpi)
+    if country is not None:
+        name="{}/{}_absolut_{}_{}.png".format(plotdir, var, country, user_dpi)
+    else:
+        name="{}/{}_absolut_{}.png".format(plotdir, var , user_dpi)
 
     print('file is here:', name)
-    savefig(fig, "{}".format(name), user_dpi)
+    fig.savefig("{}".format(name), dpi=user_dpi, bbox_inches="tight")# pad_inches=0.02)
     return
