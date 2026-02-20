@@ -43,7 +43,7 @@ conda install conda-forge::scikit-image
 
 .. code-block:: bash
 		
-   conda env create -f env_reprtlab.yml
+   conda env create -f factsheet.yml
 
 Also see chapter :ref:`environments`. 
 
