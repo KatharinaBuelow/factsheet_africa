@@ -35,6 +35,10 @@ def read_obs(i, ind, frequency, saison,region):
     if ind in ["TG", "TX", "TN"]:
         sel[c] = sel[c] - 273.15
 
+    if ind in ["RRm"] :
+        #change unit from mm/day to mm/year
+        sel[c] = sel[c].astype(float) * 365
+
     if saison == 12:
         dft["Index"] = sel["ci_name"]
         dfl = sel[c].map("{:,.1f}".format)
@@ -44,15 +48,16 @@ def read_obs(i, ind, frequency, saison,region):
         dfl = sel_[c].map("{:,.1f}".format)
         dft["Index"] = sel_["ci_name"].str.cat(sel_["mid_month"].values.astype(str))
 
+    
+
     dft = pd.concat([dft, dfl], axis=1)
     return dft
 
 def time_slice(files, region, dft, s, ind, fixh):
     # Es ist wichtig die Spalten hier klar zubenennen, sonst passiert ein Fehler.
-    for ts in ("1991_2020", "2031_2060", "2069_2098"):
+    for ts in ("2031_2060", "2069_2098"):
         for rcp in ("rcp26", "rcp85"):
             dfile = sorted([f for f in files if ts in f and rcp in f])
-            print(dfile)
             if not dfile:
                 continue
             i = dfile[0]
@@ -65,13 +70,15 @@ def time_slice(files, region, dft, s, ind, fixh):
                 val = t * 100
                 dfl = val.map("{:,.1f} %".format)
             elif fixh in c:
-                print('historical:', c)
+                #print('historical:', c)
                 if ind in ["TG", "TX", "TN"]:
                     sel[c] = sel[c] - 273.15
                 dfl = sel[c].map("{:,.1f}".format)
             else:
                 dfl = sel[c].map("{:,.1f}".format)
-
+            if ind in ["RRm"] :
+                #change unit from mm/day to mm/year
+                dfl = dfl.astype(float) * 365
             dft.reset_index(drop=True, inplace=True)
             dfl.reset_index(drop=True, inplace=True)
             # unclear wird ersetzt: 0 mit 0.5
@@ -86,7 +93,7 @@ def time_slice_mm(files):
     dfd = pd.DataFrame(np.nan, index=[0], columns=["dummy"])
     dfmm = pd.concat([dfmm, dfd], axis=1)
 
-    for ts in ("1991_2020", "2031_2060", "2069_2098"):
+    for ts in ("2031_2060", "2069_2098"):
         for rcp in ("rcp26", "rcp85"):
             dfile = sorted([f for f in files if ts in f and rcp in f])
             if not dfile:
@@ -126,8 +133,8 @@ def rename(df, ind, frequency, fixh, fixmh ,fix, fixm, fixr, rcp, time_period):
             "ci_name": "Index",
             ind + "_" + frequency + "_ref_time-mean": "1991-2020",
             "dummy": "1991-2020",
-            ind + "_" + frequency + "_" + time_period + "_" + rcp + "_" + fixh: rcp + ": " + time_period,
-            ind + "_" + frequency + "_" + time_period + "_" + rcp + "_" + fixmh: rcp + ": " + time_period,
+            #ind + "_" + frequency + "_" + time_period + "_" + rcp + "_" + fixh: rcp + ": " + time_period,
+            #ind + "_" + frequency + "_" + time_period + "_" + rcp + "_" + fixmh: rcp + ": " + time_period,
             ind + "_" + frequency + "_" + time_period + "_" + rcp + "_" + fix: rcp + ": Δ " + time_period,
             ind + "_" + frequency + "_" + time_period + "_" + rcp + "_" + fixm: rcp + ": Δ " + time_period,
             ind + "_" + frequency + "_" + time_period + "_" + rcp + "_" + fixr: rcp + ": Δ " + time_period,
@@ -139,7 +146,7 @@ def rename_index(df):
     df_ = df.copy()
     return df_.rename(
         index={
-            "TG7": "Temperature [°C]",
+            "TG7": "Mean Temperature [°C]",
             "TR7": "Tropical nights (Tmin > 20°C) [nights]",
             "TR267": "Tropical nights (Tmin > 26°C) [nights]",
             "TN7": "Temperature Min. [°C]",
@@ -152,7 +159,7 @@ def rename_index(df):
             "LFD": "Late frost days [days]",
             "HSx3": "Max. heatwave [days]",
             "HSf3": "Heatwaves [number]",
-            "RRm7": "Annual precipitation [mm/day]",
+            "RRm7": "Annual precipitation [mm/year]",
             "RRm1": "Winter precipitation [mm/day]",
             "RRm4": "Spring precipitation [mm/day]",
             "RRm": "Summer precipitation [mm/day]",
@@ -178,12 +185,10 @@ def rename_index(df):
 def rename_columns(df_index):
     '''this is just for plotting the table header over two lines'''
     return df_index.rename(columns={
-        'rcp26: Δ 1991_2020':'rcp26:\n1991-2020',
-        'rcp85: Δ 1991_2020':'rcp85:\n1991-2020',
-        'rcp26: Δ 2031_2060':'rcp26:\n2031-2060', 
-        'rcp85: Δ 2031_2060':'rcp85:\n2031-2060', 
-        'rcp26: Δ 2069_2098':'rcp26:\n2069-2098',
-        'rcp85: Δ 2069_2098':'rcp85:\n2069-2098',
+        'rcp26: Δ 2031_2060': 'rcp26:\nΔ 2031-2060', 
+        'rcp85: Δ 2031_2060': 'rcp85:\nΔ 2031-2060', 
+        'rcp26: Δ 2069_2098': 'rcp26:\nΔ 2069-2098',
+        'rcp85: Δ 2069_2098': 'rcp85:\nΔ 2069-2098',
     })
 
 def minmax(files, region, s, method):
@@ -195,19 +200,16 @@ def minmax(files, region, s, method):
     dft = pd.DataFrame(["Min:Max"], columns=["ci_name"])
     dfd = pd.DataFrame(np.nan, index=[0], columns=["dummy"])
     dft = pd.concat([dft, dfd], axis=1)
-    #print('bis hier')
-    #print(dft)
-    #print(files)
+    
     for i in files:
-        print(' Processing file:', i)
+        
         if method == "pro":
             minfile = i.replace("diff-frac-median", "diff-frac-p5")
             maxfile = i.replace("diff-frac-median", "diff-frac-p95")
         else:
             minfile = i.replace("-median.csv", "-p5.csv")
             maxfile = i.replace("-median.csv", "-p95.csv")
-        #print(' Min file:', minfile)
-        #print(' Max file:', maxfile)
+     
         dfmin = pd.read_csv(minfile)
         dfmax = pd.read_csv(maxfile)
 
@@ -215,10 +217,10 @@ def minmax(files, region, s, method):
         selx_ = select_region(dfmax, region)
         seln = seln_.loc[(seln_["mid_month"].isin([s]))]
         selx = selx_.loc[(selx_["mid_month"].isin([s]))]
-        #print('print seln,selx: ',seln,selx)
+        
         cmin = col_name(minfile)
         cmax = col_name(maxfile)
-        #print(' cmin, cmax:', cmin, cmax)
+        
 
         if method == "pro":
             endcmax = cmax.split("-")[4]
@@ -231,10 +233,10 @@ def minmax(files, region, s, method):
         else:
             tmp = cmax.split(".")[0]
             endcmax = tmp.split("-")[-1]
-            print('endcmax: ', endcmax)
+            #print('endcmax: ', endcmax)
             dfn = seln[cmin].map("{:,.1f}".format)
             dfm = selx[cmax].map("{:,.1f}".format)
-        #print(' cmin, cmax:', dfn, dfm)
+
         dfn_ = dfn.reset_index(drop=True)
         dfm_ = dfm.reset_index(drop=True)
         dft_ = pd.concat([dft, dfn_, dfm_], axis=1)
@@ -242,5 +244,40 @@ def minmax(files, region, s, method):
         dft = dft__.replace("-0.0", "0")
         dft[cmin + "-" + endcmax] = dft[cmin] + " : " + dft[cmax]
         dft.drop([cmin, cmax], inplace=True, axis=1)
-        #print(dft)
+
     return dft
+
+# Die Tabelle klarer gestalten:
+
+def add_plus(value):
+    float_value = float(value)
+    if float_value > 0:
+        return "+" + str(float_value)
+    else:
+        return str(float_value)
+    
+    # some graphic style tools:
+
+# Design:
+# Schrift größe bestimmen
+
+def annotate_row(row_index):
+    # Always return a list with length equal to the number of columns (5)
+    if row_index == "Min:Max":
+        return [8] * 5  # Font sizes for each column in row
+    else:
+        return [12] * 5  # Default font sizes
+
+
+def annotate_row_weight(row_index):
+    # Always return a list with length equal to the number of columns (5)
+    if row_index == "Min:Max":
+        return ["light"] * 5
+    else:
+        return ["bold"] * 5
+
+
+def label_color(label): 
+    # Always return a color for the label
+    return "#636363"  # Default color (black)
+    
