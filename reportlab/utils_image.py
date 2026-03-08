@@ -8,4 +8,5 @@ def get_image(path, height=1*cm):
     aspect = ih / float(iw)
     return Image(path, height=height, width=(height / aspect))
     
+    pwd
     
