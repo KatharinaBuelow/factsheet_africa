@@ -279,5 +279,20 @@ def annotate_row_weight(row_index):
 
 def label_color(label): 
     # Always return a color for the label
-    return "#636363"  # Default color (black)
+    if label in ["Mean Temperature [°C]","Temperature Max. [°C]", "Temperature Min. [°C]"]:
+        return "#dcab4c"
+    if label in ["Tropical nights (Tmin > 26°C) [nights]", "Temperature max. > 35°C [days]","Temperature max. > 40°C [days]"]:
+        return "#cf6752"
+    if label == "Hitzewellen [Anzahl]":
+        return "#cf6752"
+    if label == "Dry days [days]":
+        return "#97b0ca"
+    if label  in ["Wet days (RR > 1mm) [days]","Heavy precipitation (RR > 20mm) [days]","Annual precipitation [mm/year]","Total precipitation on wet days [mm/year]"]:
+        return "#615793"
+    if label == "jährl. max.Trockenperiode [Tage]":
+        return "#882a4f"
+    if label == "Wind speed [m/s]":
+        return "#609C88"
+    else:
+        return "#636363"  # Default color (black)
     
