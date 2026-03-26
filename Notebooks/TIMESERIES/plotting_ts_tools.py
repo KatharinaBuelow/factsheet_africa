@@ -32,6 +32,11 @@ def select_index(idx: str):
             'unit_base': 'days',
             'description': 'Dry days (precipitation < 1 mm/day)'
         },
+        'RRm': {
+            'longname': 'mean precipitation [mm/day]',
+            'unit_base': 'mm/day',
+            'description': 'Mean precipitation'
+        },
         'SU40': {
             'longname': 'number of days with Tmax > 40°C',
             'unit_base': 'days',
@@ -348,7 +353,10 @@ def line_plot_min_max(df, x, y, index,outputpath, region, dfera5=None, ylim=None
             
     plt.title(f"Area mean for {region}: of {y}", fontsize=20)
     plt.legend(title='CORDEX AFR22 Realizations', loc='upper left', ncol=1, fontsize=8)
-    plt.grid(True, alpha=0.3)
+    plt.grid(True, alpha=0.7)
+    plt.tick_params(axis='both', which='major', labelsize=14)
+    plt.tick_params(axis='both', which='minor', labelsize=12)
+
     plt.tight_layout()
     plt.xticks(rotation=0)
     plt.xlabel(x, fontsize=14)
@@ -383,6 +391,7 @@ def line_plot_min_max(df, x, y, index,outputpath, region, dfera5=None, ylim=None
     plt.savefig(outfile, dpi=1200, bbox_inches='tight', pad_inches=0.3)
     print('Saved plot to: ', outfile)
     return plt.show()
+
 
 #############################
 # Load RCMS data
@@ -440,6 +449,16 @@ def load_rcms_csv(csv_path, country, index, longname, start_date=None, end_date=
     rcm_clean=cleanup(df, index, longname, longnameK)
     rcm_clean=adjust_names(rcm_clean)
     cut_data=adjust_length(rcm_clean, start_date, end_date)
+    print('Loaded CORDEX AFR-22 data for country: ', country, ' with index: ', index)
+    print('Data range: ', cut_data['year'].min(), ' - ', cut_data['year'].max())
+    print('Data columns: ', cut_data.columns)
+    if index == 'RRm':
+        # change to mm/year for better comparison with Table
+        print(longname)
+        cut_data[longname] = cut_data[longname] * 365.25
+        # change longname to reflect new unit
+        cut_data = cut_data.rename(columns={longname: longname.replace('mm/day', 'mm/year')})
+        print('Adjusted precipitation to mm/year for better comparison with Table. New longname: ', cut_data.columns)
     return cut_data
 
 
@@ -693,7 +712,7 @@ def box_plot_anomaly(src, outputpath, country, var, longname):
     ax.set_xticks(xticks)
     ax.set_xticklabels(xticklabels)
     #ax.set_xlabel("Time Slice / Scenario")
-    ax.set_ylabel(f"{country}: {longname} anomaly to 1991-2020")
+    #ax.set_ylabel(f"{country}: {longname} anomaly to 1991-2020")
     # Build legend
     if hue_order:
         legend_handles = []
@@ -708,6 +727,11 @@ def box_plot_anomaly(src, outputpath, country, var, longname):
             plt.Line2D([0], [0], color="lightgray", lw=2, label="Median")
         )
         ax.legend(handles=legend_handles)
+
+    plt.tight_layout()
+    ax.yaxis.set_label_position('right')
+    #ax.set_ylabel(f"{country}: {longname} anomaly to 1991-2020", fontsize=12, labelpad=10 ,rotation=270)
+    #ax.yaxis.set_label_coords(1.13, 0.5)
     # Add values of min, max, p85, p15, and median to each box-plot
     for idx, row in stats.iterrows():
         s = row["slice"]
@@ -735,7 +759,9 @@ def box_plot_anomaly(src, outputpath, country, var, longname):
     plt.savefig(outfile, dpi=300)
     plt.show()
 
-def lineplot_and_boxplot(df, df_era5, src,country, var, longname, outputpath):
+#------------------------------
+
+def lineplot_and_boxplot(df, df_era5, src,country, var, longname, outputpath,ylim=None):
     '''Create a combined figure with a line plot of anomalies and a box plot of statistics.'''
 
     # Use scenario-based colors
@@ -746,6 +772,13 @@ def lineplot_and_boxplot(df, df_era5, src,country, var, longname, outputpath):
     hue_order = [k for k in palette.keys() if k in src["scenario"].unique().tolist()]
     # Consistent order for slices on the x-axis
     slice_order = sorted(src["slice"].unique().tolist())
+    
+    slice_order = ['2031-2060', '2069-2098']
+    slice_order_p = []
+    for s in slice_order:
+        start, end = s.split('-')
+        slice_order_p.extend([start, '-' + end])
+    
 
     # Summary stats per slice/scenario
     stats = (
@@ -769,7 +802,7 @@ def lineplot_and_boxplot(df, df_era5, src,country, var, longname, outputpath):
     df_era5_plot = df_era5_plot.dropna(subset=['anomaly'])
 
     # Create a figure with two subplots (side by side)
-    fig, axes = plt.subplots(1, 2, figsize=(16, 7), gridspec_kw={'width_ratios': [3, 1]})
+    fig, axes = plt.subplots(1, 2, figsize=(12, 5.25), gridspec_kw={'width_ratios': [3, 1.3]})
     # --- Left: line_plot_anomaly (manual version) ---
     for scenario in hue_order:
         for _, group in df[df['scenario'] == scenario].groupby('realization'):
@@ -784,17 +817,27 @@ def lineplot_and_boxplot(df, df_era5, src,country, var, longname, outputpath):
         axes[0].fill_between(min_vals.index, min_vals.values, max_vals.values, color=palette[scenario], alpha=0.15, label=f"{scenario} min-max")
 
     # Add ERA5 anomaly as black line if available
-    if 'anomaly' in df_era5_plot.columns and not df_era5_plot.empty:
-        axes[0].plot(df_era5_plot['year'], df_era5_plot['anomaly'], color='black', label='ERA5', linewidth=2)
+    #if 'anomaly' in df_era5_plot.columns and not df_era5_plot.empty:
+    #    axes[0].plot(df_era5_plot['year'], df_era5_plot['anomaly'], color='black', label='ERA5', linewidth=2)
 
     # Robust y-limits ignoring NaN
-    ymin = np.nanmin(df['anomaly'].values) - 0.5
-    ymax = np.nanmax(df['anomaly'].values) + 0.5
-    ytext = ymin+0.1
-    axes[0].set_xlim(1969, 2100)
-    axes[0].axhline(0, color=DARKGREY, linestyle='-', linewidth=1)
-    axes[0].axvline(1991, color='grey', linestyle='-', linewidth=1)
-    axes[0].axvline(2020, color='grey', linestyle='-', linewidth=1)
+    # Add extra padding to y-limits for visual gap
+    ymin = np.nanmin(df['anomaly'].values)
+    ymax = np.nanmax(df['anomaly'].values)
+    span = ymax - ymin
+    pad = 0.08 * span if span > 0 else 0.5
+    ymin = ymin - pad
+    ymax = ymax + pad
+    ytext = ymin + 0.02 * (ymax - ymin)
+    axes[0].set_xlim(1970, 2100)
+        
+    # Set x-ticks every 10 years
+    xticks_10yr = list(range(1970, 2101, 10))
+    axes[0].set_xticks(xticks_10yr)
+    axes[0].set_xticklabels([str(year) for year in xticks_10yr], fontsize=12)
+    axes[0].axhline(0, color=DARKGREY, linestyle='-', linewidth=2)
+    axes[0].axvline(1991, color='grey', linestyle=':', linewidth=1)
+    axes[0].axvline(2020, color='grey', linestyle=':', linewidth=1)
     # Fill between the vertical lines for the reference period
     axes[0].fill_betweenx(
         y=axes[0].get_ylim(), 
@@ -804,14 +847,19 @@ def lineplot_and_boxplot(df, df_era5, src,country, var, longname, outputpath):
         alpha=0.1
     )
     # Add a legend for the shaded area
-    axes[0].text(1992, ytext, 'Reference (1991-2020)', color='grey', fontsize=12)
+    axes[0].text(1992, ytext, 'Reference (1991-2020)', color='grey', fontsize=9)
 
-    axes[0].set_title(f"{longname} anomaly time series\n{country}")
-    axes[0].set_xlabel("Year")
-    axes[0].set_ylabel(f"{longname} anomaly to 1991-2020")
+    axes[0].set_title(f"{country}: Anomaly of {longname} to 1991-2020", fontsize=12)
+    axes[0].set_xlabel("Year",fontsize=12)
+    axes[0].set_ylabel(f"Anomaly of {longname}", fontsize=12)
     axes[0].set_ylim(ymin, ymax)
-    axes[0].legend()
-    #axes[0].grid(True)
+    axes[0].grid(True, axis='y', alpha=0.5)
+    if var == 'RRm':
+        axes[0].legend(loc='best', fontsize=10)
+    else:
+        axes[0].legend(loc='upper left', fontsize=10)
+    axes[0].tick_params(axis='both', labelsize=12)
+   
     #
     # --- Right: boxplot (manual version) ---
     #
@@ -849,32 +897,55 @@ def lineplot_and_boxplot(df, df_era5, src,country, var, longname, outputpath):
             edgecolor=inner_palette[h],
             alpha=0.7
         ))
+        lift_y=span/(40)
         axes[1].hlines(row["median"], x_center - inner_width / 2, x_center + inner_width / 2, colors="lightgray", linewidth=2)
         x_anno = x_center + 0.12 + base_width/2
-        axes[1].text(x_anno, row["ymin"]-0.2, f"{row['ymin']:.2f}", va='bottom', ha='center', fontsize=8, color=inner_palette[h])
-        axes[1].text(x_anno, row["ymax"]+0.2, f"{row['ymax']:.2f}", va='top', ha='center', fontsize=8, color=inner_palette[h])
-        axes[1].text(x_anno, row["p15"], f"{row['p15']:.2f}", va='bottom', ha='center', fontsize=8, color=palette[h])
-        axes[1].text(x_anno, row["p85"], f"{row['p85']:.2f}", va='top', ha='center', fontsize=8, color=palette[h])
-        axes[1].text(x_anno, row["median"], f"{row['median']:.2f}", va='center', ha='center', fontsize=8, color='black')
-
+        axes[1].text(x_anno+0.1, row["ymin"]-lift_y, f"{row['ymin']:.0f}", va='bottom', ha='center', fontsize=10, color=inner_palette[h])
+        axes[1].text(x_anno+0.1, row["ymax"]+lift_y, f"{row['ymax']:.0f}", va='top', ha='center', fontsize=10, color=inner_palette[h])
+        #axes[1].text(x_anno+0.1, row["p15"], f"{row['p15']:.1f}", va='bottom', ha='center', fontsize=10, color=palette[h])
+        #axes[1].text(x_anno+0.1, row["p85"], f"{row['p85']:.1f}", va='top', ha='center', fontsize=10, color=palette[h])
+        axes[1].text(x_anno+0.1, row["median"], f"{row['median']:.0f}", va='center', ha='center', fontsize=10, color='black')
         axes[1].set_xlim(-base_width, total_columns - base_width)
+    axes[1].axhline(0, color=DARKGREY, linestyle='-', linewidth=2)
     xticks = [slice_order.index(s) * n_hues + j for s in slice_order for j in range(n_hues)]
-    xticklabels = [f"{s}\n{h}" for s in slice_order for h in hue_order]
+    # Custom xticklabels: only show scenario in first, time slice in second line, but only once per slice
+
+    xticklabels = []
+    for s in slice_order:
+        for j, h in enumerate(hue_order):
+            if j == 0:
+                xticklabels.append(f"{h}\n              {s}")
+            else:
+                # Add right padding (4 spaces) to shift label right
+                xticklabels.append(f"{h}\n")
 
     axes[1].set_xticks(xticks)
-    axes[1].set_xticklabels(xticklabels)
+    axes[1].set_xticklabels(xticklabels, fontsize=12)
+    axes[1].tick_params(axis='y', labelsize=12, labelleft=False, labelright=True)
+
     axes[1].set_ylim(ymin, ymax)
-    axes[1].set_ylabel(f"{longname} anomaly to 1991-2020")
-    axes[1].set_title(f"Projected {longname} anomaly\n(30-year means)")
-    axes[1].grid(True, axis='y')
+    # Set ylabel on the right for boxplot
+    # Remove left y-label and set right y-label for boxplot
+    # Remove left y-label and set right y-label for boxplot
+    axes[1].set_ylabel("")
+    axes[1].yaxis.set_label_position('right')
+    axes[1].set_title("30-year mean anomaly", fontsize=12)
+    axes[1].grid(True, axis='y',alpha=0.7)
     legend_handles = []
     for h in hue_order:
         legend_handles.append(Patch(facecolor=palette[h], edgecolor=inner_palette[h], alpha=0.35, label=f"Min-Max ({h})"))
         legend_handles.append(Patch(facecolor=inner_palette[h], edgecolor=inner_palette[h], alpha=0.7, label=f"P15–P85 ({h})"))
     legend_handles.append(plt.Line2D([0], [0], color="lightgray", lw=2, label="Median"))
-    axes[1].legend(handles=legend_handles, loc='upper left')
+    axes[1].legend(handles=legend_handles, loc='upper left', fontsize=10)
 
     plt.tight_layout()
+    plt.subplots_adjust(wspace=0.05)  # Reduce space between subplots
+
+    # Set right y-label after layout and clear left label
+    axes[1].yaxis.set_label_position('right')
+    axes[1].set_ylabel(f"Anomaly of {longname}", fontsize=12,  labelpad=15,rotation=270)
+    axes[1].figure.canvas.draw_idle()
+    #axes[1].get_yaxis().set_label_coords(1.08, 0.5)
     # Save
     country = country.replace(' ', '_')
     outfile = os.path.join(outputpath, var + '_' + country + '_timeseries_box_minmax_p15p85.png')
