@@ -761,7 +761,7 @@ def box_plot_anomaly(src, outputpath, country, var, longname):
 
 #------------------------------
 
-def lineplot_and_boxplot(df, df_era5, src,country, var, longname, outputpath,ylim=None):
+def lineplot_and_boxplot(df,src,country, var, longname, outputpath, df_era5=None, ylim=None):
     '''Create a combined figure with a line plot of anomalies and a box plot of statistics.'''
 
     # Use scenario-based colors
@@ -793,13 +793,13 @@ def lineplot_and_boxplot(df, df_era5, src,country, var, longname, outputpath,yli
         )
         .reset_index()
     )
-    # Ensure ERA5 years are int for plotting
-    df_era5_plot = df_era5.copy()
-    if pd.api.types.is_datetime64_any_dtype(df_era5_plot['year']):
-        df_era5_plot['year'] = df_era5_plot['year'].dt.year
-
-    # Drop NaN anomalies for plotting
-    df_era5_plot = df_era5_plot.dropna(subset=['anomaly'])
+    if df_era5 is not None:
+        # Ensure ERA5 years are int for plotting
+        df_era5_plot = df_era5.copy()
+        if pd.api.types.is_datetime64_any_dtype(df_era5_plot['year']):
+            df_era5_plot['year'] = df_era5_plot['year'].dt.year
+        # Drop NaN anomalies for plotting
+        df_era5_plot = df_era5_plot.dropna(subset=['anomaly'])
 
     # Create a figure with two subplots (side by side)
     fig, axes = plt.subplots(1, 2, figsize=(12, 5.25), gridspec_kw={'width_ratios': [3, 1.3]})
@@ -817,8 +817,8 @@ def lineplot_and_boxplot(df, df_era5, src,country, var, longname, outputpath,yli
         axes[0].fill_between(min_vals.index, min_vals.values, max_vals.values, color=palette[scenario], alpha=0.15, label=f"{scenario} min-max")
 
     # Add ERA5 anomaly as black line if available
-    #if 'anomaly' in df_era5_plot.columns and not df_era5_plot.empty:
-    #    axes[0].plot(df_era5_plot['year'], df_era5_plot['anomaly'], color='black', label='ERA5', linewidth=2)
+    if df_era5 is not None and 'anomaly' in df_era5_plot.columns and not df_era5_plot.empty:
+        axes[0].plot(df_era5_plot['year'], df_era5_plot['anomaly'], color='black', label='ERA5', linewidth=2)
 
     # Robust y-limits ignoring NaN
     # Add extra padding to y-limits for visual gap
@@ -849,7 +849,7 @@ def lineplot_and_boxplot(df, df_era5, src,country, var, longname, outputpath,yli
     # Add a legend for the shaded area
     axes[0].text(1992, ytext, 'Reference (1991-2020)', color='grey', fontsize=9)
 
-    axes[0].set_title(f"{country}: Anomaly of {longname} to 1991-2020", fontsize=12)
+    #axes[0].set_title(f"{country}: Anomaly of {longname} to 1991-2020", fontsize=12)
     axes[0].set_xlabel("Year",fontsize=12)
     axes[0].set_ylabel(f"Anomaly of {longname}", fontsize=12)
     axes[0].set_ylim(ymin, ymax)
@@ -926,10 +926,10 @@ def lineplot_and_boxplot(df, df_era5, src,country, var, longname, outputpath,yli
     axes[1].set_ylim(ymin, ymax)
     # Set ylabel on the right for boxplot
     # Remove left y-label and set right y-label for boxplot
-    # Remove left y-label and set right y-label for boxplot
+    # Remove right y-axis label, keep only tick numbers
     axes[1].set_ylabel("")
-    axes[1].yaxis.set_label_position('right')
-    axes[1].set_title("30-year mean anomaly", fontsize=12)
+    #axes[1].yaxis.set_label_position('right')
+    #axes[1].set_title("30-year mean anomaly", fontsize=12)
     axes[1].grid(True, axis='y',alpha=0.7)
     legend_handles = []
     for h in hue_order:
@@ -942,13 +942,13 @@ def lineplot_and_boxplot(df, df_era5, src,country, var, longname, outputpath,yli
     plt.subplots_adjust(wspace=0.05)  # Reduce space between subplots
 
     # Set right y-label after layout and clear left label
-    axes[1].yaxis.set_label_position('right')
-    axes[1].set_ylabel(f"Anomaly of {longname}", fontsize=12,  labelpad=15,rotation=270)
-    axes[1].figure.canvas.draw_idle()
+    #axes[1].yaxis.set_label_position('right')
+    #axes[1].set_ylabel(f"Anomaly of {longname}", fontsize=12,  labelpad=15,rotation=270)
+    #axes[1].figure.canvas.draw_idle()
     #axes[1].get_yaxis().set_label_coords(1.08, 0.5)
     # Save
     country = country.replace(' ', '_')
-    outfile = os.path.join(outputpath, var + '_' + country + '_timeseries_box_minmax_p15p85.png')
+    outfile = os.path.join(outputpath, var + '_' + country + '_timeseries_box_minmax_p15p85_oT.png')
     print(f"Saving figure to {outfile}")
     plt.savefig(outfile, dpi=300)
     plt.show()
