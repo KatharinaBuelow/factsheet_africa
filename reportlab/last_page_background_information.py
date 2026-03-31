@@ -23,7 +23,7 @@ import pandas as pd
 
 def insert_impressum(self):
     #------------------ Seitenumbruch auf Impressum Seite
-    self.c.showPage()
+    #self.c.showPage()
     #  
     #logos at the top:
     #
@@ -183,28 +183,6 @@ def insert_impressum(self):
     link_width, acc_height = text_ack.wrapOn(self.c, self.width - self.text_offset_links - self.text_offset_rechts, self.height)
     text_ack.drawOn(self.c, self.text_offset_links, einfuegehoehe-acc_height)    
     
-    # --------------------------------------
-    # Data source section
-    # -----------------------------------
-    einfuegehoehe = einfuegehoehe - acc_height - self.kleiner_abstand
-    data_title = "Data source" if self.sprache == 'english' else "Datenquelle"
-    data_para = Paragraph(f"<para><span name=Helvetica size=12>{data_title}</span></para>",self.styles.get('Heading', getSampleStyleSheet()['Heading1']))
-    title_w, data_h = data_para.wrapOn(self.c, self.width - self.text_offset_links - self.text_offset_rechts, self.height)
-    data_para.drawOn(self.c, self.text_offset_links, einfuegehoehe - data_h)
-    # Add the reference below the title
-    einfuegehoehe = einfuegehoehe - data_h - self.kleiner_abstand*0.75
-    if self.sprache == 'english':
-        data_text = Paragraph('<para> <span name=Helvetica color=black size = 10>\
-            Observational baseline: ERA5 ( Hersbach H, Bell B, Berrisford P, et al. The ERA5 global reanalysis. Q J R Meteorol Soc. 2020; 146: 1999–2049. https://doi.org/10.1002/qj.3803). \nClimate projections: Multi-model ensemble from AFR22-CORDEX based on RCP2.6 and RCP8.5 scenarios. \nData access: Copernicus Climate Data Store (DOI: 10.24381/cds.adbb2d47).\
-            </span></para>',
-            self.styles['Justify'], encoding='utf8')
-    else:
-        data_text = Paragraph('<para> <span name=Helvetica color=black size = 10>\
-            Beobachtungsgrundlage: ERA5 ( Hersbach H, Bell B, Berrisford P, et al. The ERA5 global reanalysis. Q J R Meteorol Soc. 2020; 146: 1999–2049. https://doi.org/10.1002/qj.3803). \nKlimaprojektionen: Multi-Modell-Ensemble aus AFR22-CORDEX basierend auf den Szenarien RCP2.6 und RCP8.5. \nDatenzugang: Copernicus Climate Data Store (DOI: 10.24381/cds.adbb2d47).\
-            </span></para>',
-            self.styles['Justify'], encoding='utf8')
-    link_width, data_height = data_text.wrapOn(self.c, self.width - self.text_offset_links - self.text_offset_rechts, self.height)
-    data_text.drawOn(self.c, self.text_offset_links, einfuegehoehe - data_height)
     
     # ---------------------------------
     # Version section at the very bottom of the page

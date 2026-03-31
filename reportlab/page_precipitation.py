@@ -31,8 +31,7 @@ def insert_page_precipitation(self):
         for "+self.region+" from 1971 to 2098, based on CORDEX AFR22\
          regional climate model realizations under two emission scenarios: RCP2.6 (blue) and RCP8.5 (red). The solid lines represent \
          the median of the model ensemble for each scenario, while the shaded areas indicate the range between the minimum and maximum \
-         values across all models. The historical reference period (1991–2020) is highlighted, and ERA5 reanalysis data (gray line) \
-         provide observed area-mean precipitation and dry days for comparison. The projections reveal no clear trend.\
+         values across all models. The historical reference period (1991–2020) is highlighte.  The projections reveal no clear trend.\
           The shaded ranges illustrate the large uncertainty among models, with wider bands indicating greater \
          variability in projections."
         "</span></para>"
@@ -55,21 +54,19 @@ def insert_page_precipitation(self):
         "<para><span name=Helvetica size=9>"
         "<b>Figure 6:</b> Projected evolution of mean annual precipitation [mm/day] for " + self.region + " from 1971 to 2098 based on CORDEX AFR22 \
         regional climate model realizations under RCP2.6 (blue) and RCP8.5 (red) scenarios. Solid lines represent the ensemble median, \
-        while shaded areas indicate the range between minimum and maximum values across all models, illustrating uncertainty. \
-        The gray line shows ERA5 reanalysis data. "
+        while shaded areas indicate the range between minimum and maximum values across all models, illustrating uncertainty. "
         "</span></para>"
     )
     caption = Paragraph(caption_text, styles['Justify'])
     _, cap_height = caption.wrapOn(self.c, available_width, self.height)
 
-    # Zweite Grafik: ts_DD_era5 (Tage > 40°C) darunter platzieren und skalieren
+    # Zweite Grafik: ts_DD_anomaly (Tage > 40°C) darunter platzieren und skalieren
     caption_text2 = (
         "<para><span name=Helvetica size=9>"
         "<b>Figure 5:</b> Projected evolution of mean annual number of dry days (daily precipitation amount < 1 mm) for " + self.region + " \
         from 1971 to 2098 based on CORDEX AFR22 \
         regional climate model realizations under RCP2.6 (blue) and RCP8.5 (red) scenarios. Solid lines represent the ensemble median, \
-        while shaded areas indicate the range between minimum and maximum values across all models, illustrating uncertainty. \
-        The gray line shows ERA5 reanalysis data."
+        while shaded areas indicate the range between minimum and maximum values across all models, illustrating uncertainty."
         "</span></para>"
     )
     caption2 = Paragraph(caption_text2, styles['Justify'])
@@ -82,12 +79,12 @@ def insert_page_precipitation(self):
     image_height_each_max = max(1 * cm, available_height_total / 2.0)
 
     # Seitenverhältnisse prüfen und Höhe ggf. durch Breite begrenzen
-    img_reader1 = utils.ImageReader(self.ts_RRm_era5)
+    img_reader1 = utils.ImageReader(self.ts_RRm_anomaly)
     iw1, ih1 = img_reader1.getSize()
     aspect1 = ih1 / float(iw1)
     target_height1 = min(16.5 * cm, image_height_each_max, available_width * aspect1)
 
-    img_reader2 = utils.ImageReader(self.ts_DD_era5)
+    img_reader2 = utils.ImageReader(self.ts_DD_anomaly)
     iw2, ih2 = img_reader2.getSize()
     aspect2 = ih2 / float(iw2)
     target_height2 = min(16.5 * cm, image_height_each_max, available_width * aspect2)
@@ -96,7 +93,7 @@ def insert_page_precipitation(self):
     equal_height = min(target_height1, target_height2)
 
     # Erstes Bild zeichnen
-    map_image = get_image(self.ts_RRm_era5, height=equal_height)
+    map_image = get_image(self.ts_RRm_anomaly, height=equal_height)
     map_image.wrapOn(self.c, self.width, self.height)
     img1_y = start_y - map_image.drawHeight
     map_image.drawOn(self.c, self.text_offset_links, img1_y)
@@ -106,7 +103,7 @@ def insert_page_precipitation(self):
 
     # Zweites Bild zeichnen, unter Caption 1
     second_start_y = caption_y - cap_height - gap_size
-    map_image2 = get_image(self.ts_DD_era5, height=equal_height)
+    map_image2 = get_image(self.ts_DD_anomaly, height=equal_height)
     map_image2.wrapOn(self.c, self.width, self.height)
     img2_y = second_start_y - map_image2.drawHeight
     map_image2.drawOn(self.c, self.text_offset_links, img2_y)

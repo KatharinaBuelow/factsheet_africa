@@ -37,10 +37,10 @@ from page_with_table import insert_page_with_table
 from page_temperature import insert_page_temperature
 from page_precipitation import insert_page_precipitation
 from page_comp_ev import insert_page_compound_event
+from page_scenario_robust import insert_page_explain, insert_page_robustinfo
 from page_reading_instructions import insert_leseanleitung_abbildungen, insert_leseanleitung_abbildungen_teil2
-from page_scenario_robust import insert_hintergrundinformation_rcps
 from page_indice_list import insert_glossar_page
-#from page_models_data import insert_page_with_models_data
+from page_models_data import insert_page_with_models_data
 from last_page_background_information import insert_impressum
 
 #####################################################################
@@ -76,12 +76,13 @@ class FactSheet(object):
 
     def __init__(self, pdf_file, version, region, sector, gerics_logo, wascal_logo, bmbf_logo, hereon_logo,basic_color, sprache, cs_orange, cs_schwarz,
                  title_image, box_era5, table_cc, anzahl_simulationen,
-                 ts_TG_era5=None, ts_su40_era5=None, ts_RRm_era5=None, 
-                 ts_DD_era5=None, ts_R20mm_era5=None, hori_SU40_abs=None, copev_su40_DD=None, copev_su40_tr26=None):
+                 ts_TG_anomaly=None, ts_su40_anomaly=None, ts_RRm_anomaly=None, 
+                 ts_DD_anomaly=None, ts_R20mm_anomaly=None, hori_SU40_abs=None, copev_su40_DD=None, copev_su40_tr26=None):
         self.c = canvas.Canvas(pdf_file, pagesize=A4)
         self.c.setFont('Helvetica', 12)
         self.styles = getSampleStyleSheet()
         self.width, self.height = A4
+        self.story = []
         self.styles.add(ParagraphStyle(name='Justify', alignment=TA_JUSTIFY, leftIndent=0,))
         self.styles.add(ParagraphStyle(name='Heading', alignment=TA_JUSTIFY, font_size=12))
         self.styles.add(ParagraphStyle(name='SmallTableContent', alignment=TA_LEFT, font_size=8))
@@ -113,14 +114,15 @@ class FactSheet(object):
         self.box_era5 = box_era5
         self.table_cc = table_cc
         self.anzahl_simulationen = anzahl_simulationen
-        self.ts_TG_era5 = ts_TG_era5
-        self.ts_su40_era5 = ts_su40_era5
-        self.ts_RRm_era5 = ts_RRm_era5
-        self.ts_DD_era5 = ts_DD_era5
-        self.ts_R20mm_era5 = ts_R20mm_era5
+        self.ts_TG_anomaly = ts_TG_anomaly
+        self.ts_su40_anomaly = ts_su40_anomaly
+        self.ts_RRm_anomaly = ts_RRm_anomaly
+        self.ts_DD_anomaly = ts_DD_anomaly
+        self.ts_R20mm_anomaly = ts_R20mm_anomaly
         self.hori_SU40_abs = hori_SU40_abs
         self.copev_su40_DD = copev_su40_DD
         self.copev_su40_tr26 = copev_su40_tr26
+        self.story = []
 
     #----------------------------------------------------------------------
     def savePDF(self):
@@ -313,21 +315,23 @@ class FactSheet(object):
         # Page 6 List of indices → watermark → footline
         from page_indice_list import return_glossar, insert_glossar_page
         glossar_dict = return_glossar(self.sprache)
-        variables = ['TG','TX','TN','SU35','SU40','TR','RRm','R5mm','R10mm']
+        variables=['TG','TN','TX','TR26','SU35','SU40','RRm','DD','RR1', 'R20mm', 'FG','FGmax','SU40_du3_DD_du5','SU40_du3_TR26_du3','HSx3','HSf3','DSf','DSx5']
+        #variables = ['TG','TX','TN','SU35','SU40','TR','RRm','R5mm','R10mm']
         insert_glossar_page(self, glossar_dict, variables)
         #self.draw_watermark("DRAFT")
         foot_2 = self.add_footline('gerade_even') 
 # -------Seitenumbruch auf  Seite 7
         self.c.showPage()
         # Page 7 list of Simulations and data → watermark → footline
-        #models_data = insert_page_with_models_data(self)
+        insert_page_with_models_data(self)
         #self.draw_watermark("DRAFT")
         foot_2 = self.add_footline('ungerade_odd') 
 # -------Seitenumbruch auf  Seite 8
         self.c.showPage()
         # hierfehlt das Bild für die rcps
         # Page 8 scenario / robustness → watermark → footline
-        #scenario_robustness_page = insert_hintergrundinformation_rcps(self)
+        insert_page_explain(self)
+        insert_page_robustinfo(self)
         #self.draw_watermark("DRAFT")
         foot_2 = self.add_footline('gerade_even') 
 # -------Seitenumbruch auf  Seite 9

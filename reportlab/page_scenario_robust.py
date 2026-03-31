@@ -8,17 +8,12 @@ from reportlab.lib import utils
 
 def insert_page_explain(self):
     """
-    Create a page with explaining line plot and boxplot graphics
-    for the projected evolution of mean annual temperature and mean 
-    number of heat days for the specified region, based on CORDEX AFR22 regional 
-    climate model realizations under RCP2.6 and RCP8.5 scenarios, 
-    including ERA5 reanalysis data for comparison. The page includes a title, a 
-    summary text, two graphics with captions, and is formatted for clarity and readability.
+    Create a page with explaining scenarios rcp2.6, rcp8.5 and explaining robustness.
     """
     ##################################################################################
 
-###########################################################################
-def insert_hintergrundinformation_rcps(self, y_pos='', language='english'):
+
+    def insert_hintergrundinformation_rcps(self, y_pos='', language='english'):
 
         #einfuegehoehe = y_pos - 0.5 * cm
         einfuegehoehe_top = self.height - 2 * cm
@@ -39,13 +34,28 @@ def insert_hintergrundinformation_rcps(self, y_pos='', language='english'):
         figure_caption1 = Paragraph('<span name=Helvetica color=black size = 16>*</span>', style=self.styles['Justify'])
         figure_caption1.wrapOn(self.c, self.width, self.height)
         figure_caption2.wrapOn(self.c, self.width, self.height)
-
-        text1 = Paragraph('<span name=Helvetica color=black size = 10>\
+        
+        if language == 'english':
+            text1 = Paragraph(
+                """<span name=Helvetica color=black size = 10>
+                With climate models, projections for the future climate can be calculated.
+                These provide answers to the question: “What if?” Different assumptions—for
+                example about population growth, technological progress, or economic performance—lead
+                to different pathways for emissions and greenhouse gas concentrations.
+                Such scenarios are not predictions; instead, they describe various plausible future developments.
+                Climate models are then used to simulate the impacts of these emissions and
+                the resulting changes in the composition of the atmosphere on the
+                Earth's climate system. </span>""",
+                style=self.styles['Justify']
+            )
+        else:
+            text1 = Paragraph('<span name=Helvetica color=black size = 10>\
                 Mit Klimamodellen können Projektionen für das zukünftige Klima berechnet werden. Diese liefern Antworten auf die Frage:\
                 „Was wäre, wenn?“ Verschiedene Annahmen, z. B. zur Bevölkerungsentwicklung, dem technologischen Fortschritt oder der Wirtschaftsleistung,\
                 führen zu verschiedenen Entwicklungspfaden von Emissionen und Konzentrationen an Treibhausgasen. Solche Szenarien sind keine Vorhersagen,\
                 sondern beschreiben verschiedene plausible Entwicklungen. Mit Klimamodellen werden dann die Auswirkungen der Emissionen\
-                und der damit verbundenen veränderten Zusammensetzung der Atmosphäre auf das Klimasystem der Erde simuliert. </span>', style=self.styles['Justify'])
+                und der damit verbundenen veränderten Zusammensetzung der Atmosphäre auf das Klimasystem der\
+                              Erde simuliert. </span>', style=self.styles['Justify'])
         #content1.append((rcp_image,'', text1))
         table1 = Table(content1, colWidths=(5.0 * cm, 1.*cm, (self.width - self.text_offset_links - self.text_offset_rechts- 5.*cm - 2.5*cm + 0.1*cm)),
                        rowHeights=rcp_image.drawHeight)
@@ -56,18 +66,11 @@ def insert_hintergrundinformation_rcps(self, y_pos='', language='english'):
 
         content2 = []
         if language == 'english':
-            text2 = Paragraph('<span name=Helvetica color=black size = 10>\
-                Climate models can be used to calculate projections for future climate. These provide answers to the question: "What if?"\
-                                      How will the climate develop under certain conditions, for example if humans emit additional greenhouse gases into the atmosphere?\
-                                      To this end, emission scenarios for the 21<sup>st</sup> century are developed based on various assumptions, e.g. on the development of population, human culture,\
-                                      technology and the economy. Representative Concentration Pathways" (RCPs) are widely used today. They are defined by the radiative forcing at the end of the\
-                                      21<sup>st</sup> century and represent different development paths of greenhouse gas concentrations and associated emissions.\
-                                      For example, the representative concentration path "RCP4.5" leads to a radiative forcing of about 4.5\u202FW/m<sup>2</sup> at the end of the 21st century.\
-                                      This physical threshold value can be reached by various socio-economic developments, which also take into account climate policy measures, for example.\
-                                      The concentration path of RCP2.6 includes very ambitious measures to reduce greenhouse gas emissions and even "negative emissions" by the end of the 21<sup>st</sup>\
-                                      century. It leads to a radiative forcing of about 3\u202FW/m<sup>2</sup> around 2040 and then decreases to a value of 2.6\u202FW/m<sup>2</sup> towards the end of the 21<sup>st</sup> century.\
-                                      RCP2.6 thus represents a path with lower emissions compared to other RCPs. RCP8.5, on the other hand, describes a continuous increase in greenhouse gas emissions,\
-                                      reaching a radiative forcing of 8.5\u202FW/m<sup>2</sup> by the end of the 21st century.</span>', style=self.styles['Justify'])
+            text2 = Paragraph('<span name=Helvetica color=black size = 10>\In the Fifth IPCC Assessment Report, the Representative Concentration Pathways (RCPs)\
+                were used as scenarios. Two of them were selected for this report: RCP8.5 and RCP2.6. The RCP8.5 scenario describes a continued rise in greenhouse\
+                gas emissions, stabilizing at a very high level by the end of the 21st century. The climate‑protection scenario, RCP2.6, involves very ambitious\
+                measures to reduce greenhouse gas emissions and even includes “negative emissions” by the end of the 21st century—meaning a net \
+                removal of CO<sub rise=2 size=8>2</sub> from the atmosphere.</span>', style=self.styles['Justify'])
         else:
             text2 = Paragraph('<span name=Helvetica color=black size = 10>Im Rahmen des fünften IPCC-Sachstandsberichts wurden die\
                     „Representative  Concentration Pathways“ (RCPs) als Szenarien verwendet. Drei davon wurden für diesen Bericht ausgewählt: RCP8.5, RCP4.5 und\
@@ -98,80 +101,78 @@ def insert_hintergrundinformation_rcps(self, y_pos='', language='english'):
 
         return back.drawHeight
 
-
-
-
-    
-
  ###########################################################################
-def insert_leseanleitung_pfeile(self, y_pos='', language='english'):
-        
-        einfuegehoehe = y_pos - 0.5 * cm
-        self.c.setFont('Helvetica-Bold', 14)
-        self.c.setFillColor(self.cs_orange)
-        index = 0
-        if language == 'english':
-            tit = 'Symbols of the expert judgement on the robustness of the projections'
-        else:
-            tit = 'Symbole der Experteneinschätzung zur Belastbarkeit der Projektionen'            
-        content = []
-        columnwidths = (1.*cm, (self.width - self.text_offset_links - self.text_offset_rechts - 2.*cm - 1. *cm)/2.,
-                        1.*cm, (self.width - self.text_offset_links - self.text_offset_rechts - 2.*cm - 1. *cm)/2.)
-        pfeil1 = Image(self.pfeil_dir + '/ryi_sy.png')
-        pfeil1.drawHeight = (1.5 * cm)
-        pfeil1.drawWidth = 2 / 5. * pfeil1.drawHeight
-        pfeil2 = Image(self.pfeil_dir + '/ryi_sn.png')
-        pfeil2.drawHeight = (1.5 * cm)
-        pfeil2.drawWidth = 2 / 5. * pfeil1.drawHeight
-        pfeil3 = Image(self.pfeil_dir + '/ryd_sy.png')
-        pfeil3.drawHeight = (1.5 * cm)
-        pfeil3.drawWidth = 2 / 5. * pfeil1.drawHeight
-        pfeil4 = Image(self.pfeil_dir + '/ryd_sn.png')
-        pfeil4.drawHeight = (1.5 * cm)
-        pfeil4.drawWidth = 2 / 5. * pfeil1.drawHeight
-        pfeil5 = Image(self.pfeil_dir + '/rn_sy.png')
-        pfeil5.drawHeight = (1.5 * cm)
-        pfeil5.drawWidth = 2 / 5. * pfeil1.drawHeight
-        pfeil6 = Image(self.pfeil_dir + '/rn_sn.png')
-        pfeil6.drawHeight = (1.5 * cm)
-        pfeil6.drawWidth = 2 / 5. * pfeil1.drawHeight
+def insert_page_robustinfo(self, y_pos=None, language='english'):
+    
+    if y_pos is None:
+        y_pos = self.height - 2 * cm  # or another sensible default
+    einfuegehoehe = y_pos - 0.5 * cm
 
-        heights = [2.*cm, 2.*cm, 2.*cm ]
-        if language == 'english':
-            content.append((pfeil1, Paragraph('<span name=Helvetica-bold color=black size = 10>Increase: </span><span name=Helvetica color=black size = 10>The majority of the simulations projects significant increases</span>', style=self.styles['Justify']),
-                        pfeil2, Paragraph('<span name=Helvetica-bold color=black size = 10>Tendency towards an increase: </span><span name=Helvetica color=black size = 10>The majority of the simulations projects non-significant increases</span>', style=self.styles['Justify'])))
-            content.append((pfeil3, Paragraph('<span name=Helvetica-bold color=black size = 10>Decrease : </span><span name=Helvetica color=black size = 10>The majority of the simulations projects significant decreases</span>', style=self.styles['Justify']),
-                        pfeil4, Paragraph('<span name=Helvetica-bold color=black size = 10>Tendency towards a decrease: </span><span name=Helvetica color=black size = 10>The majority of the simulations projects non-significant decreases</span>', style=self.styles['Justify'])))
-            content.append((pfeil5, Paragraph('<span name=Helvetica-bold color=black size = 10>Unclear: </span><span name=Helvetica color=black size = 10>The majority of the simulations projects significant changes, but do not agree on the direction of changes</span>', style=self.styles['Justify']),
-                        pfeil6, Paragraph('<span name=Helvetica-bold color=black size = 10>No changes: </span><span name=Helvetica color=black size = 10>The majority of the simulations projects non-significant changes, with no preferred direction of changes</span>', style=self.styles['Justify'])))
-        else:
-            content.append((pfeil1, Paragraph('<span name=Helvetica-bold color=black size = 10>Zunahme: </span><span name=Helvetica color=black size = 10>\
-                Mindestens 2/3 der Simulationen zeigen eine Zunahme und mindestens 50% der Simulationen sogar eine signifikante Zunahme.</span>', style=self.styles['Justify']),
-                        pfeil2, Paragraph('<span name=Helvetica-bold color=black size = 10>Tendenz zur Zunahme: </span><span name=Helvetica color=black size = 10>\
-                            Mindestens 2/3 der Simulationen zeigen eine Zunahme, aber weniger als 50% der Simulationen eine signifikante Zunahme.</span>', style=self.styles['Justify'])))
-            content.append((pfeil3, Paragraph('<span name=Helvetica-bold color=black size = 10>Abnahme: </span><span name=Helvetica color=black size = 10>\
-                Mindestens 2/3 der Simulationen zeigen eine Abnahme und mindestens 50% der Simulationen sogar eine signifikante Abnahme. </span>', style=self.styles['Justify']),
-                        pfeil4, Paragraph('<span name=Helvetica-bold color=black size = 10>Tendenz zur Abnahme: </span><span name=Helvetica color=black size = 10>\
-                            Mindestens 2/3 der Simulationen zeigen eine Abnahme, aber weniger als 50% der Simulationen eine signifikante Abnahme. </span>', style=self.styles['Justify'])))
-            content.append((pfeil5, Paragraph('<span name=Helvetica-bold color=black size = 10>Unklar: </span><span name=Helvetica color=black size = 10>\
-                Keine 2/3-Mehrheit bezüglich der Richtung der Änderungen, aber mindestens 50% der Simulationen zeigen signifikante Änderungen.</span>', style=self.styles['Justify']),
-                        pfeil6, Paragraph('<span name=Helvetica-bold color=black size = 10>Keine Änderungen: </span><span name=Helvetica color=black size = 10>\
-                            Keine 2/3-Mehrheit bezüglich der Richtung der Änderungen; weniger als 50% der Simulationen zeigen signifikante Änderungen.</span>', style=self.styles['Justify'])))
+    self.c.setFont('Helvetica-Bold', 14)
+    self.c.setFillColor(self.cs_orange)
+    index = 0
+    if language == 'english':
+        tit = 'Symbols of the expert judgement on the robustness of the projections'
+    else:
+        tit = 'Symbole der Experteneinschätzung zur Belastbarkeit der Projektionen'            
+    content = []
+        #columnwidths = (1.*cm, (self.width - self.text_offset_links - self.text_offset_rechts - 2.*cm - 1. *cm)/2.,
+        #                1.*cm, (self.width - self.text_offset_links - self.text_offset_rechts - 2.*cm - 1. *cm)/2.)
+        #pfeil1 = Image(self.pfeil_dir + '/ryi_sy.png')
+        #pfeil1.drawHeight = (1.5 * cm)
+        #pfeil1.drawWidth = 2 / 5. * pfeil1.drawHeight
+        #pfeil2 = Image(self.pfeil_dir + '/ryi_sn.png')
+        #pfeil2.drawHeight = (1.5 * cm)
+        #pfeil2.drawWidth = 2 / 5. * pfeil1.drawHeight
+        #pfeil3 = Image(self.pfeil_dir + '/ryd_sy.png')
+        #pfeil3.drawHeight = (1.5 * cm)
+        #pfeil3.drawWidth = 2 / 5. * pfeil1.drawHeight
+        #pfeil4 = Image(self.pfeil_dir + '/ryd_sn.png')
+        #pfeil4.drawHeight = (1.5 * cm)
+        #pfeil4.drawWidth = 2 / 5. * pfeil1.drawHeight
+        #pfeil5 = Image(self.pfeil_dir + '/rn_sy.png')
+        #pfeil5.drawHeight = (1.5 * cm)
+        #pfeil5.drawWidth = 2 / 5. * pfeil1.drawHeight
+        #pfeil6 = Image(self.pfeil_dir + '/rn_sn.png')
+        #pfeil6.drawHeight = (1.5 * cm)
+        #pfeil6.drawWidth = 2 / 5. * pfeil1.drawHeight
+
+        #heights = [2.*cm, 2.*cm, 2.*cm ]
+        #if language == 'english':
+        #    content.append((pfeil1, Paragraph('<span name=Helvetica-bold color=black size = 10>Increase: </span><span name=Helvetica color=black size = 10>The majority of the simulations projects significant increases</span>', style=self.styles['Justify']),
+        #                pfeil2, Paragraph('<span name=Helvetica-bold color=black size = 10>Tendency towards an increase: </span><span name=Helvetica color=black size = 10>The majority of the simulations projects non-significant increases</span>', style=self.styles['Justify'])))
+        #    content.append((pfeil3, Paragraph('<span name=Helvetica-bold color=black size = 10>Decrease : </span><span name=Helvetica color=black size = 10>The majority of the simulations projects significant decreases</span>', style=self.styles['Justify']),
+        #                pfeil4, Paragraph('<span name=Helvetica-bold color=black size = 10>Tendency towards a decrease: </span><span name=Helvetica color=black size = 10>The majority of the simulations projects non-significant decreases</span>', style=self.styles['Justify'])))
+        #    content.append((pfeil5, Paragraph('<span name=Helvetica-bold color=black size = 10>Unclear: </span><span name=Helvetica color=black size = 10>The majority of the simulations projects significant changes, but do not agree on the direction of changes</span>', style=self.styles['Justify']),
+        #                pfeil6, Paragraph('<span name=Helvetica-bold color=black size = 10>No changes: </span><span name=Helvetica color=black size = 10>The majority of the simulations projects non-significant changes, with no preferred direction of changes</span>', style=self.styles['Justify'])))
+        #else:
+        #    content.append((pfeil1, Paragraph('<span name=Helvetica-bold color=black size = 10>Zunahme: </span><span name=Helvetica color=black size = 10>\
+        #        Mindestens 2/3 der Simulationen zeigen eine Zunahme und mindestens 50% der Simulationen sogar eine signifikante Zunahme.</span>', style=self.styles['Justify']),
+        #                pfeil2, Paragraph('<span name=Helvetica-bold color=black size = 10>Tendenz zur Zunahme: </span><span name=Helvetica color=black size = 10>\
+        #                    Mindestens 2/3 der Simulationen zeigen eine Zunahme, aber weniger als 50% der Simulationen eine signifikante Zunahme.</span>', style=self.styles['Justify'])))
+        #    content.append((pfeil3, Paragraph('<span name=Helvetica-bold color=black size = 10>Abnahme: </span><span name=Helvetica color=black size = 10>\
+        #        Mindestens 2/3 der Simulationen zeigen eine Abnahme und mindestens 50% der Simulationen sogar eine signifikante Abnahme. </span>', style=self.styles['Justify']),
+        #                pfeil4, Paragraph('<span name=Helvetica-bold color=black size = 10>Tendenz zur Abnahme: </span><span name=Helvetica color=black size = 10>\
+        #                    Mindestens 2/3 der Simulationen zeigen eine Abnahme, aber weniger als 50% der Simulationen eine signifikante Abnahme. </span>', style=self.styles['Justify'])))
+        #    content.append((pfeil5, Paragraph('<span name=Helvetica-bold color=black size = 10>Unklar: </span><span name=Helvetica color=black size = 10>\
+        #        Keine 2/3-Mehrheit bezüglich der Richtung der Änderungen, aber mindestens 50% der Simulationen zeigen signifikante Änderungen.</span>', style=self.styles['Justify']),
+        #                pfeil6, Paragraph('<span name=Helvetica-bold color=black size = 10>Keine Änderungen: </span><span name=Helvetica color=black size = 10>\
+        #                    Keine 2/3-Mehrheit bezüglich der Richtung der Änderungen; weniger als 50% der Simulationen zeigen signifikante Änderungen.</span>', style=self.styles['Justify'])))
             
-        table = Table(content, colWidths=columnwidths, rowHeights=heights)
-        table.setStyle([#("VALIGN", (0, 0), (1, 0), "TOP"),
-                        ("VALIGN", (0, 0), (-1, -1), "CENTER"),
-                        ("ALIGN", (0, 0), (0, -1), "LEFT"),
-                        ("ALIGN", (1, 0), (1, -1), "LEFT"),
-                        ("ALIGN", (2, 0), (2, -1), "RIGHT"),
-                        ("ALIGN", (3, 0), (3, -1), "LEFT"),
+        #table = Table(content, colWidths=columnwidths, rowHeights=heights)
+        #table.setStyle([#("VALIGN", (0, 0), (1, 0), "TOP"),
+        #                ("VALIGN", (0, 0), (-1, -1), "CENTER"),
+        #                ("ALIGN", (0, 0), (0, -1), "LEFT"),
+        #                ("ALIGN", (1, 0), (1, -1), "LEFT"),
+        #                ("ALIGN", (2, 0), (2, -1), "RIGHT"),
+        #                ("ALIGN", (3, 0), (3, -1), "LEFT"),
                         #("GRID", (0,0), (-1,-1), 0.25, colors.gray),
-                        ('BACKGROUND', (0, 0), (-1, -1), (colors.Color(255 / 255., 255 / 255., 255 / 255., 1)))])
-        table.wrapOn(self.c, self.width, self.height)
+        #                ('BACKGROUND', (0, 0), (-1, -1), (colors.Color(255 / 255., 255 / 255., 255 / 255., 1)))])
+        #table.wrapOn(self.c, self.width, self.height)
         
-        content2 = []
-        if language == 'english':
-            text2 = Paragraph('<span name=Helvetica color=black size = 10>\
+    content2 = []
+    if language == 'english':
+        text2 = Paragraph('<span name=Helvetica color=black size = 10>\
                 Climatic differences from one time period to the next are due to two causes:\
                 1. the natural variability from year to year. Due to the chaotic fluctuations of the weather, climate properties are never identical in different time periods,\
                 even in absence of any climatic change. The result therefore always has a random component. \
@@ -181,8 +182,8 @@ def insert_leseanleitung_pfeile(self, y_pos='', language='english'):
                 Filled arrows indicate that more than half of the simulations show a significant change in the direction of the arrow (increase or decrease).<br />\
                 All indices which are given in units of <it>days/year</it>, <it>days</it>, or <it>nights/year</it> are\
                 rounded to full days, the other values are rounded to the first decimal place.</span>', style=self.styles['Justify'])
-        else:
-            text2 = Paragraph('<span name=Helvetica color=black size = 10>\
+    else:
+        text2 = Paragraph('<span name=Helvetica color=black size = 10>\
                 Klimatische Unterschiede von einer Zeitperiode zur nächsten sind durch zwei Ursachen geprägt: <br /> \
                 1. Natürliche Schwankungen von Jahr zu Jahr. Da das Wetter ständigen chaotischen Schwankungen unterliegt, sind auch Klimagrößen über verschiedene Zeiträume nie identisch,\
                 auch ohne Klimawandel. <br /> \
@@ -192,20 +193,20 @@ def insert_leseanleitung_pfeile(self, y_pos='', language='english'):
                 mit einer Wahrscheinlichkeit von unter 5% mit zufälligen Schwankungen erklärbar ist. Farblich ausgefüllte Pfeile bedeuten, dass mehr als 50% der Simulationen eine signifikante Änderung\
                 in die angegebene Richtung zeigen (Zunahme oder Abnahme).<br /> Alle Kennwerte sowie ihre projizierten Änderungen sind auf die erste bzw. zweite Dezimalstelle gerundet.</span>', style=self.styles['Justify'])
         #content2.append(('', text2))
-        breite, hoehe = text2.wrapOn(self.c, self.width - self.text_offset_links - self.text_offset_rechts - 1.0 *cm, self.height)
+    breite, hoehe = text2.wrapOn(self.c, self.width - self.text_offset_links - self.text_offset_rechts - 1.0 *cm, self.height)
         
 
-        text2.wrapOn(self.c, self.width - self.text_offset_links - self.text_offset_rechts - 1.*cm, self.height)
-        back = Image(self.background)
-        back.drawHeight = numpy.sum(heights) + 1. * cm + hoehe + 1. * cm
-        back.drawWidth = self.width - self.text_offset_links - self.text_offset_rechts
-        back.wrapOn(self.c, self.width, self.height)
-        back.drawOn(self.c, self.text_offset_links, y_pos - back.drawHeight)
-        self.c.drawString(self.text_offset_links + 0.5 *cm, einfuegehoehe - 0.25 * cm, tit)
-        table.drawOn(self.c, self.text_offset_links + 0.5*cm, einfuegehoehe -0.75 * cm - numpy.sum(heights))
-        text2.drawOn(self.c, self.text_offset_links + 0.5*cm, einfuegehoehe + 0.25 * cm- numpy.sum(heights)- hoehe - self.abstand_zu_subtitle - self.kleiner_abstand)
+    text2.wrapOn(self.c, self.width - self.text_offset_links - self.text_offset_rechts - 1.*cm, self.height)
+    #back = Image(self.background)
+    #back.drawHeight = numpy.sum(heights) + 1. * cm + hoehe + 1. * cm
+    #back.drawWidth = self.width - self.text_offset_links - self.text_offset_rechts
+    #back.wrapOn(self.c, self.width, self.height)
+    #back.drawOn(self.c, self.text_offset_links, y_pos - back.drawHeight)
+    self.c.drawString(self.text_offset_links + 0.5 *cm, einfuegehoehe - 0.25 * cm, tit)
+    #table.drawOn(self.c, self.text_offset_links + 0.5*cm, einfuegehoehe -0.75 * cm - numpy.sum(heights))
+    text2.drawOn(self.c, self.text_offset_links + 0.5*cm, einfuegehoehe + 0.25 * cm- hoehe - self.abstand_zu_subtitle - self.kleiner_abstand)
         #table2.drawOn(self.c, self.text_offset_links + 0.5*cm, einfuegehoehe -0.25 * cm - numpy.sum(heights)- hoehe - self.abstand_zu_subtitle - self.kleiner_abstand)
         
-        return back.drawHeight
+    return #back.drawHeight
 
 

@@ -17,7 +17,8 @@ def insert_page_temperature(self):
     # Titel: Temperature
     title_text = "Temperature" if self.sprache == 'english' else "Temperatur"
     title_para = Paragraph(f"<para><span name=Helvetica-Bold size=12>{title_text}</span></para>", self.styles.get('Heading', getSampleStyleSheet()['Heading1']))
-    title_w, title_h = title_para.wrapOn(self.c, self.width - self.text_offset_links - self.text_offset_rechts, self.height)
+    title_w, title_h = title_para.wrapOn(
+        self.c, self.width - self.text_offset_links - self.text_offset_rechts, self.height)
     title_para.drawOn(self.c, self.text_offset_links, einfuegehoehe_top - title_h)
     # Reduce spacing between title and summary
     einfuegehoehe_top = einfuegehoehe_top - title_h - self.kleiner_abstand
@@ -31,8 +32,7 @@ def insert_page_temperature(self):
         for "+self.region+" from 1971 to 2098, based on CORDEX AFR22\
          regional climate model realizations under two emission scenarios: RCP2.6 (blue) and RCP8.5 (red). The solid lines represent \
          the median of the model ensemble for each scenario, while the shaded areas indicate the range between the minimum and maximum \
-         values across all models. The historical reference period (1991–2020) is highlighted, and ERA5 reanalysis data (gray line) \
-         provide observed area-mean temperatures and heat days for comparison. The projections reveal a clear warming trend, with RCP8.5 showing a \
+         values across all models. The historical reference period (1991–2020) is highlighted. The projections reveal a clear warming trend, with RCP8.5 showing a \
          strong increase toward the end of the century, while RCP2.6 stabilizes at a lower \
          level after mid-century. The shaded ranges illustrate the uncertainty among models, with wider bands indicating greater \
          variability in projections."
@@ -56,21 +56,19 @@ def insert_page_temperature(self):
         "<para><span name=Helvetica size=9>"
         "<b>Figure 2:</b> Projected evolution of mean annual temperature for " + self.region + " from 1971 to 2098 based on CORDEX AFR22 \
         regional climate model realizations under RCP2.6 (blue) and RCP8.5 (red) scenarios. Solid lines represent the ensemble median, \
-        while shaded areas indicate the range between minimum and maximum values across all models, illustrating uncertainty. \
-        The gray line shows ERA5 reanalysis data. "
+        while shaded areas indicate the range between minimum and maximum values across all models, illustrating uncertainty. "
         "</span></para>"
     )
     caption = Paragraph(caption_text, styles['Justify'])
     _, cap_height = caption.wrapOn(self.c, available_width, self.height)
 
-    # Zweite Grafik: ts_SU40_era5 (Tage > 40°C) darunter platzieren und skalieren
+    # Zweite Grafik: ts_SU40_anomaly (Tage tmax> 40°C) darunter platzieren und skalieren
     caption_text2 = (
         "<para><span name=Helvetica size=9>"
         "<b>Figure 3:</b> Projected evolution of mean annual number of heatdays (maximum temperature >40 °C) for " + self.region + " \
         from 1971 to 2098 based on CORDEX AFR22 \
         regional climate model realizations under RCP2.6 (blue) and RCP8.5 (red) scenarios. Solid lines represent the ensemble median, \
-        while shaded areas indicate the range between minimum and maximum values across all models, illustrating uncertainty. \
-        The gray line shows ERA5 reanalysis data."
+        while shaded areas indicate the range between minimum and maximum values across all models, illustrating uncertainty."
         "</span></para>"
     )
     caption2 = Paragraph(caption_text2, styles['Justify'])
@@ -83,12 +81,12 @@ def insert_page_temperature(self):
     image_height_each_max = max(1 * cm, available_height_total / 2.0)
 
     # Seitenverhältnisse prüfen und Höhe ggf. durch Breite begrenzen
-    img_reader1 = utils.ImageReader(self.ts_TG_era5)
+    img_reader1 = utils.ImageReader(self.ts_TG_anomaly)
     iw1, ih1 = img_reader1.getSize()
     aspect1 = ih1 / float(iw1)
     target_height1 = min(16.5 * cm, image_height_each_max, available_width * aspect1)
 
-    img_reader2 = utils.ImageReader(self.ts_su40_era5)
+    img_reader2 = utils.ImageReader(self.ts_su40_anomaly)
     iw2, ih2 = img_reader2.getSize()
     aspect2 = ih2 / float(iw2)
     target_height2 = min(16.5 * cm, image_height_each_max, available_width * aspect2)
@@ -97,7 +95,7 @@ def insert_page_temperature(self):
     equal_height = min(target_height1, target_height2)
 
     # Erstes Bild zeichnen
-    map_image = get_image(self.ts_TG_era5, height=equal_height)
+    map_image = get_image(self.ts_TG_anomaly, height=equal_height)
     map_image.wrapOn(self.c, self.width, self.height)
     img1_y = start_y - map_image.drawHeight
     map_image.drawOn(self.c, self.text_offset_links, img1_y)
@@ -107,7 +105,7 @@ def insert_page_temperature(self):
 
     # Zweites Bild zeichnen, unter Caption 1
     second_start_y = caption_y - cap_height - gap_size
-    map_image2 = get_image(self.ts_su40_era5, height=equal_height)
+    map_image2 = get_image(self.ts_su40_anomaly, height=equal_height)
     map_image2.wrapOn(self.c, self.width, self.height)
     img2_y = second_start_y - map_image2.drawHeight
     map_image2.drawOn(self.c, self.text_offset_links, img2_y)
