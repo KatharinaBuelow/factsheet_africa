@@ -3,6 +3,9 @@
 import os
 import pandas as pd
 
+import xarray as xr
+import regionmask
+
 import numpy as np
 import glob
 import geopandas as gpd
@@ -13,18 +16,24 @@ from typing import Optional
 import matplotlib as mpl
 
 
-def mask_and_save(fp_list, var, mask, out_dir):
+def mask_and_save_one(fp_list, var, mask, out_dir, country_short):
     out_list = []
     for fp in fp_list:
+        base = os.path.basename(fp)
+        out_fp = os.path.join(out_dir, base.replace('.nc', f'_{var}_{country_short}_masked.nc'))
         ds = xr.open_dataset(fp, decode_timedelta=False)
+        if var not in ds:
+            ds.close()
+            raise KeyError(f"{var} not found in {fp}")
+
+        print(f"Masking {var} in {fp} and saving to {out_fp}")
         da = ds[var]
         mask_da = xr.DataArray(
             mask, dims=('rlat', 'rlon'),
             coords={'rlat': ds['rlat'], 'rlon': ds['rlon']}
         )
         da_masked = da.where(mask_da, other=np.nan)
-        base = os.path.basename(fp)
-        out_fp = os.path.join(out_dir, base.replace('.nc', '_BF_masked.nc'))
+
         da_masked.to_dataset(name=var).to_netcdf(
             out_fp,
             encoding={var: {'zlib': True, 'complevel': 4}}
@@ -33,8 +42,133 @@ def mask_and_save(fp_list, var, mask, out_dir):
         out_list.append(out_fp)
     return out_list
 
+def mask_and_save(fp_list, var1, var2, mask, out_dir, country_short):
+    os.makedirs(out_dir, exist_ok=True)
+    out_list = []
+    for fp in fp_list:
+        base = os.path.basename(fp)
+        out_fp = os.path.join(out_dir, base.replace('.nc', f'_{var1}_{var2}_{country_short}_masked.nc'))
+        ds = xr.open_dataset(fp, decode_timedelta=False)
+        missing_vars = [var for var in (var1, var2) if var not in ds]
+        if missing_vars:
+            ds.close()
+            raise KeyError(f"{', '.join(missing_vars)} not found in {fp}")
 
-def maskout_country(sims_rcp26,sims_rcp85, shpfile, dm, var, datadir):
+        mask_da = xr.DataArray(
+            mask, dims=('rlat', 'rlon'),
+            coords={'rlat': ds['rlat'], 'rlon': ds['rlon']}
+        )
+        print(f"Masking {var1} and {var2} in {fp} and saving to {out_fp}")
+        ds_masked = ds[[var1, var2]].copy()
+        for var in (var1, var2):
+            ds_masked[var] = ds[var].where(mask_da, other=np.nan)
+
+        ds_masked.to_netcdf(
+            out_fp,
+            encoding={
+                var1: {'zlib': True, 'complevel': 4},
+                var2: {'zlib': True, 'complevel': 4},
+            }
+        )
+        ds.close()
+        out_list.append(out_fp)
+    return out_list
+
+
+def mask_and_save_era5(fp_list, shpfile, var1, out_dir, country_short):
+    os.makedirs(out_dir, exist_ok=True)
+    out_files = []
+
+    for fp in fp_list:
+        ds = xr.open_dataset(fp, decode_times=False)
+
+        if var1 not in ds:
+            ds.close()
+            raise KeyError(f"{var1} not found in {fp}")
+
+        da = ds[var1].squeeze(drop=True)
+
+        if "latitude" not in da.dims or "longitude" not in da.dims:
+            ds.close()
+            raise ValueError(f"{fp} must contain 'latitude' and 'longitude' dimensions")
+
+        # build country mask on the SAME grid as the data variable
+        mask = regionmask.mask_geopandas(
+            shpfile,
+            da["longitude"],
+            da["latitude"],
+        )
+
+        # keep only inside-country cells
+        country_mask = mask.notnull()
+
+        # if shapes differ, align explicitly to the data grid
+        if country_mask.shape != da.shape:
+            country_mask = country_mask.interp(
+                latitude=da["latitude"],
+                longitude=da["longitude"],
+                method="nearest",
+            ).astype(bool)
+
+        da_masked = da.where(country_mask)
+
+        out_file = os.path.join(
+            out_dir,
+            os.path.basename(fp).replace(".nc", f"_{country_short}_masked_country.nc")
+        )
+
+        da_masked.to_dataset(name=var1).to_netcdf(out_file)
+        out_files.append(out_file)
+        ds.close()
+
+    return out_files
+
+
+def maskout_country(sims_rcp26, sims_rcp85, shpfile, dm, var1, var2, datadir, country_short):
+    '''mask out values outside the country shapefile
+    fp_list: list of file paths to be masked
+    shpfile: geopandas dataframe of the country shapefile
+    dm: cordex domain object (AFR-22)
+    var1, var2: variable names to be masked
+    datadir: base data directory to save masked files
+    '''
+    # Compute a boolean mask for the AFR-22 grid that is True inside the shapefile and False outside
+    # Uses dm (AFR-22 domain) and shpfile (GeoDataFrame of Burkina Faso)
+    bf = shpfile.copy()
+    if bf.crs is None:
+        bf = bf.set_crs(epsg=4326)
+    else:
+        bf = bf.to_crs(epsg=4326)
+
+    union_geom = bf.geometry.unary_union
+
+    lon = np.asarray(dm['lon'].values)
+    lat = np.asarray(dm['lat'].values)
+
+    if lon.shape != lat.shape:
+        lon, lat = np.broadcast_arrays(lon, lat)
+
+    points = gpd.GeoSeries(
+        gpd.points_from_xy(lon.ravel(), lat.ravel()),
+        crs='EPSG:4326'
+    )
+    mask_flat = points.within(union_geom).to_numpy()
+    mask = mask_flat.reshape(lon.shape)
+
+    # Apply mask and save masked files for both variables
+    out_dir = os.path.join(datadir, 'MASKED')
+    os.makedirs(out_dir, exist_ok=True)
+
+    sims_rcp26_masked = mask_and_save(sims_rcp26, var1, var2, mask, out_dir, country_short)
+    sims_rcp85_masked = mask_and_save(sims_rcp85, var1, var2, mask, out_dir, country_short)
+
+    print('Masked files saved:')
+    print(f'{var1} and {var2} rcp26:', sims_rcp26_masked)
+    print(f'{var1} and {var2} rcp85:', sims_rcp85_masked)
+
+    return sims_rcp26_masked, sims_rcp85_masked
+
+def maskout_country_one(sims_rcp26, sims_rcp85, shpfile, dm, var, datadir, country_short):
     '''mask out values outside the country shapefile
     fp_list: list of file paths to be masked
     shpfile: geopandas dataframe of the country shapefile
@@ -48,27 +182,82 @@ def maskout_country(sims_rcp26,sims_rcp85, shpfile, dm, var, datadir):
     if bf.crs is None:
         bf = bf.set_crs(epsg=4326)
     else:
-        bf = bf.to_crs(4326)
-    union_geom = bf.unary_union
+        bf = bf.to_crs(epsg=4326)
 
-    lon = dm['lon'].values
-    lat = dm['lat'].values
-    points = gpd.points_from_xy(lon.ravel(), lat.ravel())
-    points_gs = gpd.GeoSeries(points, crs='EPSG:4326')
-    mask_flat = points_gs.within(union_geom).to_numpy()
-    mask = mask_flat.reshape(lat.shape)
+    union_geom = bf.geometry.unary_union
 
-    # Apply mask and save masked files
-    out_dir = os.path.join(datadir, 'ENSEMBLE', 'masked')
+    lon = np.asarray(dm['lon'].values)
+    lat = np.asarray(dm['lat'].values)
+
+    if lon.shape != lat.shape:
+        lon, lat = np.broadcast_arrays(lon, lat)
+
+    points = gpd.GeoSeries(
+        gpd.points_from_xy(lon.ravel(), lat.ravel()),
+        crs='EPSG:4326'
+    )
+    mask_flat = points.within(union_geom).to_numpy()
+    mask = mask_flat.reshape(lon.shape)
+
+    # Apply mask and save masked files for both variables
+    out_dir = os.path.join(datadir, 'MASKED_ABSOLUTE')
     os.makedirs(out_dir, exist_ok=True)
-    sims_rcp26_masked = mask_and_save(sims_rcp26, var, mask, out_dir)
-    sims_rcp85_masked = mask_and_save(sims_rcp85, var, mask, out_dir)
+
+    sims_rcp26_masked = mask_and_save_one(sims_rcp26, var, mask, out_dir,country_short)
+    sims_rcp85_masked = mask_and_save_one(sims_rcp85, var, mask, out_dir,country_short)
 
     print('Masked files saved:')
-    print('rcp26:', sims_rcp26_masked)
-    print('rcp85:', sims_rcp85_masked)
+    print(f'{var} rcp26:', sims_rcp26_masked)
+    print(f'{var} rcp85:', sims_rcp85_masked)
 
     return sims_rcp26_masked, sims_rcp85_masked
+
+def maskout_country_era5(simera5, shpfile, dm, var1, datadir):
+    '''mask out values outside the country shapefile
+    fp_list: list of file paths to be masked
+    shpfile: geopandas dataframe of the country shapefile
+    dm: cordex domain object (AFR-22)
+    var: variable name to be masked
+    datadir: base data directory to save masked files
+    '''
+    # Compute a boolean mask for the AFR-22 grid that is True inside the shapefile and False outside
+    # Uses dm (AFR-22 domain) and shpfile (GeoDataFrame of Burkina Faso)
+    bf = shpfile.copy()
+    if bf.crs is None:
+        bf = bf.set_crs(epsg=4326)
+    else:
+        bf = bf.to_crs(epsg=4326)
+
+    union_geom = bf.geometry.unary_union
+
+    lon = np.asarray(dm['lon'].values)
+    lat = np.asarray(dm['lat'].values)
+
+    if lon.shape != lat.shape:
+        lon, lat = np.broadcast_arrays(lon, lat)
+
+    points = gpd.GeoSeries(
+        gpd.points_from_xy(lon.ravel(), lat.ravel()),
+        crs='EPSG:4326'
+    )
+    mask_flat = points.within(union_geom).to_numpy()
+    mask = mask_flat.reshape(lon.shape)
+    
+    out_dir = os.path.join(datadir, 'masked')
+    os.makedirs(out_dir, exist_ok=True)
+
+    # pass shpfile here, not mask
+    simera5 = mask_and_save_era5(simera5, shpfile, var1, out_dir)
+    # Apply mask and save masked files for both variables
+    out_dir = os.path.join(datadir, 'masked')
+    os.makedirs(out_dir, exist_ok=True)
+
+    simera5 = mask_and_save_era5(simera5, shpfile, var1, out_dir)
+
+    print('Masked files saved:')
+    print(f'{var1} 1991-2020:', simera5)
+
+    return simera5
 
 
 def min_max_levels(sims_rcp26_masked, sims_rcp85_masked, var):

@@ -68,9 +68,11 @@ def cleanup(data, index, longname, longnameK):
         data['mean temperature [°C]'] = data['mean temperature [K]'] - 273.15
     else:
         data = data.rename(columns={'time': 'year', 'value': longname})
-
+    print('Data after cleanup: ')
+    print(data['realization'])
     # some new columns
     data['GCM'] = data['realization'].str.split('_').str[3]
+    print(data['GCM'] )
     data['RCM'] = data['realization'].str.split('_').str[2]
     data['scenario'] = data['realization'].str.split('_').str[4]
     data['realization'].unique()
@@ -193,10 +195,23 @@ def calculate_anomaly(df, baseline_start, baseline_end, value_col):
         df.groupby('realization')['anomaly']
           .transform(lambda x: x.rolling(window=10, min_periods=10).mean())
     )
+    #
     df['running_mean_30yr'] = (
         df.groupby('realization')['anomaly']
           .transform(lambda x: x.rolling(window=30, min_periods=30).mean())
     )
+    # PLOTTING, use year_running_mean_30yr
+    # (or year_running_mean_10yr) as the x-axis and running_mean_30yr 
+    # (or running_mean_10yr) as the y-axis
+    #
+    df['year_running_mean_10yr'] = (
+    df.groupby('realization')['year']
+      .transform(lambda x: x.rolling(window=10, min_periods=10).apply(lambda y: int(np.round(np.mean(y))), raw=False))
+)
+    df['year_running_mean_30yr'] = (
+    df.groupby('realization')['year']
+      .transform(lambda x: x.rolling(window=30, min_periods=30).apply(lambda y: int(np.round(np.mean(y))), raw=False))
+)
 
     return df
 
@@ -268,7 +283,7 @@ def line_plot(data,x,y,explore,index, outputpath):
                 linewidth=1
             )
     else:
-        raise ValueError("Invalid value for 'explore'. Must be 'GCM', 'RCM', or 'Scenario'.")
+        raise ValueError("Invalid value for 'explore'. Must be 'GCMcolor', 'RCMcolor', or 'Scenario'.")
     
     plt.title('WASCAL region area mean temperature')
     plt.legend(title='CORDEX AFR22 Realization', loc='upper left', ncol=1, fontsize=8)
@@ -526,7 +541,8 @@ def load_era5_csv(csv_path, country, index, longname, start_date=None, longnameK
 ################################
 
 def line_plot_anomaly(data,x,y,outputpath, group, country, index, longname,era5=None,ylim=None):
-    """make line plot of anomaly
+    """
+    make line plot of anomaly
 
     you can either have each realisation in it own color 
     or 
@@ -549,9 +565,9 @@ def line_plot_anomaly(data,x,y,outputpath, group, country, index, longname,era5=
     
     if group =='scenario':
         # Create the plot
-        for (scenario, gcm, rcm), group in data.groupby(['scenario', 'GCM', 'RCM']):
+        for (scenario, gcm, rcm), group_df in data.groupby(['scenario', 'GCM', 'RCM']):
             plt.plot(
-            group[x], group[y],
+            group_df[x], group_df[y],
             label=f'{scenario} | {gcm} | {rcm}',
             color=color_map[scenario],
             linestyle=linestyle_map[gcm],
@@ -572,10 +588,10 @@ def line_plot_anomaly(data,x,y,outputpath, group, country, index, longname,era5=
             plt.plot(median.index, min_values[scenario], linestyle='--', linewidth=0.6, color=color_map[scenario], alpha=0.7)
             plt.plot(median.index, max_values[scenario], linestyle='--', linewidth=0.6, color=color_map[scenario], alpha=0.7)
     else:
-        for realization, group in data.groupby('realization'):
+        for realization, group_df in data.groupby('realization'):
             plt.plot(
-            group[x],
-            group[y],
+            group_df[x],
+            group_df[y],
             label=realization
         )
     if era5 is not None:
@@ -592,7 +608,7 @@ def line_plot_anomaly(data,x,y,outputpath, group, country, index, longname,era5=
     
     # title, labels
     plt.title(f"Area mean for {country}: {y} of {longname}", fontsize=20)
-    plt.legend(title='CORDEX AFR22 Realization', loc='upper left', ncol=1, fontsize=8)
+    plt.legend(title='CORDEX AFR22 Realization', loc='best', ncol=1, fontsize=8)
     plt.tight_layout()
     plt.xticks(rotation=0)
     plt.xlabel(x, fontsize=14)
@@ -627,10 +643,11 @@ def line_plot_anomaly(data,x,y,outputpath, group, country, index, longname,era5=
     y=y.replace(' ', '_')
     country=country.replace(' ', '_')
     # save plot
+
     if era5 is not None:
-        outfile = os.path.join(outputpath,'line_plot_'+group+'_'+x+'_'+index+'_'+y+'_'+country+'_ERA5.png')
+        outfile = os.path.join(outputpath,'line_plot_'+str(group)+'_'+str(x)+'_'+str(index)+'_'+str(y)+'_'+str(country)+'_ERA5.png')
     else:
-        outfile = os.path.join(outputpath,'line_plot_'+group+'_'+x+'_'+index+'_'+y+'_'+country+'.png')
+        outfile = os.path.join(outputpath,'line_plot_'+'test.png') #str(group)+'_'+str(x)+'_'+str(index)+'_'+str(y)+'_'+str(country)+'.png')
     plt.savefig(outfile, bbox_inches='tight' ,pad_inches=0.3, dpi=1200)
     print('file liegt: ', outfile)
     
@@ -804,18 +821,60 @@ def lineplot_and_boxplot(df,src,country, var, longname, outputpath, df_era5=None
     # Create a figure with two subplots (side by side)
     fig, axes = plt.subplots(1, 2, figsize=(12, 5.25), gridspec_kw={'width_ratios': [3, 1.3]})
     # --- Left: line_plot_anomaly (manual version) ---
+    #for scenario in hue_order:
+    #    for _, group in df[df['scenario'] == scenario].groupby('realization'):
+    #        axes[0].plot(group['year'], group['running_mean_30yr'], color=palette[scenario], alpha=0.3, linewidth=1)
+    #    median = df[df['scenario'] == scenario].groupby('year')['running_mean_30yr'].median()
+    #    # Plot median line
+    #    axes[0].plot(median.index, median.values, color=inner_palette[scenario], label=f"{scenario} median", linewidth=2)
+    #    # Fill between min and max for each year
+    #    grouped = df[df['scenario'] == scenario].groupby('year')['running_mean_30yr']
+    #    min_vals = grouped.min()
+    #    max_vals = grouped.max()
+    #    axes[0].fill_between(min_vals.index, min_vals.values, max_vals.values, color=palette[scenario], alpha=0.15, label=f"{scenario} min-max")
+    
+    # Ensure rcp85 is first, rcp26 is last (so blue is on top)
+    hue_order = [h for h in ['rcp85', 'rcp26'] if h in df['scenario'].unique()]
     for scenario in hue_order:
-        for _, group in df[df['scenario'] == scenario].groupby('realization'):
-            axes[0].plot(group['year'], group['anomaly'], color=palette[scenario], alpha=0.3, linewidth=1)
-        median = df[df['scenario'] == scenario].groupby('year')['anomaly'].median()
-        # Plot median line
-        axes[0].plot(median.index, median.values, color=inner_palette[scenario], label=f"{scenario} median", linewidth=2)
-        # Fill between min and max for each year
-        grouped = df[df['scenario'] == scenario].groupby('year')['anomaly']
+        scenario_df = df[df['scenario'] == scenario]
+    # Plot each realization's anomaly as a line
+    #for _, group in scenario_df.groupby('realization'):
+    #    axes[0].plot(group['year'], group['anomaly'], color=palette[scenario], alpha=0.3, linewidth=1)
+    # Min-max shading for annual anomaly
+        grouped = scenario_df.groupby('year')['anomaly']
         min_vals = grouped.min()
         max_vals = grouped.max()
-        axes[0].fill_between(min_vals.index, min_vals.values, max_vals.values, color=palette[scenario], alpha=0.15, label=f"{scenario} min-max")
+        axes[0].fill_between(min_vals.index, min_vals.values, max_vals.values, color=palette[scenario], alpha=0.35, label=f"{scenario} min-max (anomaly)")
 
+        # 30-year running mean: median and 15th–85th percentile
+        # Only plot running_mean_30yr for years >= 2021
+        #running = scenario_df.dropna(subset=['running_mean_30yr'])
+        #running = running[running['year_running_mean_30yr'] >= 2021]
+        #grouped_rm = running.groupby('year_running_mean_30yr')['running_mean_30yr']
+        #median_rm = grouped_rm.median()
+        #p15 = grouped_rm.quantile(0.15)
+        #p85 = grouped_rm.quantile(0.85)
+        #axes[0].plot(median_rm.index, median_rm.values, color=inner_palette[scenario], label=f"{scenario} median (30yr mean)", linewidth=2)
+        #axes[0].fill_between(p15.index, p15.values, p85.values, color=palette[scenario], alpha=0.8, label=f"{scenario} 15–85% (30yr mean)")
+        #running = scenario_df.dropna(subset=['running_mean_30yr'])
+        #grouped_rm = running.groupby('year_running_mean_30yr')['running_mean_30yr']
+        #median_rm = grouped_rm.median()
+        #p15 = grouped_rm.quantile(0.15)
+        #p85 = grouped_rm.quantile(0.85)
+        #axes[0].plot(median_rm.index, median_rm.values, color=inner_palette[scenario], label=f"{scenario} median (30yr mean)", linewidth=2)
+        #axes[0].fill_between(p15.index, p15.values, p85.values, color=palette[scenario], alpha=0.8, label=f"{scenario} 15–85% (30yr mean)")
+        # 30-year running mean: median and 15th–85th percentile
+        # Only plot running_mean_30yr for years >= 2021
+        running = scenario_df.dropna(subset=['running_mean_30yr'])
+        running = running[running['year_running_mean_30yr'] >= 2006]
+        grouped_rm = running.groupby('year_running_mean_30yr')['running_mean_30yr']
+        median_rm = grouped_rm.median()
+        p15 = grouped_rm.quantile(0.15)
+        p85 = grouped_rm.quantile(0.85)
+        axes[0].plot(median_rm.index, median_rm.values, color=palette[scenario], label=f"{scenario} median (30yr mean)", linewidth=2)
+        #axes[0].fill_between(p15.index, p15.values, p85.values, color=inner_palette[scenario], alpha=1.0, label=f"{scenario} 15–85% (30yr mean)")
+        axes[0].fill_between(p15.index, p15.values, p85.values, color=inner_palette[scenario], alpha=0.7,label=f"{scenario} 15–85% (30yr mean)")
+    
     # Add ERA5 anomaly as black line if available
     if df_era5 is not None and 'anomaly' in df_era5_plot.columns and not df_era5_plot.empty:
         axes[0].plot(df_era5_plot['year'], df_era5_plot['anomaly'], color='black', label='ERA5', linewidth=2)
@@ -835,7 +894,7 @@ def lineplot_and_boxplot(df,src,country, var, longname, outputpath, df_era5=None
     xticks_10yr = list(range(1970, 2101, 10))
     axes[0].set_xticks(xticks_10yr)
     axes[0].set_xticklabels([str(year) for year in xticks_10yr], fontsize=12)
-    axes[0].axhline(0, color=DARKGREY, linestyle='-', linewidth=2)
+    axes[0].axhline(0, color=DARKGREY, linestyle='-', linewidth=1.5)
     axes[0].axvline(1991, color='grey', linestyle=':', linewidth=1)
     axes[0].axvline(2020, color='grey', linestyle=':', linewidth=1)
     # Fill between the vertical lines for the reference period
@@ -847,7 +906,8 @@ def lineplot_and_boxplot(df,src,country, var, longname, outputpath, df_era5=None
         alpha=0.1
     )
     # Add a legend for the shaded area
-    axes[0].text(1992, ytext, 'Reference (1991-2020)', color='grey', fontsize=9)
+    if var != 'RRm':
+        axes[0].text(1992, ytext, 'Reference (1991-2020)', color='grey', fontsize=9)
 
     #axes[0].set_title(f"{country}: Anomaly of {longname} to 1991-2020", fontsize=12)
     axes[0].set_xlabel("Year",fontsize=12)
@@ -855,7 +915,7 @@ def lineplot_and_boxplot(df,src,country, var, longname, outputpath, df_era5=None
     axes[0].set_ylim(ymin, ymax)
     axes[0].grid(True, axis='y', alpha=0.5)
     if var == 'RRm':
-        axes[0].legend(loc='best', fontsize=10)
+        axes[0].legend(loc='lower left', fontsize=10)
     else:
         axes[0].legend(loc='upper left', fontsize=10)
     axes[0].tick_params(axis='both', labelsize=12)
@@ -874,6 +934,11 @@ def lineplot_and_boxplot(df,src,country, var, longname, outputpath, df_era5=None
         for j, h in enumerate(hue_order):
             x_positions.append(i * n_hues + j)
     #slice_pos = {s: i * n_hues for i, s in enumerate(slice_order)}
+
+    # Compute span for annotation lift (avoid NameError)
+    #ymin_box = np.nanmin(stats['ymin'].values)
+    #ymax_box = np.nanmax(stats['ymax'].values)
+    #span = ymax_box - ymin_box if ymax_box > ymin_box else 1.0
 
     for idx, row in stats.iterrows():
         s = row["slice"]
@@ -897,7 +962,7 @@ def lineplot_and_boxplot(df,src,country, var, longname, outputpath, df_era5=None
             edgecolor=inner_palette[h],
             alpha=0.7
         ))
-        lift_y=span/(40)
+        lift_y = span/(40)
         axes[1].hlines(row["median"], x_center - inner_width / 2, x_center + inner_width / 2, colors="lightgray", linewidth=2)
         x_anno = x_center + 0.12 + base_width/2
         axes[1].text(x_anno+0.1, row["ymin"]-lift_y, f"{row['ymin']:.0f}", va='bottom', ha='center', fontsize=10, color=inner_palette[h])
@@ -906,7 +971,8 @@ def lineplot_and_boxplot(df,src,country, var, longname, outputpath, df_era5=None
         #axes[1].text(x_anno+0.1, row["p85"], f"{row['p85']:.1f}", va='top', ha='center', fontsize=10, color=palette[h])
         axes[1].text(x_anno+0.1, row["median"], f"{row['median']:.0f}", va='center', ha='center', fontsize=10, color='black')
         axes[1].set_xlim(-base_width, total_columns - base_width)
-    axes[1].axhline(0, color=DARKGREY, linestyle='-', linewidth=2)
+
+    axes[1].axhline(0, color=DARKGREY, linestyle='-', linewidth=1.5)
     xticks = [slice_order.index(s) * n_hues + j for s in slice_order for j in range(n_hues)]
     # Custom xticklabels: only show scenario in first, time slice in second line, but only once per slice
 

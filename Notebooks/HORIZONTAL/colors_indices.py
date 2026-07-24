@@ -110,7 +110,7 @@ def colorsteps_absolute(var):
             '#80cdc1','#66c2a4','#35978f','#01665e','#003c30',
             '#f6e8c3',
             '#dfc27d','#bf812d',"#a35414","#854e0c",'#543005',]
-    elif var =='ev_coin_sdu_median':
+    elif var in ['ev_coin_sdu', 'ev_coin_sdu_median']:
         color_steps=['#d9d9d9','#5e4fa2','#3288bd','#66c2a5','#abdda4','#e6f598','#ffffbf','#fee08b','#fdae61','#f46d43','#d53e4f','#9e0142']
         color_steps=['#d9d9d9','#fff7f3','#fde0dd','#fcc5c0','#fa9fb5','#f768a1','#dd3497','#ae017e','#7a0177','#49006a']
     else:
@@ -138,8 +138,8 @@ def colorsteps_absolute(var):
     # set the colors, special case for population:
     elif var in ['number_of_people']:
         level_steps=[0,5,10,20,30,60,90,120,150,180,210,240,270]
-    elif var=='ev_coin_sdu_median':
-        level_steps = [0,30,60,90,120,150,180,210]
+    elif var in ['ev_coin_sdu', 'ev_coin_sdu_median']:
+        level_steps = [0,5,10,20,30,40,60,80,100]
         #heavy precip
         #level_steps = [0,1,2,3,4,5,6,7]
     else:
@@ -167,3 +167,32 @@ def colorsteps_exposure(var):
     else:
         print('no level_steps for '+ var+' are provided')
     return color_steps_exp, level_steps_exp
+
+def colorsteps_comp_ev(var, var_pattern):
+
+    """
+    colors and levels for robust compound eventsplots
+    """
+    # perhaps needed later
+    #if var in ['ev_coin_du_days_ensemble_median_diff', 'ev_coin_du_days_ensemble_mean_diff']:
+    if var in ['ev_coin_du_days']:
+        color_steps_diff=["#fdfde8",'#ffffcc','#ffeda0','#fed976',
+            '#feb24c','#fd8d3c','#fc4e2a',
+            '#e31a1c','#bd0026','#800026',"#4B0117"]
+        level_steps_diff=[5,10,20,30,40,50,60,80,100,120]
+        
+    elif var in ['ev_coin_du_days_ensemble_median_diff', 'ev_coin_du_days_ensemble_mean_diff']:
+        if var_pattern in ['SU40_du3_DD_du5', 'SU40_du3_TR26_du3', 'SU35_du3_DD_du5']:
+            color_steps_diff=["#fdfde8",'#ffffcc','#ffeda0','#fed976',
+                '#feb24c','#fd8d3c','#fc4e2a',
+                '#e31a1c','#bd0026','#800026',"#4B0117"]
+            level_steps_diff=[5,10,20,30,40,50,60,80,100,120]
+    
+        #color_steps_diff=['#d9d9d9',"#fdfde8",'#ffffcc','#ffeda0','#fed976',
+        #    '#feb24c','#fd8d3c','#fc4e2a',
+        #    '#e31a1c','#bd0026','#800026',"#4B0117"]
+        
+    else:
+        print('no color steps defined')
+        print('no level_steps for '+ var+' are provided')
+    return color_steps_diff, level_steps_diff
