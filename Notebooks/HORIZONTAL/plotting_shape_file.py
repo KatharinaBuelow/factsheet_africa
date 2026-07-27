@@ -212,7 +212,7 @@ def maskout_country_one(sims_rcp26, sims_rcp85, shpfile, dm, var, datadir, count
 
     return sims_rcp26_masked, sims_rcp85_masked
 
-def maskout_country_era5(simera5, shpfile, dm, var1, datadir):
+def maskout_country_era5(simera5, shpfile, dm, var1, datadir, country_short):
     '''mask out values outside the country shapefile
     fp_list: list of file paths to be masked
     shpfile: geopandas dataframe of the country shapefile
@@ -247,12 +247,12 @@ def maskout_country_era5(simera5, shpfile, dm, var1, datadir):
     os.makedirs(out_dir, exist_ok=True)
 
     # pass shpfile here, not mask
-    simera5 = mask_and_save_era5(simera5, shpfile, var1, out_dir)
+    #simera5 = mask_and_save_era5(simera5, shpfile, var1, out_dir, country_short)
     # Apply mask and save masked files for both variables
     out_dir = os.path.join(datadir, 'masked')
     os.makedirs(out_dir, exist_ok=True)
 
-    simera5 = mask_and_save_era5(simera5, shpfile, var1, out_dir)
+    simera5 = mask_and_save_era5(simera5, shpfile, var1, out_dir, country_short)
 
     print('Masked files saved:')
     print(f'{var1} 1991-2020:', simera5)

@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+from fileinput import filename
+from fileinput import filename
 import os
 import numpy as np
 import glob
@@ -611,10 +613,14 @@ def plot_absolut(
     # Layout (space for colorbar at bottom)(left,bottom,right, top)
     fig.tight_layout(rect=[0.03, 0.01, 0.97, 0.99])
 
+    # just het median/mean from the input file for the outputfilename
+    filename = os.path.basename(sims_rcp26[0]) if len(sims_rcp26) > 0 else None
+    what = filename.split('_')[1] if filename and len(filename.split('_')) > 1 else None
+   
     if country is not None:
-        name="{}/{}_absolut_{}_{}.png".format(plotdir, var_pattern, country, user_dpi)
+        name="{}/{}_{}_absolute_{}_{}.png".format(plotdir, var_pattern, what, country, user_dpi)
     else:
-        name="{}/{}_absolut_{}.png".format(plotdir, var_pattern, user_dpi)
+        name="{}/{}_{}_absolute_{}.png".format(plotdir, var_pattern, what, user_dpi)
 
     print('file is here:', name)
     fig.savefig("{}".format(name), dpi=user_dpi, bbox_inches="tight")# pad_inches=0.02)
@@ -670,9 +676,9 @@ def plot_era(
         height=4
 
     if westafrica is True:
-        height=4
+        height=2
     else:
-        height=7
+        height=3.5
 
     if columns == 1:
         width=3
@@ -749,7 +755,7 @@ def plot_era(
             unit='events per year'
         elif var == 'ev_coin_sdu':
             varname=''
-            unit='events per year'
+            unit='days/year'
         else:
             print('var-long_name not found')
                
@@ -775,10 +781,8 @@ def plot_era(
         if shapefile is not None:
             shapefile.plot(ax=axes[0, i], edgecolor='black', linewidth=0.5, facecolor='none')
         # This is not very clever, need to be adjusted according to file_name :-(
-        if var =='ev_coin_sdu_median':
-            axes[0, i].set_title(f'RCP26: {file.split("_")[9].split(".")[0]}', fontsize=12)
-        else:
-            axes[0, i].set_title(f'RCP26: {file.split("_")[6]}-{file.split("_")[7]}',fontsize=12)
+        if var =='ev_coin_sdu':
+            axes[0, i].set_title(f'ERA5: {file.split("_")[5]}',fontsize=12)
     
         if fancy:
             # Add north arrow and scalebar to all subplots
