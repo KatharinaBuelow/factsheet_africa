@@ -672,16 +672,15 @@ def plot_era(
         except Exception:
             pass
 
-    if rows == 1:
-        height=4
+    
 
     if westafrica is True:
-        height=2
+        height=4
     else:
         height=3.5
 
     if columns == 1:
-        width=3
+        width=5
     elif columns == 3:
         width=10
     
@@ -698,6 +697,8 @@ def plot_era(
         fig.subplots_adjust(hspace=row_gap, wspace=wspace)
     else:
          fig.subplots_adjust(hspace=row_gap)
+
+    title_drawn = False
     
     for row in axes:
         for ax in row:
@@ -759,14 +760,16 @@ def plot_era(
         else:
             print('var-long_name not found')
                
-        s = "{} {}".format(title,varname)
-    
-        fig.suptitle(s+": ", 
-                 fontsize=14, 
-                 #fontweight='bold', 
-                 x=0.5,
-                 position=(0.5, 0.95)
-                 )  
+        s = "{} {}".format(title, varname).strip()
+
+        if not title_drawn:
+            fig.suptitle(
+                f"{s}: ",
+                fontsize=14,
+                x=0.5,
+                y=0.98,
+            )
+            title_drawn = True
 
         
         im = data_variable.plot(ax=axes[0, i],
@@ -798,11 +801,11 @@ def plot_era(
                     add_scalebar(ax, geom=union_geom, location='lower right', segments=4)
 
     
-    cbar_ax = fig.add_axes([0.15, 0.02, 0.7, 0.03])
+    cbar_ax = fig.add_axes([0.15, 0.055, 0.7, 0.028])
     fig.colorbar(im, cax=cbar_ax, orientation="horizontal", label=f'[ {str(unit)} ]')
    
-    # Layout (space for colorbar at bottom)(left,bottom,right, top)
-    fig.tight_layout(rect=[0.03, 0.01, 0.97, 0.99])
+    # Layout: reserve space for the title at the top and the colorbar at the bottom
+    fig.tight_layout(rect=[0.03, 0.09, 0.97, 0.92])
 
     if country is not None:
         name="{}/{}_absolut_{}_{}.png".format(plotdir, var, country, user_dpi)
@@ -1067,6 +1070,316 @@ def plot_diff_compev(
    
     # Layout (space for colorbar at bottom)(left,bottom,right, top)
     fig.tight_layout(rect=[0.03, 0.01, 0.97, 0.99])
+    # incase the mean is chosen instead of the median, the file name will be adjusted accordingly
+    what = str.split(var, '_')[5]
+
+    if title != "":
+        name="{}/Compev_{}_{}_diff_{}.png".format(plotdir, var_pattern, what, user_dpi)
+        if country is not None:
+            name="{}/Compev_{}_{}_diff_{}_{}.png".format(plotdir, var_pattern, what, country, user_dpi)
+    else:
+        name="{}/Compev_{}_{}_diff_{}_{}_oT.png".format(plotdir, var_pattern , what, country, user_dpi)
+    print('file is here:', name)
+    fig.savefig("{}".format(name), dpi=user_dpi, bbox_inches="tight")
+
+    return
+
+def plot_diff_compev_era5(
+        sims_rcp26,
+        sims_rcp85,
+        sims_era5,
+        level_steps,
+        color_steps,
+        levelsteps_era5,
+        colorsteps_era5,
+        plotdir,
+        title="",
+        var="",
+        varera5="",
+        var_pattern=None,
+        robustness=False,
+        westafrica=None,
+        shapefile=None,
+        country=None,
+        user_dpi=300,
+        rows=2,
+        columns=3,
+        fancy=None,
+        row_gap: float = 0.35,
+        wspace: Optional[float] = None,
+        ):
+    
+    """
+
+    Parameters
+    ----------
+    row_gap : float
+        Vertical space between subplot rows (matplotlib hspace). Default 0.35.
+    wspace : float | None
+        Optional horizontal space between columns (matplotlib wspace). If None keep default.
+    """
+
+    print(sims_rcp26)
+    print(sims_rcp85)
+    from cartopy import crs as ccrs
+    import cartopy.feature as cf
+    
+    # Some graphical features:
+    # set the colors:
+    levels_diff = level_steps
+    colors_diff = color_steps
+    levels_era5 = levelsteps_era5
+    colors_era5 = colorsteps_era5
+    unit='days/year'
+    hatchcolor='grey'
+    plt.rcParams.update({'hatch.color': hatchcolor})
+
+    if shapefile is not None:
+        print('shapefile provided:')
+        try:
+            shapefile = shapefile.to_crs(epsg=4326)
+        except Exception:
+            pass
+
+    if rows == 2:
+        height=6
+
+    if westafrica is True:
+        height=6.2
+        if title=='':
+            height=5.5
+    else:
+        height=7
+
+    if columns == 2:
+        width=7
+    elif columns == 3:
+        width=10
+    
+    # Create subplots
+    fig, axes = plt.subplots(
+        ncols=columns,
+        nrows=rows,
+        figsize=(width, height),
+        subplot_kw={'projection': ccrs.PlateCarree()},
+        squeeze=False,
+    )
+    # Apply user-defined spacing between rows (and optionally columns)
+    if wspace is not None:
+        fig.subplots_adjust(hspace=row_gap, wspace=wspace)
+    else:
+         fig.subplots_adjust(hspace=row_gap)
+    
+    for row_axes in axes:
+        for ax in row_axes:
+            subplot_row = ax.get_subplotspec().rowspan.start
+            subplot_col = ax.get_subplotspec().colspan.start
+
+            if subplot_row == 1 and subplot_col == 0:
+                ax.set_visible(False)
+                continue
+
+            gl = ax.gridlines(
+                draw_labels=True,
+                dms=True,
+                x_inline=False,
+                y_inline=False,
+                linewidth=0.5,
+            )
+            gl.top_labels = False
+            gl.right_labels = False
+            gl.bottom_labels = (subplot_row == rows - 1)
+            gl.left_labels = (subplot_col == 0)
+
+            ax.tick_params(axis="x", bottom=(subplot_row == rows - 1), labelbottom=(subplot_row == rows - 1))
+            ax.tick_params(axis="y", left=(subplot_col == 0), labelleft=(subplot_col == 0))
+            #ax.coastlines(resolution="50m", color="lightgrey", linewidth=1)
+            ax.coastlines(resolution="10m", color="black", linewidth=1)
+
+            if shapefile is not None:
+                print('adding borders from shapefile')  
+            else:
+                print('adding default borders')
+                ax.add_feature(cf.BORDERS)
+                #ax.add_feature(cf.OCEAN, facecolor='#f0f0f0')
+
+            if shapefile is not None and country is not None:
+                ax.set_extent([shapefile.total_bounds[0]-0.25, 
+                               shapefile.total_bounds[2]+0.25, 
+                               shapefile.total_bounds[1]-0.25, 
+                               shapefile.total_bounds[3]+0.25])
+                
+    
+    im_era5 = None
+    im_diff = None
+
+    # Plot data for ERA5
+    for i, file in enumerate(sims_era5):
+        data = xr.open_dataset(file, decode_timedelta=False)
+        data_variable = get_variable(data, varera5)
+
+        fig.suptitle(
+            f"{title}",
+            fontsize=14,
+            x=0.5,
+            position=(0.5, 0.95),
+        )
+
+        im_era5 = data_variable.plot(
+            ax=axes[0, 0],
+            levels=levels_era5,
+            colors=colors_era5,
+            transform=ccrs.PlateCarree(),
+            extend="both",
+            add_colorbar=False,
+        )
+        if shapefile is not None:
+            shapefile.plot(ax=axes[0, 0], edgecolor='black', linewidth=0.5, facecolor='none')
+        axes[0, 0].set_title(f'ERA5: {file.split("_")[5]}', fontsize=12)
+
+    # Plot data for rcp26
+    print('sims_rcp26',sims_rcp26)
+    for i, file in enumerate(sims_rcp26):
+        print(file)
+        data = xr.open_dataset(file,decode_timedelta=False)
+        data_variable=get_variable(data,var)
+    
+        # Select labels // Units frome metadata
+        # Set title of plot
+            
+        s = "{}".format(title)
+    
+        fig.suptitle(s, 
+                 fontsize=14, 
+                 #fontweight='bold', 
+                 x=0.5,
+                 position=(0.5, 0.95)
+                 )  
+
+        im_diff = data_variable.plot(ax=axes[0, i + 1],
+                    levels=levels_diff,
+                    colors=colors_diff,
+                            transform=ccrs.PlateCarree(),
+                            extend="both",#"neither",
+                            add_colorbar=False,
+                            #alpha=.8,
+                            )
+        if robustness is True:
+            datar_variable = data['robustness']
+
+            # Significant only when robustness equals ±1
+            significant = xr.where(np.abs(datar_variable) == 1, 1, 0).squeeze()
+            # do not plot NaN cells
+            significant = significant.where(datar_variable.notnull())
+            significant.plot.contourf(
+                        ax=axes[0, i + 1],
+                        levels=[-.5, .5],
+                        colors='none',
+                        # now hatches are applied to the not significant areas, with a grey color for the hatches
+                        hatches=['', '//', ''],
+                        add_colorbar=False,
+                        extend='both',
+                        transform=ccrs.PlateCarree()
+                        )
+        # Plot shapefile on current axis only if provided
+        if shapefile is not None:
+            shapefile.plot(ax=axes[0, i + 1], edgecolor='black', linewidth=0.5, facecolor='none')
+        # This is not very clever, need to be adjusted according to file_name :-(
+        axes[0, i + 1].set_title(f'RCP26: {file.split("_")[7]}',fontsize=12)
+    
+        if fancy:
+            # Add north arrow and scalebar to all subplots
+            arrowprops = dict(facecolor='black', edgecolor='black', width=1, headwidth=8, headlength=10)
+            # If a shapefile is provided, build union geometry for accurate scalebar
+            union_geom = shapefile.unary_union if shapefile is not None else None
+            for ax in axes.flat:
+                # Arrow pointing up in axes coordinates
+                ax.annotate('', xy=(0.08, 0.85), xytext=(0.08, 0.65), xycoords='axes fraction', arrowprops=arrowprops)
+                # Label "N" above the arrow
+                ax.text(0.08, 0.86, 'N', transform=ax.transAxes, ha='center', va='bottom', fontsize=12)#, fontweight='bold')
+                if union_geom is not None:
+                    add_scalebar(ax, geom=union_geom, location='lower right', segments=4)
+
+    # Plot data for rcp85
+    for i, file in enumerate(sims_rcp85):
+        data = xr.open_dataset(file,decode_timedelta=False)
+        data_variable=get_variable(data,var)
+        
+        im_diff = data_variable.plot(ax=axes[1, i + 1],
+                           levels=levels_diff,
+                           colors=colors_diff,
+                           transform=ccrs.PlateCarree(),
+                           extend="both",#"neither",
+                           add_colorbar=False,
+                           #alpha=.8,
+                           )
+        if robustness is True:
+            datar_variable = data['robustness']
+
+            # Significant only when robustness equals ±1
+            significant = xr.where(np.abs(datar_variable) == 1, 1, 0).squeeze()
+
+            # do not plot NaN cells
+            significant = significant.where(datar_variable.notnull())
+
+            significant.plot.contourf(
+                        ax=axes[1, i + 1],
+                        levels=[-.5, .5],
+                        colors='none',
+                        #hattches for1: significant values
+                        #hatches=[None, None, "//", ],
+                        # now hatches are applied to the not significant areas, with a grey color for the hatches
+                        hatches=["", "//", ""],
+                        add_colorbar=False,
+                        extend='both',
+                        transform=ccrs.PlateCarree()
+                        )
+        if shapefile is not None:
+            shapefile.plot(ax=axes[1, i + 1], edgecolor='black', linewidth=0.5, facecolor='none')
+        
+        axes[1, i + 1].set_title(f'RCP85: {file.split("_")[7]}',fontsize=12)
+
+    axes = np.atleast_2d(axes)
+
+    for r in range(rows):
+        for c in range(columns):
+            ax = axes[r, c]
+
+            if r == 1 and c == 0:
+                ax.set_visible(False)
+                continue
+
+            gl = ax.gridlines(
+                draw_labels=True,
+                dms=True,
+                x_inline=False,
+                y_inline=False,
+                linewidth=0.5,
+            )
+            gl.top_labels = False
+            gl.right_labels = False
+            gl.bottom_labels = (r == rows - 1)  # only bottom row
+            gl.left_labels = (c == 0)           # only left column
+
+            ax.coastlines(resolution="10m", color="black", linewidth=1)
+
+            # optional: also hide matplotlib ticks on inner panels
+            ax.tick_params(axis="x", labelbottom=(r == rows - 1), bottom=(r == rows - 1))
+            ax.tick_params(axis="y", labelleft=(c == 0), left=(c == 0))
+
+    if im_era5 is not None:
+        if title=='':
+            cbar_ax_era5 = fig.add_axes([0.11, 0.49, 0.22, 0.03])
+        else:
+            cbar_ax_era5 = fig.add_axes([0.11, 0.44, 0.22, 0.03])
+        fig.colorbar(im_era5, cax=cbar_ax_era5, orientation="horizontal", label=f'[ {str(unit)} ]')
+
+    if im_diff is not None:
+        cbar_ax_diff = fig.add_axes([0.39, 0.04, 0.56, 0.03])
+        fig.colorbar(im_diff, cax=cbar_ax_diff, orientation="horizontal", label=f'[ {str(unit)} ]')
+   
+    # Layout (space for colorbar at bottom)(left,bottom,right, top)
+    fig.tight_layout(rect=[0.03, 0.08, 0.97, 0.99])
     # incase the mean is chosen instead of the median, the file name will be adjusted accordingly
     what = str.split(var, '_')[5]
 

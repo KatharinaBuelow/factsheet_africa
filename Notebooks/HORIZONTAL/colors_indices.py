@@ -173,48 +173,63 @@ def colorsteps_comp_ev(var, var_pattern):
     """
     colors and levels for robust compound eventsplots
     """
-    
-    if var in ['ev_coin_du_days','ev_coin_sdu']:
-        color_steps_diff=["#fdfde8",'#ffffcc','#ffeda0','#fed976',
+    #era5
+    if var in ['ev_coin_sdu']:
+        print(var_pattern)
+        color_steps=['#ffffff','#f0f0f0','#d9d9d9','#bdbdbd','#969696','#737373','#525252','#252525','#000000'] 
+        if var_pattern in ['SU40_du3_TR26_du3','SU40_du7_DD_du7']:
+            level_steps=[5,10,15,20,25,30,35,40]
+        elif var_pattern in ['SU40_du3_DD_du5','SU40_du3_TR_du3']:
+            level_steps=[10,20,30,40,50,60,70,80]  
+        elif var_pattern in ['SU35_du3_DD_du5','SU35_du7_DD_du7']:
+            level_steps=[25,50,75,100,125,150,175,200]
+        elif var_pattern in ['SU35_du3_R20mm_du1', 'SU40_du3_R20mm_du1','SU40_du3_R50mm_du1']:
+            level_steps=[0,0.1,0.2,0.3,0.4,0.5,0.6,0.7]
+        elif var_pattern in ['DD_du7_R20mm_du1']:
+            level_steps=[0,0.1,0.2,0.3,0.4,0.5,0.6,0.7]    
+
+    # absolute values
+    elif var in ['ev_coin_du_days']:
+        color_steps=["#fdfde8",'#ffffcc','#ffeda0','#fed976',
             '#feb24c','#fd8d3c','#fc4e2a',
             '#e31a1c','#bd0026','#800026',"#4B0117"]
         if var_pattern in ['SU40_du3_DD_du5','SU40_du3_TR26_du3', 'SU40_du3_TR_du3','SU40_du7_DD_du7']:
-            level_steps_diff=[10,20,30,40,60,80,100,120,140,160]
+            level_steps=[10,20,30,40,60,80,100,120,140,160]
         elif var_pattern in ['SU35_du3_DD_du5','SU35_du7_DD_du7']:
-            level_steps_diff=[50,100,120,140,160,180,200,220,240, 260]
+            level_steps=[50,100,120,140,160,180,200,220,240, 260]
         elif var_pattern in ['SU35_du3_R20mm_du1', 'SU40_du3_R20mm_du1','SU40_du3_R50mm_du1']:
-            color_steps_diff=['#f7fcfd','#e0ecf4','#bfd3e6','#9ebcda','#8c96c6','#8c6bb1','#88419d','#810f7c','#4d004b']
-            level_steps_diff=[0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8]
+            color_steps=['#f7fcfd','#e0ecf4','#bfd3e6','#9ebcda','#8c96c6','#8c6bb1','#88419d','#810f7c','#4d004b']
+            level_steps=[0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8]
         elif var_pattern in ['DD_du7_R20mm_du1']:
-            color_steps_diff=['#f7fcfd','#e0ecf4','#bfd3e6','#9ebcda','#8c96c6','#8c6bb1','#88419d','#810f7c','#4d004b']
-            level_steps_diff=[0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8]    
+            color_steps=['#f7fcfd','#e0ecf4','#bfd3e6','#9ebcda','#8c96c6','#8c6bb1','#88419d','#810f7c','#4d004b']
+            level_steps=[0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8]    
         #else:
-            #level_steps_diff=[5,10,20,30,40,50,60,80,100,120]
+            #level_steps=[5,10,20,30,40,50,60,80,100,120]
         else:
             raise ValueError('no level_steps for ' + var + ' are provided for pattern ' + var_pattern)
 
         
     elif var in ['ev_coin_du_days_ensemble_median_diff', 'ev_coin_du_days_ensemble_mean_diff']:
-        color_steps_diff=["#fdfde8",'#ffffcc','#ffeda0','#fed976',
+        color_steps=["#fdfde8",'#ffffcc','#ffeda0','#fed976',
                         '#feb24c','#fd8d3c','#fc4e2a',
                         '#e31a1c','#bd0026','#800026',"#4B0117"]
         if var_pattern in ['SU40_du3_DD_du5', 'SU40_du3_TR26_du3','SU40_du3_TR_du3','SU40_du7_DD_du7']:
-            level_steps_diff=[5,10,20,30,40,50,60,80,100,120]
+            level_steps=[5,10,20,30,40,50,60,80,100,120]
         elif var_pattern in ['SU35_du3_DD_du5','SU35_du7_DD_du7']:
-            level_steps_diff=[5,10,20,30,40,50,60,70,80,90]
+            level_steps=[5,10,20,30,40,50,60,70,80,90]
         elif var_pattern in ['SU35_du3_R20mm_du1', 'SU40_du3_R20mm_du1','SU40_du3_R50mm_du1']:
-            level_steps_diff=[-3,-2,-1,-0.5,0,0.5,1,2,3]  
-            color_steps_diff=['#053061','#2166ac','#4393c3','#92c5de','#d1e5f0','#f7f7f7','#fddbc7','#f4a582','#d6604d','#b2182b','#67001f']
+            level_steps=[-3,-2,-1,-0.5,0,0.5,1,2,3]  
+            color_steps=['#053061','#2166ac','#4393c3','#92c5de','#d1e5f0','#f7f7f7','#fddbc7','#f4a582','#d6604d','#b2182b','#67001f']
         elif var_pattern in ['DD_du7_R20mm_du1']:
-            color_steps_diff=['#053061','#2166ac','#4393c3','#92c5de','#d1e5f0','#f7f7f7','#fddbc7','#f4a582','#d6604d','#b2182b','#67001f']
-            level_steps_diff=[-3,-2,-1,-0.5,0,0.5,1,2,3]      
+            color_steps=['#053061','#2166ac','#4393c3','#92c5de','#d1e5f0','#f7f7f7','#fddbc7','#f4a582','#d6604d','#b2182b','#67001f']
+            level_steps=[-3,-2,-1,-0.5,0,0.5,1,2,3]      
         else:
             raise ValueError('no level_steps for ' + var + ' are provided for pattern ' + var_pattern)
     
-        #color_steps_diff=['#d9d9d9',"#fdfde8",'#ffffcc','#ffeda0','#fed976',
+        #color_steps=['#d9d9d9',"#fdfde8",'#ffffcc','#ffeda0','#fed976',
         #    '#feb24c','#fd8d3c','#fc4e2a',
         #    '#e31a1c','#bd0026','#800026',"#4B0117"]
         
     else:
         raise ValueError('no color steps defined for ' + var)
-    return color_steps_diff, level_steps_diff
+    return color_steps, level_steps
