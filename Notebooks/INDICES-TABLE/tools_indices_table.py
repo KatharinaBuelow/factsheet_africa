@@ -76,7 +76,7 @@ def time_slice(files, region, dft, s, ind, fixh):
                 dfl = sel[c].map("{:,.1f}".format)
             else:
                 dfl = sel[c].map("{:,.1f}".format)
-            if ind in ["RRm"] :
+            if ind in ["RRm"] and "ensemble-robustness" not in c:
                 #change unit from mm/day to mm/year
                 dfl = dfl.astype(float) * 365
             dft.reset_index(drop=True, inplace=True)
@@ -204,11 +204,11 @@ def minmax(files, region, s, method):
     for i in files:
         
         if method == "pro":
-            minfile = i.replace("diff-frac-median", "diff-frac-p5")
-            maxfile = i.replace("diff-frac-median", "diff-frac-p95")
+            minfile = i.replace("diff-frac-median", "diff-frac-min")
+            maxfile = i.replace("diff-frac-median", "diff-frac-max")
         else:
-            minfile = i.replace("-median.csv", "-p5.csv")
-            maxfile = i.replace("-median.csv", "-p95.csv")
+            minfile = i.replace("-median.csv", "-min.csv")
+            maxfile = i.replace("-median.csv", "-max.csv")
      
         dfmin = pd.read_csv(minfile)
         dfmax = pd.read_csv(maxfile)
@@ -264,9 +264,9 @@ def add_plus(value):
 def annotate_row(row_index):
     # Always return a list with length equal to the number of columns (5)
     if row_index == "Min:Max":
-        return [8] * 5  # Font sizes for each column in row
+        return [10] * 5  # Font sizes for each column in row
     else:
-        return [12] * 5  # Default font sizes
+        return [14] * 5  # Default font sizes
 
 
 def annotate_row_weight(row_index):
