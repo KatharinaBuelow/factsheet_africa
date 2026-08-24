@@ -8,18 +8,16 @@ from reportlab.lib import utils
 
 def insert_page_temperature(self):
     """
-    Create a page with a table
+    Create a page with temperature and heatdays projections for the specified region.
     """
     # Beispielbild und Text
     # Zuerst: Seitentitel und Zusammenfassungstext über der Grafik
     einfuegehoehe_top = self.height - 2 * cm
 
-    # Titel: Temperature
-    title_text = "Temperature" if self.sprache == 'english' else "Temperatur"
-    title_para = Paragraph(f"<para><span name=Helvetica-Bold size=12>{title_text}</span></para>", self.styles.get('Heading', getSampleStyleSheet()['Heading1']))
-    title_w, title_h = title_para.wrapOn(
-        self.c, self.width - self.text_offset_links - self.text_offset_rechts, self.height)
-    title_para.drawOn(self.c, self.text_offset_links, einfuegehoehe_top - title_h)
+    # Titel: Temperature (shared Header1 style)
+    title_text = "TEMPERATURE" if self.sprache == 'english' else "TEMPERATUR"
+    title_h = self.draw_header(title_text, einfuegehoehe_top)
+
     # Reduce spacing between title and summary
     einfuegehoehe_top = einfuegehoehe_top - title_h - self.kleiner_abstand
 
@@ -27,7 +25,7 @@ def insert_page_temperature(self):
     if 'Justify' not in styles.byName:
         styles.add(ParagraphStyle(name='Justify', parent=styles['Normal'], alignment=TA_JUSTIFY))
     summary_text = (
-        "<para><span name=Helvetica size=10>"
+        "<para><span name=Helvetica size="+str(self.schrift_fliesstext)+">"
         "The graphs show the projected evolution of mean annual temperature and mean number of heat days (Maximum temperature > 40°C) \
         for "+self.region+" from 1971 to 2098, based on CORDEX AFR22\
          regional climate model realizations under two emission scenarios: RCP2.6 (blue) and RCP8.5 (red). The solid lines represent \
@@ -53,25 +51,25 @@ def insert_page_temperature(self):
 
     # Caption-Texte vorab definieren und Höhen bestimmen
     caption_text = (
-        "<para><span name=Helvetica size=9>"
         "<b>Figure 2:</b> Projected evolution of mean annual temperature for " + self.region + " from 1971 to 2098 based on CORDEX AFR22 \
         regional climate model realizations under RCP2.6 (blue) and RCP8.5 (red) scenarios. Solid lines represent the ensemble median, \
-        while shaded areas indicate the range between minimum and maximum values across all models, illustrating uncertainty. "
-        "</span></para>"
+        while shaded areas indicate the range between minimum and maximum values across all models, illustrating uncertainty."
     )
+    caption = '<para><span name=Helvetica color=black size='+str(self.schrift_caption)+'>'+caption_text+'</span></para>'
+    caption = Paragraph(caption, styles['Justify'])
+    
     caption = Paragraph(caption_text, styles['Justify'])
     _, cap_height = caption.wrapOn(self.c, available_width, self.height)
 
     # Zweite Grafik: ts_SU40_anomaly (Tage tmax> 40°C) darunter platzieren und skalieren
     caption_text2 = (
-        "<para><span name=Helvetica size=9>"
         "<b>Figure 3:</b> Projected evolution of mean annual number of heatdays (maximum temperature >40 °C) for " + self.region + " \
         from 1971 to 2098 based on CORDEX AFR22 \
         regional climate model realizations under RCP2.6 (blue) and RCP8.5 (red) scenarios. Solid lines represent the ensemble median, \
         while shaded areas indicate the range between minimum and maximum values across all models, illustrating uncertainty."
-        "</span></para>"
     )
-    caption2 = Paragraph(caption_text2, styles['Justify'])
+    caption2 = '<para><span name=Helvetica color=black size='+str(self.schrift_caption)+'>'+caption_text2+'</span></para>'
+    caption2 = Paragraph(caption2, styles['Justify'])
     _, cap_height2 = caption2.wrapOn(self.c, available_width, self.height)
 
     # Verfügbarer Platz: gleichmäßig verteilen

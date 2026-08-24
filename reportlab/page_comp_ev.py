@@ -8,18 +8,15 @@ from reportlab.lib import utils
 
 def insert_page_compound_event(self):
     """
-    Create a page with a table
+    Create a page with compound events
     """
     # Beispielbild und Text
     # Zuerst: Seitentitel und Zusammenfassungstext über der Grafik
     einfuegehoehe_top = self.height - 2 * cm
     print("creation page for compound events : " + self.region)
-   
     # Titel: 
-    title_text = "Concurrent Extreme Events" if self.sprache == 'english' else "Concurrent Extreme Events"
-    title_para = Paragraph(f"<para><span name=Helvetica-Bold size=12>{title_text}</span></para>", self.styles.get('Heading', getSampleStyleSheet()['Heading1']))
-    title_w, title_h = title_para.wrapOn(self.c, self.width - self.text_offset_links - self.text_offset_rechts, self.height)
-    title_para.drawOn(self.c, self.text_offset_links, einfuegehoehe_top - title_h)
+    title_text = "COMPOUND EXTREME EVENTS" if self.sprache == 'english' else "KOMBINIERTE EXTREME EREIGNISSE"
+    title_h = self.draw_header(title_text, einfuegehoehe_top)
     # Reduce spacing between title and summary
     einfuegehoehe_top = einfuegehoehe_top - title_h - self.kleiner_abstand
 
@@ -31,7 +28,7 @@ def insert_page_compound_event(self):
     if region_norm in ("ivory coast", "côte d'ivoire"):
         print("[compound] Using Ivory Coast summary text")
         summary_text = (
-        "<para><span name=Helvetica size=10>"
+        "<para><span name=Helvetica size="+str(self.schrift_fliesstext)+">"
         "Projected concurrent occurrence of heatwaves (Tmax > 40 °C) and tropical nights (minimum temperature > 26°C) lasting\
          at leat 3 days in West Africa. The figure shows the ensemble median for \
         different time periods (1991–2020, 2031–2060, 2069–2098) under two emission scenarios (RCP2.6 and RCP8.5). \
@@ -44,7 +41,7 @@ def insert_page_compound_event(self):
         )
     else:
         summary_text = (
-        "<para><span name=Helvetica size=10>"
+        "<para><span name=Helvetica size="+str(self.schrift_fliesstext)+">"
         "Projected concurrent occurrence of heatwaves (Tmax > 40 °C) lasting at leat 3 days and \
         number of dry days (RR < 1 mm/day) lasting at least 5 days in West Africa. The figure shows the ensemble median for \
         different time periods (1991–2020, 2031–2060, 2069–2098) under two emission scenarios (RCP2.6 and RCP8.5). \
@@ -70,24 +67,21 @@ def insert_page_compound_event(self):
     if region_norm in ("ivory coast", "côte d'ivoire"):
         print("[compound] Using Ivory Coast caption")
         caption_text = (
-            "<para><span name=Helvetica size=9>"
             "<b>Figure 6:</b> Projected concurrent occurrence of heatwaves (Tmax > 40 °C) and tropical nights (Minimum Temperature > 26°C)\
              in "+self.region+" lasting at least 3 days. The figure shows the ensemble median for different \
              time periods (1991–2020, 2031–2060, 2069–2098) \
-            under two emission scenarios (RCP2.6 and RCP8.5). The color scale indicates the expected number of such events per year."
-            "</span></para>"
+            under two emission scenarios (RCP2.6 and RCP8.5). The color scale indicates the expected number of such events per year. "
+            "The non-hatched regions indicate robust projected changes, whereas hatched regions indicate areas where projected changes are not robust."
         )
-        caption = Paragraph(caption_text, styles['Justify'])
-        _, cap_height = caption.wrapOn(self.c, available_width, self.height)
     else:
         caption_text = (
-            "<para><span name=Helvetica size=9>"
             "<b>Figure 6:</b> Projected concurrent occurrence of heatwaves (Tmax > 40 °C) and dry days (RR < 1 mm/day)\
             in West Africa lasting at least 3 and 5 days. The figure shows the ensemble median for different \
             time periods (1991–2020, 2031–2060, 2069–2098) \
             under two emission scenarios (RCP2.6 and RCP8.5). The color scale indicates the expected number of such events per year."
-            "</span></para>"
+            "The non-hatched regions indicate robust projected changes, whereas hatched regions indicate areas where projected changes are not robust."
         )
+    caption = '<para><span name=Helvetica color=black size='+str(self.schrift_caption)+'>'+caption_text+'</span></para>'
     caption = Paragraph(caption_text, styles['Justify'])
     _, cap_height = caption.wrapOn(self.c, available_width, self.height)
 

@@ -15,18 +15,17 @@ def insert_page_precipitation(self):
     einfuegehoehe_top = self.height - 2 * cm
 
     # Titel: Precipitation
-    title_text = "Precipitation" if self.sprache == 'english' else "Niederschlag"
-    title_para = Paragraph(f"<para><span name=Helvetica-Bold size=12>{title_text}</span></para>", self.styles.get('Heading', getSampleStyleSheet()['Heading1']))
-    title_w, title_h = title_para.wrapOn(self.c, self.width - self.text_offset_links - self.text_offset_rechts, self.height)
-    title_para.drawOn(self.c, self.text_offset_links, einfuegehoehe_top - title_h)
-    # Reduce spacing between title and summary
+    title_text = "PRECIPITATION" if self.sprache == 'english' else "NIEDERSCHLAG"
+    title_h = self.draw_header(title_text, einfuegehoehe_top)
+
+     # Reduce spacing between title and summary
     einfuegehoehe_top = einfuegehoehe_top - title_h - self.kleiner_abstand
 
     styles = getSampleStyleSheet()
     if 'Justify' not in styles.byName:
         styles.add(ParagraphStyle(name='Justify', parent=styles['Normal'], alignment=TA_JUSTIFY))
     summary_text = (
-        "<para><span name=Helvetica size=10>"
+        "<para><span name=Helvetica size="+str(self.schrift_fliesstext)+">"
         "The graphs show the projected evolution of mean annual precipitation and mean number of dry days (daily precipitation amount <1mm/day) \
         for "+self.region+" from 1971 to 2098, based on CORDEX AFR22\
          regional climate model realizations under two emission scenarios: RCP2.6 (blue) and RCP8.5 (red). The solid lines represent \
@@ -51,25 +50,23 @@ def insert_page_precipitation(self):
 
     # Caption-Texte vorab definieren und Höhen bestimmen
     caption_text = (
-        "<para><span name=Helvetica size=9>"
-        "<b>Figure 6:</b> Projected evolution of mean annual precipitation [mm/day] for " + self.region + " from 1971 to 2098 based on CORDEX AFR22 \
+        "<b>Figure 4:</b> Projected evolution of mean annual precipitation [mm/day] for " + self.region + " from 1971 to 2098 based on CORDEX AFR22 \
         regional climate model realizations under RCP2.6 (blue) and RCP8.5 (red) scenarios. Solid lines represent the ensemble median, \
         while shaded areas indicate the range between minimum and maximum values across all models, illustrating uncertainty. "
-        "</span></para>"
     )
+    caption = '<para><span name=Helvetica color=black size='+str(self.schrift_caption)+'>'+caption_text+'</span></para>'
     caption = Paragraph(caption_text, styles['Justify'])
     _, cap_height = caption.wrapOn(self.c, available_width, self.height)
 
     # Zweite Grafik: ts_DD_anomaly (Tage > 40°C) darunter platzieren und skalieren
     caption_text2 = (
-        "<para><span name=Helvetica size=9>"
         "<b>Figure 5:</b> Projected evolution of mean annual number of dry days (daily precipitation amount < 1 mm) for " + self.region + " \
         from 1971 to 2098 based on CORDEX AFR22 \
         regional climate model realizations under RCP2.6 (blue) and RCP8.5 (red) scenarios. Solid lines represent the ensemble median, \
         while shaded areas indicate the range between minimum and maximum values across all models, illustrating uncertainty."
-        "</span></para>"
     )
-    caption2 = Paragraph(caption_text2, styles['Justify'])
+    caption2 = '<para><span name=Helvetica color=black size='+str(self.schrift_caption)+'>'+caption_text2+'</span></para>'
+    caption2 = Paragraph(caption2, styles['Justify'])
     _, cap_height2 = caption2.wrapOn(self.c, available_width, self.height)
 
     # Verfügbarer Platz: gleichmäßig verteilen

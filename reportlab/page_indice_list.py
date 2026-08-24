@@ -31,24 +31,39 @@ def insert_glossar_page(self, glossar_dict, variables):
         #back.wrapOn(self.c, self.width, self.height)
         #back.drawOn(self.c, self.text_offset_links, 1.75 * cm)
         
-        einfuegehoehe = self.height - 2.85 * cm
-        self.c.setFont('Helvetica-Bold', 14)
-        self.c.setFillColor(self.cs_orange)
-        index = 0
-        var_col_width = 4.*cm
-        content = []
-        columnwidths = (var_col_width, self.width - self.text_offset_links - self.text_offset_rechts - var_col_width - 0.5 *cm)
-        #heights = [0.45 * cm] * (len(variables))
-        heights = []
-        heights.insert(0, 1. * cm)
-        font_size = 10
-        font_size2 = 8
-        content.append((Paragraph('<span name=Helvetica-bold color=black size ='+str(font_size)+'>Climate Index</span>', style=self.styles['Centered']),
-                       Paragraph('<span name=Helvetica-bold color=black size ='+str(font_size)+'>Definition</span>', style=self.styles['Centered'])))
-        #content.append((Paragraph('Parameter', style=self.styles['Centered']), Paragraph('Definition', style=self.styles['Centered'])))
-        variables='TG','TX','TN','SU35','SU40','TR26','RRm','DD','RR1', 'R20mm', 'FG','SU40_du3_DD_du5'
-        for var in variables:
+    header_left = ParagraphStyle(
+        name="HeaderLeft",
+        parent=self.styles["SmallTableContent"],
+        alignment=TA_LEFT,
+        leftIndent=0,
+        firstLineIndent=0,
+    )
+
+    einfuegehoehe_top = self.height - 2 * cm
+    # Titel: 
+    title_text = "DEFINITION OF CLIMATE INDICATORS" if self.sprache == 'english' else "DEFINITION DER KLIMAINDIKATOREN"
+    title_h = self.draw_header(title_text, einfuegehoehe_top)
+    # Reduce spacing between title and summary
+    einfuegehoehe_top = einfuegehoehe_top - title_h - self.kleiner_abstand
+
+    index = 0
+    var_col_width = 4.*cm
+    content = []
+    columnwidths = (var_col_width, self.width - self.text_offset_links - self.text_offset_rechts - var_col_width) # - 0.5 *cm)
+    #heights = [0.45 * cm] * (len(variables))
+    heights = []
+    heights.insert(0, 1. * cm)
+    font_size = 12
+    font_size2 = 12
+    content.append((
+    Paragraph('<span name=Helvetica-bold color=black size='+str(font_size)+'>CLIMATE INDEX</span>', style=header_left),
+    Paragraph('<span name=Helvetica-bold color=black size='+str(font_size)+'>DEFINITION</span>', style=header_left)
+    ))
+
+    variables='TG','TX','TN','SU35','SU40','TR26','RRm','DD','RR1', 'R20mm', 'FG','SU40_du3_DD_du5'
+    for var in variables:
             text_zeile = Paragraph('<span name=Helvetica color=black size ='+str(font_size2)+'>'+glossar_dict[var][1]+'</span>', style=self.styles['SmallTableContent'])
+            ##breite, hoehe = text_zeile.wrapOn(self.c, self.width - self.text_offset_links - self.text_offset_rechts - var_col_width, self.height)
             breite, hoehe = text_zeile.wrapOn(self.c, self.width - self.text_offset_links - self.text_offset_rechts - var_col_width - 1. *cm, self.height)
             varara = Paragraph('<span name=Helvetica color=black size ='+str(font_size2)+'>'+glossar_dict[var][0]+'</span>', style = self.styles['SmallTableContent'])
             breite2, hoehe2 = varara.wrapOn(self.c, var_col_width , self.height)
@@ -56,17 +71,18 @@ def insert_glossar_page(self, glossar_dict, variables):
             #print( hoehe, hoehe2)
             self.hoehe = hoehe
             heights.append(max(hoehe+ 0.25 * cm, hoehe2+ 0.25 * cm)+ 0.2 * cm)
-        dum = heights.pop(-1)
-        heights.append(dum + 0.25*cm)
-        table = Table(content, colWidths=columnwidths, rowHeights=heights)
-        table.setStyle([("VALIGN", (0, 0), (1, 0), "MIDDLE"),
+    dum = heights.pop(-1)
+    heights.append(dum + 0.25*cm)
+    table = Table(content, colWidths=columnwidths, rowHeights=heights)
+    table.setStyle([("VALIGN", (0, 0), (1, 0), "MIDDLE"),
                         ("VALIGN", (0, 1), (1, -1), "CENTER"),
                         ("ALIGN", (0, 0), (0, -1), "LEFT"),
                         ("GRID", (0,0), (-1,-1), 0.25, colors.gray),
                         ('BACKGROUND', (0, 0), (-1, -1), (colors.Color(255 / 255., 255 / 255., 255 / 255., 1)))])
-        table.wrapOn(self.c, self.width, self.height)
-        table.drawOn(self.c, self.text_offset_links + 0.25*cm, einfuegehoehe -0.25 * cm - numpy.sum(heights))
+    table.wrapOn(self.c, self.width, self.height)
+    table.drawOn(self.c, self.text_offset_links, einfuegehoehe_top -0.25 * cm - numpy.sum(heights))
 
+        #table.drawOn(self.c, self.text_offset_links + 0.25*cm, einfuegehoehe_top -0.25 * cm - numpy.sum(heights))
 # Katharina noch bearbeiten für 2 Sprache
 
 def return_glossar_en(english=True):
