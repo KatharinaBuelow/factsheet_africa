@@ -1,6 +1,6 @@
 from reportlab.platypus import Image, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.lib.enums import TA_JUSTIFY
+from reportlab.lib.enums import TA_JUSTIFY, TA_LEFT
 from reportlab.lib.units import cm
 from utils_image import get_image
 from reportlab.lib import utils
@@ -10,203 +10,221 @@ def insert_page_explain(self):
     """
     Create a page with explaining scenarios rcp2.6, rcp8.5 and explaining robustness.
     """
-    ##################################################################################
+    einfuegehoehe_top = self.height - 2 * cm
+    
+    title_text = "CLIMATE PROJECTIONS AND SCENARIOS" if self.sprache == 'english' else "FRENCH"
+    title_h = self.draw_header(title_text, einfuegehoehe_top)
+
+    # Reduce spacing between title and summary
+    einfuegehoehe = einfuegehoehe_top - title_h - self.kleiner_abstand
+    
+    styles = getSampleStyleSheet()
+    if 'Justify' not in styles.byName:
+        styles.add(ParagraphStyle(name='Justify', parent=styles['Normal'], alignment=TA_JUSTIFY))
+    if 'LeftAlign' not in styles.byName:
+        styles.add(ParagraphStyle(name='LeftAlign', parent=styles['Normal'], alignment=TA_LEFT))
+    if 'BulletHang' not in styles.byName:
+        styles.add(ParagraphStyle(
+            name='BulletHang',
+            parent=styles['LeftAlign'],
+            leftIndent=12,
+            firstLineIndent=-10,
+            spaceBefore=0,
+            spaceAfter=2,
+        ))
+    if 'DefAfterBullet' not in styles.byName:
+        styles.add(ParagraphStyle(
+            name='DefAfterBullet',
+            parent=styles['LeftAlign'],
+            leftIndent=36,
+            firstLineIndent=-36,
+            spaceBefore=0,
+            spaceAfter=2,
+        ))
+    if self.sprache == 'english':
+        rcptext = (
+        "<para><span name=Helvetica size="+str(self.schrift_fliesstext)+">"
+        "With climate models, projections for the future climate can be calculated. "
+        "Different assumptions for "
+        "example about population growth, technological progress, or economic performance lead "
+        "to different pathways for emissions and greenhouse gas concentrations. "
+        "Such scenarios are not predictions; instead, they describe various plausible future developments. "
+        "</span></para>"
+        ) 
+        #,self.styles['Justify'])
+    else:
+        rcptext =(
+        "<para><span name=Helvetica size="+str(self.schrift_fliesstext)+">"
+        "FRENCH.</span></para>"
+        )
+        #,self.styles['Justify'])    
+
+    #rcps figure is missing, figure need to get defined same as for figure box_era5
+    map_image = get_image(self.rcp_image, height = 6*cm)
+    
+    map_image.wrapOn(self.c, self.width, self.height)
+    map_image.drawOn(self.c, self.text_offset_links, einfuegehoehe - map_image.drawHeight)#- self.kleiner_abstand)
+
+    # Draw the caption below the RCP image
+    rcp_figure_caption = Paragraph(
+        '<span name=Helvetica color=grey size=10>* Data source: <link href="http://www.pik-potsdam.de/~mmalte/rcps/index.htm">http://www.pik-potsdam.de/~mmalte/rcps/index.htm</link></span>',
+        style=styles['Justify']
+    )
+    _, caption_height = rcp_figure_caption.wrap(self.width, self.height)
+    rcp_figure_caption.drawOn(
+        self.c,
+        self.text_offset_links,
+        einfuegehoehe - map_image.drawHeight - caption_height
+    )
 
 
-    def insert_hintergrundinformation_rcps(self, y_pos='', language='english'):
+    col2_width = self.width - self.text_offset_links - self.text_offset_rechts - map_image.drawWidth - 0.2*cm
+    col2_x = self.text_offset_links + map_image.drawWidth + 0.2*cm
+    
 
-        #einfuegehoehe = y_pos - 0.5 * cm
-        einfuegehoehe_top = self.height - 2 * cm
-        
-        self.c.setFont('Helvetica-Bold', 14)
-        self.c.setFillColor(self.cs_orange)
-        index = 0
-        if language == 'english':
-            tit = 'Climate Projections and Scenarios'
-        else:
-            tit = 'Klimaprojektionen und Szenarien'
-        content1 = []
-        #rcp_image = Image(self.rcp_dummy_im)
-        #rcp_image = get_image(self.rcp_dummy_im, height = 5.*cm)
+    rcptext_para = Paragraph(rcptext, style=styles['Justify'])
+    _, p2_height = rcptext_para.wrap(col2_width, self.height)
+    rcptext_para.drawOn(self.c, col2_x, einfuegehoehe - p2_height) #- self.kleiner_abstand)
 
-        figure_caption2 = Paragraph('<span name=Helvetica color=black size = 8>* Datenquelle:\
-            <link href="http://www.pik-potsdam.de/~mmalte/rcps/index.htm#Download">http://www.pik-potsdam.de/~mmalte/rcps/index.htm#Download</link> </span>', style=self.styles['Justify'])
-        figure_caption1 = Paragraph('<span name=Helvetica color=black size = 16>*</span>', style=self.styles['Justify'])
-        figure_caption1.wrapOn(self.c, self.width, self.height)
-        figure_caption2.wrapOn(self.c, self.width, self.height)
-        
-        if language == 'english':
-            text1 = Paragraph(
-                """<span name=Helvetica color=black size = 10>
-                With climate models, projections for the future climate can be calculated.
-                These provide answers to the question: “What if?” Different assumptions—for
-                example about population growth, technological progress, or economic performance—lead
-                to different pathways for emissions and greenhouse gas concentrations.
-                Such scenarios are not predictions; instead, they describe various plausible future developments.
-                Climate models are then used to simulate the impacts of these emissions and
-                the resulting changes in the composition of the atmosphere on the
-                Earth's climate system. </span>""",
-                style=self.styles['Justify']
-            )
-        else:
-            text1 = Paragraph('<span name=Helvetica color=black size = 10>\
-                Mit Klimamodellen können Projektionen für das zukünftige Klima berechnet werden. Diese liefern Antworten auf die Frage:\
-                „Was wäre, wenn?“ Verschiedene Annahmen, z. B. zur Bevölkerungsentwicklung, dem technologischen Fortschritt oder der Wirtschaftsleistung,\
-                führen zu verschiedenen Entwicklungspfaden von Emissionen und Konzentrationen an Treibhausgasen. Solche Szenarien sind keine Vorhersagen,\
-                sondern beschreiben verschiedene plausible Entwicklungen. Mit Klimamodellen werden dann die Auswirkungen der Emissionen\
-                und der damit verbundenen veränderten Zusammensetzung der Atmosphäre auf das Klimasystem der\
-                              Erde simuliert. </span>', style=self.styles['Justify'])
-        #content1.append((rcp_image,'', text1))
-        table1 = Table(content1, colWidths=(5.0 * cm, 1.*cm, (self.width - self.text_offset_links - self.text_offset_rechts- 5.*cm - 2.5*cm + 0.1*cm)),
-                       rowHeights=rcp_image.drawHeight)
-        table1.setStyle([("VALIGN", (0, 0), (-1, -1), "TOP"),
-                        ("ALIGN", (0, 0), (-1, -1), "CENTER"),
-                        ])
-        table1.wrapOn(self.c, self.width- self.text_offset_links - self.text_offset_rechts - 1.5*cm, self.height)
+    einfuegehoehe = einfuegehoehe - map_image.drawHeight - self.kleiner_abstand*0.8
 
-        content2 = []
-        if language == 'english':
-            text2 = Paragraph('<span name=Helvetica color=black size = 10>\In the Fifth IPCC Assessment Report, the Representative Concentration Pathways (RCPs)\
-                were used as scenarios. Two of them were selected for this report: RCP8.5 and RCP2.6. The RCP8.5 scenario describes a continued rise in greenhouse\
-                gas emissions, stabilizing at a very high level by the end of the 21st century. The climate‑protection scenario, RCP2.6, involves very ambitious\
-                measures to reduce greenhouse gas emissions and even includes “negative emissions” by the end of the 21st century—meaning a net \
-                removal of CO<sub rise=2 size=8>2</sub> from the atmosphere.</span>', style=self.styles['Justify'])
-        else:
-            text2 = Paragraph('<span name=Helvetica color=black size = 10>Im Rahmen des fünften IPCC-Sachstandsberichts wurden die\
-                    „Representative  Concentration Pathways“ (RCPs) als Szenarien verwendet. Drei davon wurden für diesen Bericht ausgewählt: RCP8.5, RCP4.5 und\
-                    RCP2.6. Das Szenario RCP8.5 beschreibt einen weiterhin kontinuierlichen Anstieg der Treibhausgasemissionen mit einer Stabilisierung der\
-                    Emissionen auf einem sehr hohen Niveau zum Ende des 21. Jahrhunderts. Das mittlere Szenario, RCP4.5, geht davon aus, dass die Emissionen bis\
-                    zur Mitte des 21. Jahrhunderts noch etwas ansteigen und danach wieder sinken. Dieser Pfad kann durch verschiedene sozioökonomische \
-                    Entwicklungen erreicht werden, die z. B. auch klimapolitische Maßnahmen berücksichtigen. Das Klimaschutz-Szenario, RCP2.6, beinhaltet sehr\
-                    ambitionierte Maßnahmen zur Reduktion von  Treibhausgasemissionen und zum Ende des 21. Jahrhunderts sogar „negative Emissionen“ (eine\
-                    netto-Entnahme von CO<sub rise=2 size=8>2</sub> aus der Atmosphäre).\
-                    </span>', style=self.styles['Justify'])
-        
-        breite, hoehe = text2.wrapOn(self.c, self.width - self.text_offset_links - self.text_offset_rechts - 1.0 *cm, self.height)
+    if self.sprache == 'english':
+        text2 = Paragraph(
+            "<para><span name=Helvetica size="+str(self.schrift_fliesstext)+">"
+            "Climate models are then used to simulate the impacts of these emissions and "
+            "the resulting changes in the composition of the atmosphere on the "
+            "Earth's climate system. <br />"
+            "In the Fifth IPCC Assessment Report, the Representative Concentration Pathways (RCPs) "
+            "were used as scenarios. Two of them were selected for this report: RCP8.5 and RCP2.6. "
+            "RCP8.5 describes a scenario with continued high greenhouse gas emissions, leading to significant climate change "
+            "at a very high level by the end of the 21st century. The climate protection scenario, "
+            "RCP2.6, involves very ambitious measures to reduce greenhouse gas emissions and even includes "
+            "negative emissions by the end of the 21st century meaning a net "
+            "removal of CO<sub rise=2 size=8>2</sub> from the atmosphere."
+            "</span></para>",
+            style=styles['Justify'])
+    else:
+        text2 = Paragraph(
+            "<para><span name=Helvetica size="+str(self.schrift_fliesstext)+">"
+            "FRENCH."
+            "</span></para>",
+            style=styles['Justify'])
 
-        self.c.drawString(self.text_offset_links + 0.5 *cm, einfuegehoehe - 0.25 * cm, tit)
-        back = Image(self.background)
-        back.drawHeight = hoehe + rcp_image.drawHeight + 1.5 * cm + 0.25 * cm + 0.5*cm
-        back.drawWidth = self.width - self.text_offset_links - self.text_offset_rechts
-        back.wrapOn(self.c, self.width, self.height)
-        back.drawOn(self.c, self.text_offset_links, y_pos - back.drawHeight)
-        self.c.drawString(self.text_offset_links + 0.5 *cm, einfuegehoehe - 0.25 * cm, tit)
-        table1.drawOn(self.c, self.text_offset_links + 1.1*cm, einfuegehoehe - rcp_image.drawHeight - self.abstand_zu_subtitle + 0.5*cm)
-
-        text2.wrapOn(self.c, self.width -self.text_offset_links - self.text_offset_rechts - 1.*cm, self.height)
-        text2.drawOn(self.c, self.text_offset_links + 0.5*cm, einfuegehoehe - rcp_image.drawHeight -1.* self.abstand_zu_subtitle - hoehe)
-#        figure_caption1.drawOn(self.c, self.text_offset_links + 1.*cm, einfuegehoehe - rcp_image.drawHeight - self.abstand_zu_subtitle + 0.5*cm)
-        figure_caption1.drawOn(self.c, self.text_offset_links + 0.25*cm, einfuegehoehe - rcp_image.drawHeight - self.abstand_zu_subtitle)
-        figure_caption2.drawOn(self.c, self.text_offset_links + 0.25*cm, einfuegehoehe - rcp_image.drawHeight -1.* self.abstand_zu_subtitle - hoehe - 0.65 * cm)
-
-        return back.drawHeight
+    available_width = self.width - self.text_offset_links - self.text_offset_rechts
+    para_width, para_height = text2.wrapOn(self.c, available_width, self.height)
+    text2.drawOn(self.c, self.text_offset_links, einfuegehoehe - para_height) 
+    einfuegehoehe = einfuegehoehe - para_height - self.kleiner_abstand
 
  ###########################################################################
-def insert_page_robustinfo(self, y_pos=None, language='english'):
+ # Part 2: ROBUSTNESS OF THE PROJECTIONS
+ ###########################################################################
     
-    if y_pos is None:
-        y_pos = self.height - 2 * cm  # or another sensible default
-    einfuegehoehe = y_pos - 0.5 * cm
-
-    self.c.setFont('Helvetica-Bold', 14)
-    self.c.setFillColor(self.cs_orange)
-    index = 0
-    if language == 'english':
-        tit = 'Symbols of the expert judgement on the robustness of the projections'
+    if self.sprache == 'english':
+        tit2 = 'ROBUSTNESS OF THE PROJECTIONS'
     else:
-        tit = 'Symbole der Experteneinschätzung zur Belastbarkeit der Projektionen'            
-    content = []
-        #columnwidths = (1.*cm, (self.width - self.text_offset_links - self.text_offset_rechts - 2.*cm - 1. *cm)/2.,
-        #                1.*cm, (self.width - self.text_offset_links - self.text_offset_rechts - 2.*cm - 1. *cm)/2.)
-        #pfeil1 = Image(self.pfeil_dir + '/ryi_sy.png')
-        #pfeil1.drawHeight = (1.5 * cm)
-        #pfeil1.drawWidth = 2 / 5. * pfeil1.drawHeight
-        #pfeil2 = Image(self.pfeil_dir + '/ryi_sn.png')
-        #pfeil2.drawHeight = (1.5 * cm)
-        #pfeil2.drawWidth = 2 / 5. * pfeil1.drawHeight
-        #pfeil3 = Image(self.pfeil_dir + '/ryd_sy.png')
-        #pfeil3.drawHeight = (1.5 * cm)
-        #pfeil3.drawWidth = 2 / 5. * pfeil1.drawHeight
-        #pfeil4 = Image(self.pfeil_dir + '/ryd_sn.png')
-        #pfeil4.drawHeight = (1.5 * cm)
-        #pfeil4.drawWidth = 2 / 5. * pfeil1.drawHeight
-        #pfeil5 = Image(self.pfeil_dir + '/rn_sy.png')
-        #pfeil5.drawHeight = (1.5 * cm)
-        #pfeil5.drawWidth = 2 / 5. * pfeil1.drawHeight
-        #pfeil6 = Image(self.pfeil_dir + '/rn_sn.png')
-        #pfeil6.drawHeight = (1.5 * cm)
-        #pfeil6.drawWidth = 2 / 5. * pfeil1.drawHeight
+        tit2 = 'FRENCH'
+    title2_y = einfuegehoehe - self.kleiner_abstand
+    if 'Header14BoldOrange' not in self.styles.byName:
+        self.styles.add(ParagraphStyle(
+            name='Header14BoldOrange',
+            parent=self.styles['Header14Bold'],
+            textColor=self.cs_orange,
+        ))
+    title2_para = Paragraph(tit2, self.styles['Header14BoldOrange'])
+    _, title2_h = title2_para.wrapOn(
+        self.c,
+        self.width - self.text_offset_links - self.text_offset_rechts,
+        self.height,
+    )
+    title2_para.drawOn(self.c, self.text_offset_links, title2_y - title2_h)
+    
+    # Reduce spacing between title and summary
+    einfuegehoehe = title2_y - title2_h - self.kleiner_abstand
 
-        #heights = [2.*cm, 2.*cm, 2.*cm ]
-        #if language == 'english':
-        #    content.append((pfeil1, Paragraph('<span name=Helvetica-bold color=black size = 10>Increase: </span><span name=Helvetica color=black size = 10>The majority of the simulations projects significant increases</span>', style=self.styles['Justify']),
-        #                pfeil2, Paragraph('<span name=Helvetica-bold color=black size = 10>Tendency towards an increase: </span><span name=Helvetica color=black size = 10>The majority of the simulations projects non-significant increases</span>', style=self.styles['Justify'])))
-        #    content.append((pfeil3, Paragraph('<span name=Helvetica-bold color=black size = 10>Decrease : </span><span name=Helvetica color=black size = 10>The majority of the simulations projects significant decreases</span>', style=self.styles['Justify']),
-        #                pfeil4, Paragraph('<span name=Helvetica-bold color=black size = 10>Tendency towards a decrease: </span><span name=Helvetica color=black size = 10>The majority of the simulations projects non-significant decreases</span>', style=self.styles['Justify'])))
-        #    content.append((pfeil5, Paragraph('<span name=Helvetica-bold color=black size = 10>Unclear: </span><span name=Helvetica color=black size = 10>The majority of the simulations projects significant changes, but do not agree on the direction of changes</span>', style=self.styles['Justify']),
-        #                pfeil6, Paragraph('<span name=Helvetica-bold color=black size = 10>No changes: </span><span name=Helvetica color=black size = 10>The majority of the simulations projects non-significant changes, with no preferred direction of changes</span>', style=self.styles['Justify'])))
-        #else:
-        #    content.append((pfeil1, Paragraph('<span name=Helvetica-bold color=black size = 10>Zunahme: </span><span name=Helvetica color=black size = 10>\
-        #        Mindestens 2/3 der Simulationen zeigen eine Zunahme und mindestens 50% der Simulationen sogar eine signifikante Zunahme.</span>', style=self.styles['Justify']),
-        #                pfeil2, Paragraph('<span name=Helvetica-bold color=black size = 10>Tendenz zur Zunahme: </span><span name=Helvetica color=black size = 10>\
-        #                    Mindestens 2/3 der Simulationen zeigen eine Zunahme, aber weniger als 50% der Simulationen eine signifikante Zunahme.</span>', style=self.styles['Justify'])))
-        #    content.append((pfeil3, Paragraph('<span name=Helvetica-bold color=black size = 10>Abnahme: </span><span name=Helvetica color=black size = 10>\
-        #        Mindestens 2/3 der Simulationen zeigen eine Abnahme und mindestens 50% der Simulationen sogar eine signifikante Abnahme. </span>', style=self.styles['Justify']),
-        #                pfeil4, Paragraph('<span name=Helvetica-bold color=black size = 10>Tendenz zur Abnahme: </span><span name=Helvetica color=black size = 10>\
-        #                    Mindestens 2/3 der Simulationen zeigen eine Abnahme, aber weniger als 50% der Simulationen eine signifikante Abnahme. </span>', style=self.styles['Justify'])))
-        #    content.append((pfeil5, Paragraph('<span name=Helvetica-bold color=black size = 10>Unklar: </span><span name=Helvetica color=black size = 10>\
-        #        Keine 2/3-Mehrheit bezüglich der Richtung der Änderungen, aber mindestens 50% der Simulationen zeigen signifikante Änderungen.</span>', style=self.styles['Justify']),
-        #                pfeil6, Paragraph('<span name=Helvetica-bold color=black size = 10>Keine Änderungen: </span><span name=Helvetica color=black size = 10>\
-        #                    Keine 2/3-Mehrheit bezüglich der Richtung der Änderungen; weniger als 50% der Simulationen zeigen signifikante Änderungen.</span>', style=self.styles['Justify'])))
-            
-        #table = Table(content, colWidths=columnwidths, rowHeights=heights)
-        #table.setStyle([#("VALIGN", (0, 0), (1, 0), "TOP"),
-        #                ("VALIGN", (0, 0), (-1, -1), "CENTER"),
-        #                ("ALIGN", (0, 0), (0, -1), "LEFT"),
-        #                ("ALIGN", (1, 0), (1, -1), "LEFT"),
-        #                ("ALIGN", (2, 0), (2, -1), "RIGHT"),
-        #                ("ALIGN", (3, 0), (3, -1), "LEFT"),
-                        #("GRID", (0,0), (-1,-1), 0.25, colors.gray),
-        #                ('BACKGROUND', (0, 0), (-1, -1), (colors.Color(255 / 255., 255 / 255., 255 / 255., 1)))])
-        #table.wrapOn(self.c, self.width, self.height)
-        
-    content2 = []
-    if language == 'english':
-        text2 = Paragraph('<span name=Helvetica color=black size = 10>\
-                Climatic differences from one time period to the next are due to two causes:\
-                1. the natural variability from year to year. Due to the chaotic fluctuations of the weather, climate properties are never identical in different time periods,\
-                even in absence of any climatic change. The result therefore always has a random component. \
-                < /br> 2. the long-term, systematic influence of external factors, for example the emission of greenhouse gases.\
-                In order to assess whether climatic differences have such a systematic cause or whether they are just random fluctuations, statistical significance tests are applied. \
-                In this report, a climate change is labeled as significant if its chance to be a random fluctuation is below 5%, based on a Mann-Whitney-u-test.\
-                Filled arrows indicate that more than half of the simulations show a significant change in the direction of the arrow (increase or decrease).<br />\
-                All indices which are given in units of <it>days/year</it>, <it>days</it>, or <it>nights/year</it> are\
-                rounded to full days, the other values are rounded to the first decimal place.</span>', style=self.styles['Justify'])
+    robust_width = self.width - self.text_offset_links - self.text_offset_rechts
+    if self.sprache == 'english':
+        intro3 = Paragraph(
+            "<para><span name=Helvetica size="+str(self.schrift_fliesstext)+">"
+            "Climatic differences from one time period to the next are shaped by two causes: "
+            "Natural year-to-year variability. Because weather is subject to constant chaotic fluctuations, "
+            "climatic variables are never identical across different time periods, even in the absence of climate change. "
+            "The long-term, systematic influence of external factors, such as the emission of greenhouse gases."
+            "</span></para>",
+            style=styles['Justify'])
+        _, intro_h = intro3.wrapOn(self.c, robust_width, self.height)
+        intro3.drawOn(self.c, self.text_offset_links, einfuegehoehe - intro_h)
+        einfuegehoehe = einfuegehoehe - intro_h - self.kleiner_abstand *0.5
+
+        text3 = Paragraph(
+            "<para><span name=Helvetica size="+str(self.schrift_fliesstext)+">"
+            "To statistically assess whether differences in a climatic variable have such a systematic cause or "
+            "can be explained by short-term, random fluctuations, statistical significance is calculated for "
+            "each simulation. We define a climate change as significant if, according to a so-called Mann–Whitney U test, "
+            "it can be explained by random fluctuations with a probability of less than 5%."
+            "</span></para>",
+            style=styles['Justify'])
+        _, hoehe = text3.wrapOn(self.c, robust_width, self.height)
+        text3.drawOn(self.c, self.text_offset_links, einfuegehoehe - hoehe)
+        einfuegehoehe = einfuegehoehe - hoehe - self.kleiner_abstand * 0.5
+
+        robust_def = Paragraph(
+            "<span name=Helvetica size="+str(self.schrift_fliesstext)+">"
+            "<b>Robust:</b> We assumed that an ensemble depicts a robust increase "
+            "if at least 2/3 of the climate projections show an increase and at "
+            "least 1/2 of the climate projections show a significant increase. "
+            "The definition of a robust decrease is analogous."
+            "</span>",
+            style=styles['DefAfterBullet'])
+        _, rd_h = robust_def.wrapOn(self.c, robust_width, self.height)
+        robust_def.drawOn(self.c, self.text_offset_links, einfuegehoehe - rd_h)
+        einfuegehoehe = einfuegehoehe - rd_h - self.kleiner_abstand * 0.5
+
+        tendency_def = Paragraph(
+            "<span name=Helvetica size="+str(self.schrift_fliesstext)+">"
+            "<b>Tendency:</b> We assumed that an ensemble depicts a tendency for an "
+            "increase if at least 2/3 of the climate projections show an increase, "
+            "but fewer than 1/2 of the climate projections show a significant increase. "
+            "The definition of a tendency for decrease is analogous."
+            "</span>",
+            style=styles['DefAfterBullet'])
+        _, td_h = tendency_def.wrapOn(self.c, robust_width, self.height)
+        tendency_def.drawOn(self.c, self.text_offset_links, einfuegehoehe - td_h)
+        einfuegehoehe = einfuegehoehe - td_h - self.kleiner_abstand * 0.5
+
+        unclear_def = Paragraph(
+            "<span name=Helvetica size="+str(self.schrift_fliesstext)+">"
+            "<b>Unclear:</b> No 2/3 majority exists regarding the direction of change, "
+            "but at least 1/2 of the projections show a significant change."
+            "</span>",
+            style=styles['DefAfterBullet'])
+        _, ud_h = unclear_def.wrapOn(self.c, robust_width, self.height)
+        unclear_def.drawOn(self.c, self.text_offset_links, einfuegehoehe - ud_h)
+        einfuegehoehe = einfuegehoehe - ud_h - self.kleiner_abstand * 0.5
+
+        none_def = Paragraph(
+            "<span name=Helvetica size="+str(self.schrift_fliesstext)+">"
+            "<b>None:</b> No 2/3 majority exists regarding the direction of change, "
+            "and fewer than 1/2 of the projections show a significant change."
+            "</span>",
+            style=styles['DefAfterBullet'])
+        _, nd_h = none_def.wrapOn(self.c, robust_width, self.height)
+        none_def.drawOn(self.c, self.text_offset_links, einfuegehoehe - nd_h)
+        einfuegehoehe = einfuegehoehe - nd_h - self.kleiner_abstand * 0.5
+
     else:
-        text2 = Paragraph('<span name=Helvetica color=black size = 10>\
-                Klimatische Unterschiede von einer Zeitperiode zur nächsten sind durch zwei Ursachen geprägt: <br /> \
-                1. Natürliche Schwankungen von Jahr zu Jahr. Da das Wetter ständigen chaotischen Schwankungen unterliegt, sind auch Klimagrößen über verschiedene Zeiträume nie identisch,\
-                auch ohne Klimawandel. <br /> \
-                2. Der langfristige, systematische Einfluss externer Faktoren, z.B. der Ausstoß von Treibhausgasen. \
-                Um statistisch zu bewerten, ob Unterschiede einer Klimagröße eine solche systematische Ursache haben oder mit kurzfristigen, zufälligen Schwankungen erklärbar sind,\
-                wird für jede Simulation die statistische Signifikanz berechnet. Wir definieren eine Klimaänderung als signifikant, wenn sie gemäß eines sogenannten Mann-Whitney-U-Tests\
-                mit einer Wahrscheinlichkeit von unter 5% mit zufälligen Schwankungen erklärbar ist. Farblich ausgefüllte Pfeile bedeuten, dass mehr als 50% der Simulationen eine signifikante Änderung\
-                in die angegebene Richtung zeigen (Zunahme oder Abnahme).<br /> Alle Kennwerte sowie ihre projizierten Änderungen sind auf die erste bzw. zweite Dezimalstelle gerundet.</span>', style=self.styles['Justify'])
-        #content2.append(('', text2))
-    breite, hoehe = text2.wrapOn(self.c, self.width - self.text_offset_links - self.text_offset_rechts - 1.0 *cm, self.height)
-        
+        text3 = Paragraph(
+            "<para><span name=Helvetica size="+str(self.schrift_fliesstext)+">"
+                'Klimatische Unterschiede von einem Zeitraum zum anderen werden durch zwei Ursachen gepr\u00e4gt: <br />'
+                '1. Natürliche Jahr-zu-Jahr-Variabilität. Da das Wetter ständigen chaotischen Schwankungen unterliegt, sind klimatische Variablen auch ohne Klimawandel nie in verschiedenen Zeiträumen identisch. <br />'
+                '2. Der langfristige systematische Einfluss externer Faktoren, wie z.B. die Emission von Treibhausgasen. <br />'
+                'Um statistisch zu beurteilen, ob Unterschiede in einer klimatischen Variable eine solche systematische Ursache haben oder durch kurzfristige, zuf\u00e4llige Schwankungen erkl\u00e4rt werden k\u00f6nnen, wird f\u00fcr jede Simulation die statistische Signifikanz berechnet. Wir definieren eine Klimaver\u00e4nderung als signifikant, wenn sie laut eines sogenannten Mann-Whitney-U-Tests mit einer Wahrscheinlichkeit von weniger als 5% durch zuf\u00e4llige Schwankungen erkl\u00e4rt werden kann. Alle Indikatoren sowie ihre projizierten Ver\u00e4nderungen werden auf die erste oder zweite Dezimalstelle gerundet.',
+                 "</span></para>",
+                 style=styles['Justify'])
+        _, hoehe = text3.wrapOn(self.c, robust_width, self.height)
+        text3.drawOn(self.c, self.text_offset_links, einfuegehoehe - hoehe)
 
-    text2.wrapOn(self.c, self.width - self.text_offset_links - self.text_offset_rechts - 1.*cm, self.height)
-    #back = Image(self.background)
-    #back.drawHeight = numpy.sum(heights) + 1. * cm + hoehe + 1. * cm
-    #back.drawWidth = self.width - self.text_offset_links - self.text_offset_rechts
-    #back.wrapOn(self.c, self.width, self.height)
-    #back.drawOn(self.c, self.text_offset_links, y_pos - back.drawHeight)
-    self.c.drawString(self.text_offset_links + 0.5 *cm, einfuegehoehe - 0.25 * cm, tit)
-    #table.drawOn(self.c, self.text_offset_links + 0.5*cm, einfuegehoehe -0.75 * cm - numpy.sum(heights))
-    text2.drawOn(self.c, self.text_offset_links + 0.5*cm, einfuegehoehe + 0.25 * cm- hoehe - self.abstand_zu_subtitle - self.kleiner_abstand)
-        #table2.drawOn(self.c, self.text_offset_links + 0.5*cm, einfuegehoehe -0.25 * cm - numpy.sum(heights)- hoehe - self.abstand_zu_subtitle - self.kleiner_abstand)
-        
-    return #back.drawHeight
+    return
+ 
+ 
 
 

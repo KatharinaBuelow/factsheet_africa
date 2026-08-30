@@ -39,9 +39,19 @@ def insert_glossar_page(self, glossar_dict, variables):
         firstLineIndent=0,
     )
 
+    body_left = ParagraphStyle(
+        name="BodyLeft",
+        parent=self.styles["SmallTableContent"],
+        alignment=TA_LEFT,
+        leftIndent=0,
+        firstLineIndent=0,
+        spaceBefore=0,
+        spaceAfter=0,
+    )
+
     einfuegehoehe_top = self.height - 2 * cm
     # Titel: 
-    title_text = "DEFINITION OF CLIMATE INDICATORS" if self.sprache == 'english' else "DEFINITION DER KLIMAINDIKATOREN"
+    title_text = "DEFINITION OF CLIMATE INDICATORS" if self.sprache == 'english' else "FRENCH"
     title_h = self.draw_header(title_text, einfuegehoehe_top)
     # Reduce spacing between title and summary
     einfuegehoehe_top = einfuegehoehe_top - title_h - self.kleiner_abstand
@@ -50,9 +60,6 @@ def insert_glossar_page(self, glossar_dict, variables):
     var_col_width = 4.*cm
     content = []
     columnwidths = (var_col_width, self.width - self.text_offset_links - self.text_offset_rechts - var_col_width) # - 0.5 *cm)
-    #heights = [0.45 * cm] * (len(variables))
-    heights = []
-    heights.insert(0, 1. * cm)
     font_size = 12
     font_size2 = 12
     content.append((
@@ -62,25 +69,19 @@ def insert_glossar_page(self, glossar_dict, variables):
 
     variables='TG','TX','TN','SU35','SU40','TR26','RRm','DD','RR1', 'R20mm', 'FG','SU40_du3_DD_du5'
     for var in variables:
-            text_zeile = Paragraph('<span name=Helvetica color=black size ='+str(font_size2)+'>'+glossar_dict[var][1]+'</span>', style=self.styles['SmallTableContent'])
-            ##breite, hoehe = text_zeile.wrapOn(self.c, self.width - self.text_offset_links - self.text_offset_rechts - var_col_width, self.height)
-            breite, hoehe = text_zeile.wrapOn(self.c, self.width - self.text_offset_links - self.text_offset_rechts - var_col_width - 1. *cm, self.height)
-            varara = Paragraph('<span name=Helvetica color=black size ='+str(font_size2)+'>'+glossar_dict[var][0]+'</span>', style = self.styles['SmallTableContent'])
-            breite2, hoehe2 = varara.wrapOn(self.c, var_col_width , self.height)
+            text_zeile = Paragraph('<span name=Helvetica color=black size ='+str(font_size2)+'>'+glossar_dict[var][1]+'</span>', style=body_left)
+            varara = Paragraph('<span name=Helvetica color=black size ='+str(font_size2)+'>'+glossar_dict[var][0]+'</span>', style=body_left)
             content.append((varara, text_zeile))
-            #print( hoehe, hoehe2)
-            self.hoehe = hoehe
-            heights.append(max(hoehe+ 0.25 * cm, hoehe2+ 0.25 * cm)+ 0.2 * cm)
-    dum = heights.pop(-1)
-    heights.append(dum + 0.25*cm)
-    table = Table(content, colWidths=columnwidths, rowHeights=heights)
-    table.setStyle([("VALIGN", (0, 0), (1, 0), "MIDDLE"),
-                        ("VALIGN", (0, 1), (1, -1), "CENTER"),
-                        ("ALIGN", (0, 0), (0, -1), "LEFT"),
+    table = Table(content, colWidths=columnwidths)
+    table.setStyle([("VALIGN", (0, 0), (-1, -1), "TOP"),
+                        ("ALIGN", (0, 0), (-1, -1), "LEFT"),
+                        ("LEFTPADDING", (0, 0), (-1, -1), 4),
+                        ("TOPPADDING", (0, 0), (-1, -1), 5),
+                        ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
                         ("GRID", (0,0), (-1,-1), 0.25, colors.gray),
                         ('BACKGROUND', (0, 0), (-1, -1), (colors.Color(255 / 255., 255 / 255., 255 / 255., 1)))])
-    table.wrapOn(self.c, self.width, self.height)
-    table.drawOn(self.c, self.text_offset_links, einfuegehoehe_top -0.25 * cm - numpy.sum(heights))
+    _, table_height = table.wrapOn(self.c, self.width, self.height)
+    table.drawOn(self.c, self.text_offset_links, einfuegehoehe_top - 0.25 * cm - table_height)
 
         #table.drawOn(self.c, self.text_offset_links + 0.25*cm, einfuegehoehe_top -0.25 * cm - numpy.sum(heights))
 # Katharina noch bearbeiten für 2 Sprache
@@ -99,13 +100,13 @@ def return_glossar_en(english=True):
            'The temperature refers to near-surface air temperature (2 m above ground). '
            'Annual and seasonal means are calculated using daily minimum temperatures.'],
         'SU30': ['Hot Days', 
-             'Number of days per year with a daily maximum temperature above 30 °C.'],
+             'Number of days per year with a daily maximum temperature > 30 °C.'],
         'SU35': ['Very Hot Days', 
-             'Number of days per year with a daily maximum temperature above 35 °C.'],
+             'Number of days per year with a daily maximum temperature > 35 °C.'],
         'SU40': ['Extremely Hot Days', 
-             'Number of days per year with a daily maximum temperature above 40 °C.'],
+             'Number of days per year with a daily maximum temperature > 40 °C.'],
         'TR26': ['Tropical Nights', 
-           'Number of days per year with a daily minimum temperature above 20 °C.'],
+           'Number of days per year with a daily minimum temperature > 20 °C.'],
         'CHD30x': ['Maximum Duration of Heatwaves', 
                'Annual maximum duration of periods when the daily maximum temperature exceeds 30 °C.'],
         'RRm': ['Precipitation', 
@@ -122,9 +123,9 @@ def return_glossar_en(english=True):
         'R25mm': ['Precipitation ≥ 25 mm/day', 
               'Number of days per year with precipitation (rain and snow) exceeding 25 mm.'],
         'DD': ['Dry Days', 
-           'Number of days per year with precipitation (rain and snow) below 1 mm.'],
+           'Number of days per year with precipitation (rain and snow) < 1 mm.'],
         'RR1': ['Wet Days', 
-            'Number of days per year with precipitation (rain and snow) of at least 1 mm.'],
+            'Number of days per year with precipitation (rain and snow) ≥ 1 mm.'],
         'FG': ['Wind Speed', 
            'Mean annual wind speed in m/s.'],
         'HSx3': ['Maximum Duration of Heatwaves', 

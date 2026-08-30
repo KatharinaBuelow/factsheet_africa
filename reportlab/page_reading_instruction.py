@@ -18,10 +18,10 @@ def insert_page_reading_instructions(self):
     #--------------------------
     # Titel: 
     #-------------------------
-    title_text = "READING INSTRUCTIONS" if self.sprache == 'english' else "LESEANLEITUNG"
+    title_text = "READING INSTRUCTIONS" if self.sprache == 'english' else "FRENCH"
     title_h = self.draw_header(title_text, einfuegehoehe_top)
   
-    # Reduce spacing between title and summary
+    # Spacing between title and summary
     einfuegehoehe_top = einfuegehoehe_top - title_h - self.kleiner_abstand
     
     styles = getSampleStyleSheet()
@@ -30,73 +30,104 @@ def insert_page_reading_instructions(self):
     if self.sprache == 'english':
         intro_text = (
             "<para><span name=Helvetica size="+str(self.schrift_fliesstext)+">"
-            "This page explains how to read the figures used in this factsheet. "
-            "The first graphic illustrates the structure of the time-series plot."
+            "This page explains how to read the timeseries and bar chart figures used in this factsheet."
             "</span></para>"
         )
     else:
         intro_text = (
             "<para><span name=Helvetica size="+str(self.schrift_fliesstext)+">"
-            "Diese Seite erklärt, wie die Abbildungen in diesem Factsheet gelesen werden. "
-            "Die erste Grafik zeigt den Aufbau des Zeitreihendiagramms."
+            "FRENCH."
             "</span></para>"
         )
     
     para = Paragraph(intro_text, styles["Justify"])
     available_width = self.width - self.text_offset_links - self.text_offset_rechts
     _, para_height = para.wrapOn(self.c, available_width, self.height)
-    # Text oben platzieren
-    para_top_y = einfuegehoehe_top - para_height
-    para.drawOn(self.c, self.text_offset_links, para_top_y)
+
+    # Place text at the top of the page, below the title
+    einfuegehoehe = einfuegehoehe_top - para_height
+    para.drawOn(self.c, self.text_offset_links, einfuegehoehe)
     
     # Put figure after the text
-    einfuegehoehe_table = einfuegehoehe_top - para_height - self.kleiner_abstand
+    einfuegehoehe = einfuegehoehe - para_height 
     map_image = get_image(self.timeseries_theorie, height=8.5 * cm)
     map_image.wrapOn(self.c, self.width, self.height)
-    map_image.drawOn(self.c, self.text_offset_links, einfuegehoehe_table - map_image.drawHeight)
+    map_image.drawOn(self.c, self.text_offset_links, einfuegehoehe - map_image.drawHeight)
+    einfuegehoehe = einfuegehoehe - map_image.drawHeight 
     
-    # Bildunterschrift direkt unter die graphik
-    caption_text = (
+    # Caption directly below the figure
+    if self.sprache == 'english':
+        caption_text = (
             "<para><span name=Helvetica size="+str(self.schrift_fliesstext)+">"
-            "<b>1:</b> Unit <br />"
-            "<b>2:</b> Legend <br />"
-            "<b>3:</b> Reference period 1991-2020 <br />"
-            "<b>4 TIMESERIES:</b> The timeseries plot shows the annual values of the climate indicator for Burkina Faso from 1941 to 2023, relative to the 1991–2020 average. <br />"
-            "<b>5 BAR CHART:</b> Legend<br />"
+            "<b>1:</b> Magnitude and unit of the simulated change in the respective climate variable.<br /><br />"
+            "<b>2:</b> Legend for the time series plot: colors indicate the underlying emission "
+            "scenarios (RCP2.6: blue; RCP8.5: red). The dark line represents the ensemble median, "
+            "while the shaded area denotes the full range of the climate projections used. <br /><br />"
+            "<b>3:</b> The reference period 1991-2020 is shown as a grey shaded area. "
+            "Anomalies are expressed relative to the 30-year climatological mean of this "
+            "period, with each annual value "
+            "representing its deviation from the 1991-2020 average. <br /><br />"
+            "<b>4 TIME SERIES:</b> The time series from 1971 to 2098 depicts annual anomalies "
+            "of the climate indicator relative to the 30-year mean of the reference period 1991-2020. "
+            "The ensemble median is shown by the dark line, "
+            "while individual climate projections are displayed as thin lines in the background. "
+            "The shaded envelope represents the full range of projected values and highlights the uncertainty "
+            "across the ensemble. <br /><br />"
+            "</span></para>"
+        )
+    else:
+        caption_text = (
+            "<para><span name=Helvetica size="+str(self.schrift_fliesstext)+">"
+            "FRENCH."
             "</span></para>"
         )
     caption = Paragraph(caption_text, styles['Justify'])
     cap_width, cap_height = caption.wrapOn(self.c, available_width, self.height)
-    caption_y = (einfuegehoehe_table - map_image.drawHeight) - self.kleiner_abstand
-    caption.drawOn(self.c, self.text_offset_links, caption_y - cap_height)
+    einfuegehoehe = (einfuegehoehe - cap_height) #- self.kleiner_abstand * 0.5
+    caption.drawOn(self.c, self.text_offset_links, einfuegehoehe)
 
-# Distance for next element: 
-    #offsettop = offsettop - textbox_y - self.kleiner_abstand
- 
-    # draw plot left and caption of figure right at the bottom of the page, 
-    # Text to figure 1 (ERA5 anomalies)
-    col2_text = (
-        "<b>Figure 1:</b> Figure 1 shows annual temperature and precipitation anomalies "
-        "for "+self.region+" from 1941–2023, relative to the 1991–2020 average. "
-        "Temperatures show a clear long-term warming trend, with mostly positive anomalies since the 2000s. "
-        "Precipitation varies strongly: early decades were wetter, the 1980s drought is distinct, "
-        "and recent years show mixed patterns. Data source: ERA5 global reanalysis (Hersbach et al., 2020)."
-    )
-
-    # Annual anomaly for precipitation and Temperature
-    
+    if self.sprache == 'english':   
+        col2_text = (
+            "<para><span name=Helvetica size="+str(self.schrift_fliesstext)+">"
+            "<b>5 BAR CHART:</b> The bar chart illustrates the range of simulated changes "
+            "for two 30-year periods relative to the reference period 1991-2020: 2031-2060, "
+            "representing the period \"mid-21st century\", and 2069-2098, "
+            "representing the period \"end of the 21st century\". The bars summarize characteristic "
+            "statistics of the ensemble of available climate model projections: Maximum, 85th percentile, Median, 15th percentile, Minimum. "
+            "The full range of simulation results is bounded by the minimum and maximum values. "
+            "The median represents the projection located at the center of the ensemble distribution. "
+            "Additionally, the 15th and 85th percentiles indicate the values below "
+            "which 15% and 85% of the simulations fall, respectively. <br /><br />"
+            "<b>6:</b> Legend for the bar chart: colors indicate the underlying emission "
+            "scenarios (RCP2.6: blue; RCP8.5: red). The grey line represents the ensemble median, "
+            "while the dark shaded area denotes the range between the 15th and 85th percentiles. "
+            "The lighter shaded area indicates the full range of the climate projections used. <br />"
+            "</span></para>"
+        )
+    else:
+        col2_text = (
+            "<para><span name=Helvetica size="+str(self.schrift_fliesstext)+">"
+            "FRENCH."
+            "</span></para>"
+        )   
     map_image = get_image(self.box_theorie, height = 5*cm)
     map_image.wrapOn(self.c, self.width, self.height)
-    # Place image so its bottom aligns with self.text_offset_unten
-    img_y = self.text_offset_unten
-    map_image.drawOn(self.c, self.text_offset_links, img_y)
-    # Place col2_text right beside the box_theorie at the same height as the top of box_theorie
+
+    # Figure and text are placed in two columns, 
+    # with the figure on the left and the text on the right
+    # they are allined at their middle, so that the figure and text are centered vertically
+    
+    top_y = einfuegehoehe - self.kleiner_abstand *3
+    image_y = top_y - map_image.drawHeight
+    map_image.drawOn(self.c, self.text_offset_links, image_y)
+    # Place col2_text right beside the box_theorie and align vertical center
     col2_width = self.width - self.text_offset_links - self.text_offset_rechts - map_image.drawWidth - 1*cm
     col2_x = self.text_offset_links + map_image.drawWidth + 1*cm
-    col2_y = img_y + map_image.drawHeight  # Top of box_theorie
 
     p2 = Paragraph(col2_text, styles['Justify'])
     p2_width, p2_height = p2.wrap(col2_width, self.height)
-    p2.drawOn(self.c, col2_x, col2_y - p2_height)
+    image_center_y = image_y + (map_image.drawHeight / 2.0)
+    p2_y = image_center_y - (p2_height / 2.0)
+    p2.drawOn(self.c, col2_x, p2_y)
 
     return
