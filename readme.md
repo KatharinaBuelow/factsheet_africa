@@ -10,8 +10,7 @@ tables presented in the GERICS factsheet.
 
 Also see [documentation]()
 
-![image](PLOTS/country/FS_Burkina_Faso.png)
-
+<img src="PLOTS/country/FS_Burkina_Faso.png" alt="map" width="300">
 
 ## Contact
 
