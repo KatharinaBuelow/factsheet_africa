@@ -15,12 +15,28 @@ import re
 from reportlab_template_africa import *
 
 #################---------------------------##############################---------------------------########################-------------------
-region = 'Burkina Faso'
-sector = 'Agriculture'
+sprache = 'english'
+if sprache == 'english':
+    print('Creating factsheet in English')
+    region = 'Burkina Faso'
+    sector = 'Agriculture'
+else:
+    print('Creating factsheet in French')
+    region = 'Burkina Faso'
+    sector = 'Agriculture'
+
 #region= 'Togo'
-#sector = 'Water'
-#region ='Ivory Coast'
-#sector = 'Health'
+#if sprache == 'english':
+#    sector = 'Water'
+#else:
+#    sector = 'Eau'
+
+#if sprache == 'english':
+    #region ='Ivory Coast'
+    #sector = 'Health'
+#else:
+#    region = 'Côte d’Ivoire'    
+#    sector = 'Santé'
 
 final_pdf_name ='Test_Factsheet_'+region.replace(' ', '_')+'.pdf'
 anzahl_simulationen = 18
@@ -44,7 +60,7 @@ hori_SU40_abs = '/Users/Buelow/github/factsheet_africa/PLOTS/horizontal-plots-ex
 copev_su40_tr26='/Users/Buelow/github/factsheet_africa/PLOTS/AFR22_compound_events_diff_era5/Compev_SU40_du3_TR26_du3_median_diff_Burkina_Faso_1200_oT.png'
 copev_su40_DD='/Users/Buelow/github/factsheet_africa/PLOTS/AFR22_compound_events_diff_era5/Compev_SU40_du7_DD_du7_median_diff_Burkina_Faso_1200_oT.png'
 basic_color = [233,104,33]
-sprache = 'english'
+
 cs_orange = colors.Color(basic_color[0]/255., basic_color[1]/255., basic_color[2]/255.)
 cs_schwarz = colors.Color(0 / 255., 0 / 255., 0 / 255., 1)
 doc = FactSheet(final_pdf_name, version, region, sector, gerics_logo, wascal_logo, bmbf_logo, hereon_logo, 

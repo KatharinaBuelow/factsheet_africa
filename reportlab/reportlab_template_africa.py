@@ -311,11 +311,18 @@ class FactSheet(object):
         style3 = ParagraphStyle('Line1b', fontName='Helvetica', fontSize=24, textColor='white', alignment=TA_LEFT)
 
         # Create paragraphstitle names
-        line0 = Paragraph(self.region.title(), style0)
-        line1 = Paragraph("CLIMATE FACTSHEET", style1)
-        line1b = Paragraph(self.sector.upper(), style3)
-        line2 = Paragraph("Climate Service Center Germany (GERICS)", style2)
-        line3 = Paragraph("WASCAL Competence Centre", style2)
+        if self.sprache == 'english':   
+            line0 = Paragraph(self.region.title(), style0)
+            line1 = Paragraph("CLIMATE FACTSHEET", style1)
+            line1b = Paragraph(self.sector.upper(), style3)
+            line2 = Paragraph("Climate Service Center Germany (GERICS)", style2)
+            line3 = Paragraph("WASCAL Competence Centre", style2)
+        else:   
+            line0 = Paragraph(self.region.title(), style0)
+            line1 = Paragraph("FICHE CLIMATIQUE", style1)
+            line1b = Paragraph(self.sector.upper(), style3)
+            line2 = Paragraph("Climate Service Center Germany (GERICS)", style2)
+            line3 = Paragraph("WASCAL Competence Centre", style2)
         #line3 = Paragraph("West African Science Service Centre on Climate Change and Adapted Land Use (WASCAL)", style2)
 
         # Calculate positions

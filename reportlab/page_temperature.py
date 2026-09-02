@@ -24,18 +24,34 @@ def insert_page_temperature(self):
     styles = getSampleStyleSheet()
     if 'Justify' not in styles.byName:
         styles.add(ParagraphStyle(name='Justify', parent=styles['Normal'], alignment=TA_JUSTIFY))
-    summary_text = (
-        "<para><span name=Helvetica size="+str(self.schrift_fliesstext)+">"
-        "The graphs show the projected evolution of mean annual temperature and mean number of heat days (Maximum temperature > 40°C) \
-        for "+self.region+" from 1971 to 2098, based on CORDEX AFR22\
-         regional climate model realizations under two emission scenarios: RCP2.6 (blue) and RCP8.5 (red). The solid lines represent \
-         the median of the model ensemble for each scenario, while the shaded areas indicate the range between the minimum and maximum \
-         values across all models. The historical reference period (1991–2020) is highlighted. The projections reveal a clear warming trend, with RCP8.5 showing a \
-         strong increase toward the end of the century, while RCP2.6 stabilizes at a lower \
-         level after mid-century. The shaded ranges illustrate the uncertainty among models, with wider bands indicating greater \
-         variability in projections."
-        "</span></para>"
-    )
+    if self.sprache == 'english':
+        summary_text = (
+            "<para><span name=Helvetica size="+str(self.schrift_fliesstext)+">"
+            "The graphs show the projected evolution of mean annual temperature and mean number of heat days (Maximum temperature > 40°C) \
+            for "+self.region+" from 1971 to 2098, based on CORDEX AFR22\
+            regional climate model realizations under two emission scenarios: RCP2.6 (blue) and RCP8.5 (red). The solid lines represent \
+            the median of the model ensemble for each scenario, while the shaded areas indicate the range between the minimum and maximum \
+            values across all models. The historical reference period (1991–2020) is highlighted. The projections reveal a clear warming trend, with RCP8.5 showing a \
+            strong increase toward the end of the century, while RCP2.6 stabilizes at a lower \
+            level after mid-century. The shaded ranges illustrate the uncertainty among models, with wider bands indicating greater \
+            variability in projections."
+            "</span></para>"
+    else:
+        summary_text = (
+            "<para><span name=Helvetica size="+str(self.schrift_fliesstext)+">"
+            "Les graphiques montrent l'évolution projetée de la température moyenne annuelle et du "
+            "nombre moyen de jours de forte chaleur (température maximale > 40°C) pour "+self.region+" "
+            "entre 1971 et 2098, sur la base des simulations des modèles climatiques régionaux CORDEX "
+            "AFR22 selon deux scénarios d'émissions : RCP2.6 (bleu) et RCP8.5 (rouge). Les lignes continues "
+            "représentent la médiane de l'ensemble des modèles pour chaque scénario, tandis que les zones ombrées "
+            "indiquent l'intervalle compris entre les valeurs minimales et maximales de l'ensemble des modèles. "
+            "La période de référence historique (1991–2020) est mise en évidence. Les projections montrent une "
+            "nette tendance au réchauffement, le scénario RCP8.5 affichant une forte augmentation vers la fin "
+            "du siècle, tandis que le scénario RCP2.6 se stabilise à un niveau plus faible après le milieu "
+            "du siècle. Les zones ombrées illustrent l'incertitude entre les modèles, "
+            "des bandes plus larges indiquant une plus grande variabilité des projections."
+            "</span></para>"
+        )
 
     para = Paragraph(summary_text, styles["Justify"]) 
     available_width = self.width - self.text_offset_links - self.text_offset_rechts
@@ -50,10 +66,19 @@ def insert_page_temperature(self):
     start_y = para_top_y - self.kleiner_abstand
 
     # Caption-Texte vorab definieren und Höhen bestimmen
-    caption_text = (
-        "<b>Figure 2:</b> Projected evolution of mean annual temperature for " + self.region + " from 1971 to 2098 based on CORDEX AFR22 \
-        regional climate model realizations under RCP2.6 (blue) and RCP8.5 (red) scenarios. Solid lines represent the ensemble median, \
-        while shaded areas indicate the range between minimum and maximum values across all models, illustrating uncertainty."
+    if self.sprache == 'english':
+        caption_text = (
+            "<b>Figure 2:</b> Projected evolution of mean annual temperature for " + self.region + " from 1971 to 2098 based on CORDEX AFR22 \
+            regional climate model realizations under RCP2.6 (blue) and RCP8.5 (red) scenarios. Solid lines represent the ensemble median, \
+            while shaded areas indicate the range between minimum and maximum values across all models, illustrating uncertainty."
+        )   
+    else:
+        caption_text = (
+            "<b>Figure 2:</b>Évolution projetée de la température moyenne annuelle pour " + self.region + " entre "
+            "1971 et 2098, sur la base des simulations des modèles climatiques régionaux CORDEX AFR22 selon les "
+            "scénarios RCP2.6 (bleu) et RCP8.5 (rouge). Les lignes continues représentent la médiane de l'ensemble "
+            "des modèles, tandis que les zones ombrées indiquent l'intervalle compris entre les valeurs minimales "
+            "et maximales de l'ensemble des modèles, illustrant l'incertitude des projections."
     )
     caption = '<para><span name=Helvetica color=black size='+str(self.schrift_caption)+'>'+caption_text+'</span></para>'
     caption = Paragraph(caption, styles['Justify'])
@@ -62,12 +87,22 @@ def insert_page_temperature(self):
     _, cap_height = caption.wrapOn(self.c, available_width, self.height)
 
     # Zweite Grafik: ts_SU40_anomaly (Tage tmax> 40°C) darunter platzieren und skalieren
-    caption_text2 = (
-        "<b>Figure 3:</b> Projected evolution of mean annual number of heatdays (maximum temperature >40 °C) for " + self.region + " \
-        from 1971 to 2098 based on CORDEX AFR22 \
-        regional climate model realizations under RCP2.6 (blue) and RCP8.5 (red) scenarios. Solid lines represent the ensemble median, \
-        while shaded areas indicate the range between minimum and maximum values across all models, illustrating uncertainty."
-    )
+    
+    if self.sprache == 'english':
+        caption_text2 = (
+            "<b>Figure 3:</b> Projected evolution of mean annual number of heatdays (maximum temperature >40 °C) for " + self.region + " \
+            from 1971 to 2098 based on CORDEX AFR22 \
+            regional climate model realizations under RCP2.6 (blue) and RCP8.5 (red) scenarios. Solid lines represent the ensemble median, \
+            while shaded areas indicate the range between minimum and maximum values across all models, illustrating uncertainty."
+        )
+    else:
+        caption_text2 = (
+            "<b>Figure 3:</b> Évolution projetée du nombre moyen annuel de jours de forte chaleur (température maximale > 40 °C) "
+            "pour " + self.region + " entre 1971 et 2098, sur la base des simulations des modèles climatiques régionaux CORDEX "
+            "AFR22 selon les scénarios RCP2.6 (bleu) et RCP8.5 (rouge). Les lignes continues représentent la médiane de l'ensemble "
+            "des modèles, tandis que les zones ombrées indiquent l'intervalle compris entre les valeurs minimales et maximales "
+            "de l'ensemble des modèles, illustrant l'incertitude des projections."
+        )
     caption2 = '<para><span name=Helvetica color=black size='+str(self.schrift_caption)+'>'+caption_text2+'</span></para>'
     caption2 = Paragraph(caption2, styles['Justify'])
     _, cap_height2 = caption2.wrapOn(self.c, available_width, self.height)
