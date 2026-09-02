@@ -3,7 +3,7 @@
 [![license](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![doi](https://zenodo.org/badge/DOI/xxxxx/zenodo.xxxxx.svg)](https://doi.org/xxxxx/zenodo.xxxxxx)
 
-![image](PLOTS/country/FS_Burkina_Faso.png)
+<img src="PLOTS/country/FS_Burkina_Faso.png" alt="map" width="300">
 
 This repository contains the climate data analyses featured in the
 GERICS Climate Factsheet for Africa. It also includes the scripts used
