@@ -1,0 +1,44 @@
+site_name: Climate Factsheet Africa
+site_description: Documentation for the Climate Factsheet Africa
+site_author: "Katharina Bülow"
+theme:
+  name: material
+  palette:
+    primary: grey
+  logo: logos/gerics.png
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - toc.integrate
+    - search.suggest
+
+extra_css:
+  - stylesheets/extra.css
+
+nav:
+  - Home: introduction.md
+  - Country: country.md
+  - Observed: observed.md
+  #- Exposure: exposure.md
+  #- Population: population.md
+  - Regions: regions.md
+  - Table with Indices: table_with_indices.md
+  - Timeseries: timeseries.md
+  - Compound Events: compound_events.md
+  - Details:
+    - Indices: indices.md
+    - Ensemble Analysis: ensemble_analysis.md
+    - Model List: model_list.md
+    - Environment: environment.md
+  - ReportLab: reportlab.md
+  - Authors: authors.md
+  - Impressum: impressum.md
+
+
+
+#markdown_extensions:
+#  - tables
+#  - toc:
+#      permalink: true
