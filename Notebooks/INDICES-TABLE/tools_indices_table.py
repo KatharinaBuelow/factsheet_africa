@@ -266,7 +266,7 @@ def annotate_row(row_index):
     if row_index == "Min:Max":
         return [10] * 5  # Font sizes for each column in row
     else:
-        return [14] * 5  # Default font sizes
+        return [14ls] * 5  # Default font sizes
 
 
 def annotate_row_weight(row_index):
