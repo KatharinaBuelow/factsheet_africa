@@ -22,6 +22,20 @@ def select_index(idx: str):
             'unit_alt': 'K',
             'description': 'Near-surface air temperature'
         },
+        'TX': {
+                    'longname': 'maximum temperature [°C]',
+                    'longnameK': 'maximum temperature [K]',
+                    'unit_base': '°C',
+                    'unit_alt': 'K',
+                    'description': 'Near-surface maximum air temperature'
+                },
+        'TN': {
+                    'longname': 'minimum temperature [°C]',
+                    'longnameK': 'minimum temperature [K]',
+                    'unit_base': '°C',
+                    'unit_alt': 'K',
+                    'description': 'Near-surface minimum air temperature'
+                },
         'R20mm': {
             'longname': 'number of days with pr > 20 mm per day',
             'unit_base': 'days',
@@ -42,10 +56,30 @@ def select_index(idx: str):
             'unit_base': 'days',
             'description': 'Very hot days'
         },
+        'SU35': {
+                    'longname': 'number of days with Tmax > 35°C',
+                    'unit_base': 'days',
+                    'description': 'Hot days'
+                },
+        'TR': {
+                'longname': 'number of days with Tmin > 20°C',
+                'unit_base': 'days',
+                'description': 'Tropical nights (warm minimum temperature)'
+                },        
         'TR26': {
             'longname': 'number of days with Tmin > 26°C',
             'unit_base': 'days',
             'description': 'Tropical nights (warm minimum temperature)'
+        },
+        'FG': {
+            'longname': 'Mean daily mean wind speed [m/s]',
+            'unit_base': 'm/s',
+            'description': 'Mean daily mean wind speed'
+        },
+        'RR1': {
+            'longname': 'number of wet days',
+            'unit_base': 'days',
+            'description': 'Wet days (precipitation >= 1 mm/day)'
         }
     }
 
@@ -528,12 +562,19 @@ def load_era5_csv(csv_path, country, index, longname, start_date=None, longnameK
     #        df['year'] = pd.to_datetime(df['year'], errors='coerce').dt.year
     #    except Exception:
     #        raise ValueError("Could not parse year values in ERA5 CSV.")
-
     
     era5_clean=cleanup(df, index, longname, longnameK)
     era5_clean=adjust_names(era5_clean)
     era5_cut= adjust_length(era5_clean, start_date, '2023-12-31')
-    
+
+    if index == 'RRm':
+        # change to mm/year for better comparison with Table
+        print(longname)
+        era5_cut[longname] = era5_cut[longname] * 365.25
+        # change longname to reflect new unit
+        era5_cut = era5_cut.rename(columns={longname: longname.replace('mm/day', 'mm/year')})
+        print('Adjusted precipitation to mm/year for better comparison with Table. New longname: ', era5_cut.columns)
+     
     return era5_cut
 
 ################################
@@ -720,7 +761,7 @@ def box_plot_anomaly(src, outputpath, country, var, longname):
             alpha=0.7
         ))
     # Median line
-        ax.hlines(row["median"], x_center - inner_width / 2, x_center + inner_width / 2, colors="lightgray", linewidth=2)
+        ax.hlines(row["median"], x_center - inner_width / 2, x_center + inner_width / 2, colors="lightgray", linewidth=3)
     # Extend x-axis limits by base_width/2 for visual padding
         ax.set_xlim(-base_width, total_columns  -base_width )
     # Axes formatting
@@ -741,7 +782,7 @@ def box_plot_anomaly(src, outputpath, country, var, longname):
                 Patch(facecolor=inner_palette[h], edgecolor=inner_palette[h], alpha=0.7, label=f"P15–P85 ({h})")
             )
         legend_handles.append(
-            plt.Line2D([0], [0], color="lightgray", lw=2, label="Median")
+            plt.Line2D([0], [0], color="lightgray", lw=3, label="Median")
         )
         ax.legend(handles=legend_handles)
 
@@ -821,79 +862,52 @@ def lineplot_and_boxplot(df,src,country, var, longname, outputpath, df_era5=None
     # Create a figure with two subplots (side by side)
     fig, axes = plt.subplots(1, 2, figsize=(12, 5.25), gridspec_kw={'width_ratios': [3, 1.3]})
     # --- Left: line_plot_anomaly (manual version) ---
-    #for scenario in hue_order:
-    #    for _, group in df[df['scenario'] == scenario].groupby('realization'):
-    #        axes[0].plot(group['year'], group['running_mean_30yr'], color=palette[scenario], alpha=0.3, linewidth=1)
-    #    median = df[df['scenario'] == scenario].groupby('year')['running_mean_30yr'].median()
-    #    # Plot median line
-    #    axes[0].plot(median.index, median.values, color=inner_palette[scenario], label=f"{scenario} median", linewidth=2)
-    #    # Fill between min and max for each year
-    #    grouped = df[df['scenario'] == scenario].groupby('year')['running_mean_30yr']
-    #    min_vals = grouped.min()
-    #    max_vals = grouped.max()
-    #    axes[0].fill_between(min_vals.index, min_vals.values, max_vals.values, color=palette[scenario], alpha=0.15, label=f"{scenario} min-max")
-    
     # Ensure rcp85 is first, rcp26 is last (so blue is on top)
     hue_order = [h for h in ['rcp85', 'rcp26'] if h in df['scenario'].unique()]
     for scenario in hue_order:
         scenario_df = df[df['scenario'] == scenario]
-    # Plot each realization's anomaly as a line
-    #for _, group in scenario_df.groupby('realization'):
-    #    axes[0].plot(group['year'], group['anomaly'], color=palette[scenario], alpha=0.3, linewidth=1)
-    # Min-max shading for annual anomaly
+
+        # Plot each realization anomaly line
+        for _, group in scenario_df.groupby('realization'):
+            axes[0].plot(group['year'], group['anomaly'], color=palette[scenario], alpha=0.3, linewidth=1)
+
+        # Plot median anomaly line and min-max range
         grouped = scenario_df.groupby('year')['anomaly']
+        median = grouped.median()
         min_vals = grouped.min()
         max_vals = grouped.max()
-        axes[0].fill_between(min_vals.index, min_vals.values, max_vals.values, color=palette[scenario], alpha=0.35, label=f"{scenario} min-max (anomaly)")
-
-        # 30-year running mean: median and 15th–85th percentile
-        # Only plot running_mean_30yr for years >= 2021
-        #running = scenario_df.dropna(subset=['running_mean_30yr'])
-        #running = running[running['year_running_mean_30yr'] >= 2021]
-        #grouped_rm = running.groupby('year_running_mean_30yr')['running_mean_30yr']
-        #median_rm = grouped_rm.median()
-        #p15 = grouped_rm.quantile(0.15)
-        #p85 = grouped_rm.quantile(0.85)
-        #axes[0].plot(median_rm.index, median_rm.values, color=inner_palette[scenario], label=f"{scenario} median (30yr mean)", linewidth=2)
-        #axes[0].fill_between(p15.index, p15.values, p85.values, color=palette[scenario], alpha=0.8, label=f"{scenario} 15–85% (30yr mean)")
-        #running = scenario_df.dropna(subset=['running_mean_30yr'])
-        #grouped_rm = running.groupby('year_running_mean_30yr')['running_mean_30yr']
-        #median_rm = grouped_rm.median()
-        #p15 = grouped_rm.quantile(0.15)
-        #p85 = grouped_rm.quantile(0.85)
-        #axes[0].plot(median_rm.index, median_rm.values, color=inner_palette[scenario], label=f"{scenario} median (30yr mean)", linewidth=2)
-        #axes[0].fill_between(p15.index, p15.values, p85.values, color=palette[scenario], alpha=0.8, label=f"{scenario} 15–85% (30yr mean)")
-        # 30-year running mean: median and 15th–85th percentile
-        # Only plot running_mean_30yr for years >= 2021
-        running = scenario_df.dropna(subset=['running_mean_30yr'])
-        running = running[running['year_running_mean_30yr'] >= 2006]
-        grouped_rm = running.groupby('year_running_mean_30yr')['running_mean_30yr']
-        median_rm = grouped_rm.median()
-        p15 = grouped_rm.quantile(0.15)
-        p85 = grouped_rm.quantile(0.85)
-        axes[0].plot(median_rm.index, median_rm.values, color=palette[scenario], label=f"{scenario} median (30yr mean)", linewidth=2)
-        #axes[0].fill_between(p15.index, p15.values, p85.values, color=inner_palette[scenario], alpha=1.0, label=f"{scenario} 15–85% (30yr mean)")
-        axes[0].fill_between(p15.index, p15.values, p85.values, color=inner_palette[scenario], alpha=0.7,label=f"{scenario} 15–85% (30yr mean)")
+        axes[0].plot(median.index, median.values, color=inner_palette[scenario], label=f"{scenario} median", linewidth=2)
+        axes[0].fill_between(min_vals.index, min_vals.values, max_vals.values, color=palette[scenario], alpha=0.35, label=f"{scenario} min-max")
     
     # Add ERA5 anomaly as black line if available
     if df_era5 is not None and 'anomaly' in df_era5_plot.columns and not df_era5_plot.empty:
         axes[0].plot(df_era5_plot['year'], df_era5_plot['anomaly'], color='black', label='ERA5', linewidth=2)
 
-    # Robust y-limits ignoring NaN
-    # Add extra padding to y-limits for visual gap
-    ymin = np.nanmin(df['anomaly'].values)
-    ymax = np.nanmax(df['anomaly'].values)
+    # Robust y-limits and label y-position
+    anom_vals = pd.to_numeric(df['anomaly'], errors='coerce').to_numpy()
+    finite_vals = anom_vals[np.isfinite(anom_vals)]
+    if ylim is not None:
+        ymin, ymax = ylim
+    elif finite_vals.size > 0:
+        ymin = np.min(finite_vals)
+        ymax = np.max(finite_vals)
+        span = ymax - ymin
+        pad = 0.08 * span if span > 0 else 0.5
+        ymin = ymin - pad
+        ymax = ymax + pad
+    else:
+        # Safe fallback if anomaly contains no finite values
+        ymin, ymax = -1.0, 1.0
+
+    # Keep this span for box-plot annotation lift further below
     span = ymax - ymin
-    pad = 0.08 * span if span > 0 else 0.5
-    ymin = ymin - pad
-    ymax = ymax + pad
-    ytext = ymin + 0.02 * (ymax - ymin)
+    ytext = ymin + 0.02 * span
     axes[0].set_xlim(1970, 2100)
         
-    # Set x-ticks every 10 years
-    xticks_10yr = list(range(1970, 2101, 10))
-    axes[0].set_xticks(xticks_10yr)
-    axes[0].set_xticklabels([str(year) for year in xticks_10yr], fontsize=12)
+    # Set x-ticks every 20 years
+    xticks_20yr = list(range(1970, 2101, 20))
+    axes[0].set_xticks(xticks_20yr)
+    axes[0].set_xticklabels([str(year) for year in xticks_20yr], fontsize=16)
     axes[0].axhline(0, color=DARKGREY, linestyle='-', linewidth=1.5)
     axes[0].axvline(1991, color='grey', linestyle=':', linewidth=1)
     axes[0].axvline(2020, color='grey', linestyle=':', linewidth=1)
@@ -905,33 +919,36 @@ def lineplot_and_boxplot(df,src,country, var, longname, outputpath, df_era5=None
         color='lightgrey', 
         alpha=0.1
     )
+    axes[0].set_ylim(ymin, ymax)
+
     # Add a legend for the shaded area
     if var != 'RRm':
         axes[0].text(1992, ytext, 'Reference (1991-2020)', color='grey', fontsize=9)
 
     #axes[0].set_title(f"{country}: Anomaly of {longname} to 1991-2020", fontsize=12)
-    axes[0].set_xlabel("Year",fontsize=12)
-    axes[0].set_ylabel(f"Anomaly of {longname}", fontsize=12)
-    axes[0].set_ylim(ymin, ymax)
+    axes[0].set_xlabel("Year",fontsize=16)
+    axes[0].set_ylabel(f"Anomaly of {longname}", fontsize=16)
     axes[0].grid(True, axis='y', alpha=0.5)
     if var == 'RRm':
         axes[0].legend(loc='lower left', fontsize=10)
     else:
         axes[0].legend(loc='upper left', fontsize=10)
-    axes[0].tick_params(axis='both', labelsize=12)
+    axes[0].tick_params(axis='both', labelsize=16)
    
     #
     # --- Right: boxplot (manual version) ---
     #
+    # Boxplot order: rcp85 first, then rcp26
+    hue_order_box = [h for h in ['rcp85', 'rcp26'] if h in src['scenario'].unique()]
     base_width = 0.4
     inner_width = base_width
     # Calculate spacing so columns are evenly distributed
     n_slices = len(slice_order)
-    n_hues = len(hue_order)
+    n_hues = len(hue_order_box)
     total_columns = n_slices * n_hues
     x_positions = []
     for i, s in enumerate(slice_order):
-        for j, h in enumerate(hue_order):
+        for j, h in enumerate(hue_order_box):
             x_positions.append(i * n_hues + j)
     #slice_pos = {s: i * n_hues for i, s in enumerate(slice_order)}
 
@@ -943,9 +960,9 @@ def lineplot_and_boxplot(df,src,country, var, longname, outputpath, df_era5=None
     for idx, row in stats.iterrows():
         s = row["slice"]
         h = row["scenario"]
-        if h not in hue_order:
+        if h not in hue_order_box:
             continue
-        x_center = slice_order.index(s) * n_hues + hue_order.index(h)
+        x_center = slice_order.index(s) * n_hues + hue_order_box.index(h)
         axes[1].add_patch(Rectangle(
             (x_center - base_width / 2, row["ymin"]),
             base_width,
@@ -963,13 +980,14 @@ def lineplot_and_boxplot(df,src,country, var, longname, outputpath, df_era5=None
             alpha=0.7
         ))
         lift_y = span/(40)
-        axes[1].hlines(row["median"], x_center - inner_width / 2, x_center + inner_width / 2, colors="lightgray", linewidth=2)
+
+        axes[1].hlines(row["median"], x_center - inner_width / 2, x_center + inner_width / 2, colors="lightgray", linewidth=3)
         x_anno = x_center + 0.12 + base_width/2
-        axes[1].text(x_anno+0.1, row["ymin"]-lift_y, f"{row['ymin']:.0f}", va='bottom', ha='center', fontsize=10, color=inner_palette[h])
-        axes[1].text(x_anno+0.1, row["ymax"]+lift_y, f"{row['ymax']:.0f}", va='top', ha='center', fontsize=10, color=inner_palette[h])
+        axes[1].text(x_anno+0.1, row["ymin"]-lift_y, f"{row['ymin']:.1f}", va='bottom', ha='center', fontsize=10, color=inner_palette[h])
+        axes[1].text(x_anno+0.1, row["ymax"]+lift_y, f"{row['ymax']:.1f}", va='top', ha='center', fontsize=10, color=inner_palette[h])
         #axes[1].text(x_anno+0.1, row["p15"], f"{row['p15']:.1f}", va='bottom', ha='center', fontsize=10, color=palette[h])
         #axes[1].text(x_anno+0.1, row["p85"], f"{row['p85']:.1f}", va='top', ha='center', fontsize=10, color=palette[h])
-        axes[1].text(x_anno+0.1, row["median"], f"{row['median']:.0f}", va='center', ha='center', fontsize=10, color='black')
+        axes[1].text(x_anno+0.1, row["median"], f"{row['median']:.1f}", va='center', ha='center', fontsize=10, color='black')
         axes[1].set_xlim(-base_width, total_columns - base_width)
 
     axes[1].axhline(0, color=DARKGREY, linestyle='-', linewidth=1.5)
@@ -978,16 +996,16 @@ def lineplot_and_boxplot(df,src,country, var, longname, outputpath, df_era5=None
 
     xticklabels = []
     for s in slice_order:
-        for j, h in enumerate(hue_order):
+        for j, h in enumerate(hue_order_box):
             if j == 0:
-                xticklabels.append(f"{h}\n              {s}")
+                xticklabels.append(f"{h}\n          {s}")
             else:
-                # Add right padding (4 spaces) to shift label right
+                # Keep second-row scenario label aligned under the first row
                 xticklabels.append(f"{h}\n")
 
     axes[1].set_xticks(xticks)
-    axes[1].set_xticklabels(xticklabels, fontsize=12)
-    axes[1].tick_params(axis='y', labelsize=12, labelleft=False, labelright=True)
+    axes[1].set_xticklabels(xticklabels, fontsize=16)
+    axes[1].tick_params(axis='y', labelsize=16, labelleft=False, labelright=True)
 
     axes[1].set_ylim(ymin, ymax)
     # Set ylabel on the right for boxplot
@@ -998,10 +1016,10 @@ def lineplot_and_boxplot(df,src,country, var, longname, outputpath, df_era5=None
     #axes[1].set_title("30-year mean anomaly", fontsize=12)
     axes[1].grid(True, axis='y',alpha=0.7)
     legend_handles = []
-    for h in hue_order:
+    for h in hue_order_box:
         legend_handles.append(Patch(facecolor=palette[h], edgecolor=inner_palette[h], alpha=0.35, label=f"Min-Max ({h})"))
         legend_handles.append(Patch(facecolor=inner_palette[h], edgecolor=inner_palette[h], alpha=0.7, label=f"P15–P85 ({h})"))
-    legend_handles.append(plt.Line2D([0], [0], color="lightgray", lw=2, label="Median"))
+    legend_handles.append(plt.Line2D([0], [0], color="lightgray", lw=3, label="Median"))
     axes[1].legend(handles=legend_handles, loc='upper left', fontsize=10)
 
     plt.tight_layout()
@@ -1016,6 +1034,6 @@ def lineplot_and_boxplot(df,src,country, var, longname, outputpath, df_era5=None
     country = country.replace(' ', '_')
     outfile = os.path.join(outputpath, var + '_' + country + '_timeseries_box_minmax_p15p85_oT.png')
     print(f"Saving figure to {outfile}")
-    plt.savefig(outfile, dpi=300)
+    plt.savefig(outfile, dpi=1200)
     plt.show()
     return    
