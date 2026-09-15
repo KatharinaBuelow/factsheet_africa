@@ -36,6 +36,7 @@ def insert_page_temperature(self):
             level after mid-century. The shaded ranges illustrate the uncertainty among models, with wider bands indicating greater \
             variability in projections."
             "</span></para>"
+        )
     else:
         summary_text = (
             "<para><span name=Helvetica size="+str(self.schrift_fliesstext)+">"
