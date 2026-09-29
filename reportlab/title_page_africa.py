@@ -54,7 +54,7 @@ def insert_title_page(self):
         abstract = Paragraph("<span name=Helvetica color=black size="+str(self.schrift_fliesstext)+">"
                              "The Regional Climate Factsheet summarizes possible climate developments "
                              "for "+self.region+" throughout the 21st century. "
-                             "It is based on results from %s regional climate model simulations that use two Representative "
+                             "It is based on results from 18 regional climate model simulations that use two Representative "
                              "Concentration Pathways (RCPs): RCP8.5, a high-emission scenario, and RCP2.6, a low-emission scenario. "
                              "The factsheet presents 11 key climate parameters relevant for different sectors of society. "
                              "It also highlights the likelihood of certain co-occurring extreme events and "
@@ -63,7 +63,7 @@ def insert_title_page(self):
     else:
         abstract = Paragraph("<span name=Helvetica color=black size="+str(self.schrift_fliesstext)+
                              ">La fiche climatique régionale présente les évolutions climatiques possibles pour "+self.region+" "
-                             "au cours du XXIe siècle. Elle repose sur les résultats de %s simulations réalisées à "
+                             "au cours du XXIe siècle. Elle repose sur les résultats de 18 simulations réalisées à "
                              "l'aide de modèles climatiques régionaux utilisant deux trajectoires représentatives de "
                              "concentration (RCP) : le RCP8.5, un scénario à fortes émissions, et le RCP2.6, un scénario "
                              "à faibles émissions. La fiche présente 11 paramètres climatiques clés pertinents pour différents "

@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 
-import os
+#import os
 import pandas as pd
 
 import numpy as np
-import glob
-import matplotlib.pyplot as plt
+#import glob
+#import matplotlib.pyplot as plt
 import pandas as pd
-import seaborn as sns
-import xarray as xr
+#import seaborn as sns
+#import xarray as xr
 
 def select_region(df, region):
     return df.loc[(df["region"].isin([region]))]
@@ -47,8 +47,6 @@ def read_obs(i, ind, frequency, saison,region):
         sel_ = sel.loc[(sel["mid_month"].isin([saison]))]
         dfl = sel_[c].map("{:,.1f}".format)
         dft["Index"] = sel_["ci_name"].str.cat(sel_["mid_month"].values.astype(str))
-
-    
 
     dft = pd.concat([dft, dfl], axis=1)
     return dft
@@ -266,7 +264,7 @@ def annotate_row(row_index):
     if row_index == "Min:Max":
         return [10] * 5  # Font sizes for each column in row
     else:
-        return [14ls] * 5  # Default font sizes
+        return [14] * 5  # Default font sizes
 
 
 def annotate_row_weight(row_index):

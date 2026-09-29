@@ -42,13 +42,17 @@ def insert_page_compound_event(self):
     else:
         summary_text = (
         "<para><span name=Helvetica size="+str(self.schrift_fliesstext)+">"
-        "Projected concurrent occurrence of heatwaves (Tmax > 40 °C) lasting at leat 3 days and \
-        number of dry days (RR < 1 mm/day) lasting at least 5 days in West Africa. The figure shows the ensemble median for \
-        different time periods (1991–2020, 2031–2060, 2069–2098) under two emission scenarios (RCP2.6 and RCP8.5). \
-        The color scale indicates the expected number of such events per year. Results reveal a strong upward trend \
-        over time, particularly under RCP8.5, where events become extremely frequent by the end of the century, \
-        exceeding 100 per year in some regions. In contrast, RCP2.6 shows a much smaller increase, emphasizing \
-        the critical role of emission reductions in limiting extreme climate impacts."
+        "Concurrent occurrence of heat days (Tmax > 40 °C) lasting at least 3 consecutive days "
+        "and dry periods (RR < 1 mm day⁻¹) lasting at least 7 consecutive days in West Africa. "
+        "The figure shows the annual mean number of such events derived from ERA5 for the reference "
+        "period 1991-2020 (grey shading) and the ensemble median change relative to 1991-2020 "
+        "for two future periods (2031-2060 and 2069-2098) under the RCP2.6 and RCP8.5 emission scenarios. "
+        "The colour scale indicates the projected change in the annual frequency of these events. "
+        "Results reveal a strong increase over time, particularly under RCP8.5, "
+        "where the annual frequency rises substantially by the end of the century, "
+        "with increases exceeding 100 events per year in some regions. "
+        "In contrast, RCP2.6 shows a much smaller increase, highlighting the critical importance "
+        "of emission reductions in limiting extreme climate impacts."
         "</span></para>"
     )    
     para = Paragraph(summary_text, styles["Justify"]) 
@@ -68,17 +72,19 @@ def insert_page_compound_event(self):
         print("[compound] Using Ivory Coast caption")
         caption_text = (
             "<b>Figure 6:</b> Projected concurrent occurrence of heatwaves (Tmax > 40 °C) and tropical nights (Minimum Temperature > 26°C)\
-             in "+self.region+" lasting at least 3 days. The figure shows the ensemble median for different \
-             time periods (1991–2020, 2031–2060, 2069–2098) \
-            under two emission scenarios (RCP2.6 and RCP8.5). The color scale indicates the expected number of such events per year. "
+             in "+self.region+" lasting at least 3 days. The figure shows the annual mean number of such events derived from ERA5 for the reference "
+            "period 1991-2020 (grey shading) and the ensemble median change relative to 1991-2020 "
+            "for two future periods (2031-2060 and 2069-2098) under the RCP2.6 and RCP8.5 emission scenarios. "
+            "The colour scale indicates the expected number of such events per year. "
             "The non-hatched regions indicate robust projected changes, whereas hatched regions indicate areas where projected changes are not robust."
         )
     else:
         caption_text = (
-            "<b>Figure 6:</b> Projected concurrent occurrence of heatwaves (Tmax > 40 °C) and dry days (RR < 1 mm/day)\
-            in West Africa lasting at least 3 and 5 days. The figure shows the ensemble median for different \
-            time periods (1991–2020, 2031–2060, 2069–2098) \
-            under two emission scenarios (RCP2.6 and RCP8.5). The color scale indicates the expected number of such events per year."
+            "<b>Figure 6:</b> Projected concurrent occurrence of heat days (Tmax > 40 °C) and dry days (RR < 1 mm/day)\
+            in West Africa lasting at least 3 and 7 days. The figure shows the annual mean number of such events derived from ERA5 for the reference "
+            "period 1991-2020 (grey shading) and the ensemble median change relative to 1991-2020 "
+            "for two future periods (2031-2060 and 2069-2098) under the RCP2.6 and RCP8.5 emission scenarios. "
+            "The colour scale indicates the expected number of such events per year. "
             "The non-hatched regions indicate robust projected changes, whereas hatched regions indicate areas where projected changes are not robust."
         )
     caption = '<para><span name=Helvetica color=black size='+str(self.schrift_caption)+'>'+caption_text+'</span></para>'
