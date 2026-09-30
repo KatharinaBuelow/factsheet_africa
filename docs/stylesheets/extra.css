@@ -1,7 +1,11 @@
 .md-header {
-  height: 200px;
+  height: 300px;
   padding: 1.5rem 0;
   background-color: rgb(188,191,202);
+  background-image: url("../assets/Climatestripes_deviation_to_1991_2020_ERA5_Burkina_Faso.png");
+  background-size: 127% auto;
+  background-position: center;
+  background-repeat: no-repeat;
   color: rgb(93,112,133);
 }
 
@@ -32,9 +36,28 @@
 .md-header__title {
   font-size: 1.8rem;
   font-weight: bold;
+  background-color: rgba(255, 255, 255, 0.9);
+  display: inline-block;
+  width: fit-content;
+  padding-top: 1.05rem !important;
+  padding-right: 0rem !important;
+  padding-bottom: 3.05rem !important;
+  padding-left: 1.5rem !important;
+  line-height: 1.1;
+  border-radius: 0px;
+  margin-left: 0;
+  position: relative;
+  left: 0.4rem;
 }
 
 .md-header__button.md-logo img {
   height: 68px;
   width: auto;
+}
+
+.md-header__button.md-logo {
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 0.35rem;
+  border-radius: 0px;
+  margin-right: -0.8rem;
 }

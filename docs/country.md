@@ -1,6 +1,8 @@
-# Maps of the country
+# Map of the country
 
-![image](../../PLOTS/FS_Burkina_Faso.png)
+<img src="/assets/FS_Burkina_Faso.png"
+     alt="Africa with Burkin Faso"
+     width="300">
 
 Before you start, you need to create your environment by
 

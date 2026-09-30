@@ -30,7 +30,7 @@ available for africa.
 | ICTP-RegCM4-7          | MPI-M-MPI-ESM-MR     | RCP2.6, RCP8.5 | r1i1p1      |
 | ICTP-RegCM4-7          | NCC-NorESM1-M        | RCP2.6, RCP8.5 | r12i1p1     |
 
-**Tabelle 1** list of climate simulations used.
+**Tabelle 3** list of climate simulations used.
 
 [^1]: Giorgi, F., and Coauthors, 2022: The CORDEX-CORE EXP-I Initiative:
     Description and Highlight Results from the Initial Analysis. Bull.

@@ -1,6 +1,6 @@
 # Indizes for ERA5 and Climate Simulations for different time slices
 
-Each climate indicator shown in Table 3 has been supplemented with an
+Each climate indicators shown in Table 1 have been supplemented with an
 expert assessment describing the reliability of the results. This is
 indicated by different shades of gray in the table: “the darker the
 gray, the clearer the climate change.” If the majority of climate model
@@ -14,9 +14,11 @@ gray/uncertain). Below the median of all climate simulation results
 (shown here in bold and large), there is an indication of the range of
 possible developments in the form of a minimum and maximum change.
 
-![image](../../PLOTS/Table_Burkina_Faso_median_grey_300.png)
+<img src="/assets/Table_Burkina_Faso_median_1200.png"
+     alt="Climate indicator table for Burkin Faso"
+     width="500">
 
-**Table 3** lists the selected climate indicators and their projected
+**Table 1** lists the selected climate indicators and their projected
 average changes for the time slice 2031-2060 and 2069-2098 compared to
 the period 1991–2020. The first column shows the average observed value
 over the years 1991–2020
@@ -34,5 +36,5 @@ $ Notebooks/INDICES-TABLE/create_index_table_africa.ipynb
 The Notebook is using the data:
 
 ``` console
-$ input_data
+$ Notebooks/data/spavg/*
 ```

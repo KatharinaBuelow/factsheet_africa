@@ -1,4 +1,4 @@
-# Past Climate
+# Temperatur and Precipitation anomaly
 
 Example Burkina Faso 
  
@@ -7,7 +7,7 @@ Example Burkina Faso
      width="360">
 
 
-**Figure XX** The figure shows annual temperature and precipitation
+**Figure 1** The figure shows annual temperature and precipitation
 anomalies for Burkina Faso from 1941 to 2023, based on ERA5 reanalysis
 data. The anomalies are calculated relative to the 1991–2020 reference
 period, which is indicated by the vertical dashed lines. In the upper
@@ -30,7 +30,7 @@ underscores that the 1991–2020 reference period itself is already warmer
 than earlier decades, meaning current anomalies represent additional
 warming beyond an already elevated baseline.
 
-Figure XX can be created with the following Notebook:
+Figure 1 can be created with the following Notebook:
 
 ``` console
 $ Notebooks/ERA5/Plot_ERA5_annual_anomaly-new_color.ipynb

@@ -1,3 +1,4 @@
+*Climatestripes are presenting the temperature anomaly for Burkina Faso relative to 1991-2020*
 # Introduction
 This repository contains all information and resources required to reproduce a set of climate fact sheets for African countries and sectors. A climate fact sheet is a concise summary of key climate variables, historical climate conditions, projected climate change, and sector-specific climate impacts for a particular country.
 
