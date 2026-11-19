@@ -35,13 +35,19 @@ import pandas as pd
 from title_page_africa import insert_title_page
 from page_with_table import insert_page_with_table
 from page_temperature import insert_page_temperature
+from page2_temperature import insert_page2_temperature
+from page3_temperature import insert_page3_temperature
 from page_precipitation import insert_page_precipitation
+from page2_precipitation import insert_page2_precipitation
+from page_wind import insert_page_wind
 from page_comp_ev import insert_page_compound_event
+from page2_comp_ev import insert_page2_compound_event
 from page_scenario_robust import insert_page_explain
 from page_reading_instruction import insert_page_reading_instructions
 from page_indice_list import insert_glossar_page
 from page_models_data import insert_page_with_models_data
 from last_page_background_information import insert_impressum
+from page_back import insert_page_back
 
 #####################################################################
 def get_image(path, height=1*cm):
@@ -78,10 +84,10 @@ class FactSheet(object):
                  gerics_logo, wascal_logo, bmbf_logo, hereon_logo,
                  timeseries_theorie, box_theorie,
                  basic_color, sprache, cs_orange, cs_schwarz,
-                 title_image, box_era5, table_cc, anzahl_simulationen, 
-                 ts_TG_anomaly=None, ts_su40_anomaly=None, ts_RRm_anomaly=None, 
-                 ts_DD_anomaly=None, ts_R20mm_anomaly=None, hori_SU40_abs=None, 
-                 copev_su40_DD=None, copev_su40_tr26=None, rcp_image=None):
+                 title_image, box_era5, table_cc,
+                 ts_TG_anomaly=None, ts_TN_anomaly=None, ts_TX_anomaly=None, ts_TR26_anomaly=None, ts_SU35_anomaly=None, ts_SU40_anomaly=None,
+                 ts_RRm_anomaly=None, ts_DD_anomaly=None, ts_R20mm_anomaly=None, ts_RR1_anomaly=None, ts_FG_anomaly=None,
+                 hori_SU40_abs=None, copev_su40_DD=None, copev_su40_tr26=None, rcp_image=None):
         self.c = canvas.Canvas(pdf_file, pagesize=A4)
         self.c.setFont('Helvetica', 12)
         self.styles = getSampleStyleSheet()
@@ -120,12 +126,17 @@ class FactSheet(object):
         self.title_image = title_image
         self.box_era5 = box_era5
         self.table_cc = table_cc
-        self.anzahl_simulationen = anzahl_simulationen
         self.ts_TG_anomaly = ts_TG_anomaly
-        self.ts_su40_anomaly = ts_su40_anomaly
+        self.ts_TN_anomaly = ts_TN_anomaly
+        self.ts_TX_anomaly = ts_TX_anomaly
+        self.ts_TR26_anomaly = ts_TR26_anomaly
+        self.ts_SU35_anomaly = ts_SU35_anomaly
+        self.ts_SU40_anomaly = ts_SU40_anomaly
         self.ts_RRm_anomaly = ts_RRm_anomaly
+        self.ts_RR1_anomaly = ts_RR1_anomaly
         self.ts_DD_anomaly = ts_DD_anomaly
         self.ts_R20mm_anomaly = ts_R20mm_anomaly
+        self.ts_FG_anomaly = ts_FG_anomaly
         self.hori_SU40_abs = hori_SU40_abs
         self.copev_su40_DD = copev_su40_DD
         self.copev_su40_tr26 = copev_su40_tr26
@@ -356,9 +367,20 @@ class FactSheet(object):
         self.kleiner_abstand = 0.5 * cm
         varia_breite = 2.5 * cm
         self.schrift_tabellen = 8
-        self.schrift_fliesstext = 12
         self.schrift_caption = 11
+        self.schrift_fliesstext = 12
         self.text_offset_unten = 1.8 * cm
+
+        self.caption_style = ParagraphStyle(
+                name='CaptionJustify',
+                #parent=styles['Justify'],
+                fontName='Helvetica',
+                fontSize=self.schrift_caption,
+                #leading=self.schrift_caption * 1.2,
+                textColor='black',
+                alignment=TA_JUSTIFY,
+            )
+        
         print('Starte mit der Erstellung des Dokuments in make... ')
 # ----------- Header der Titelseite
         # Page 1 content → watermark → footline
@@ -380,53 +402,87 @@ class FactSheet(object):
 # -------Seitenumbruch auf  Seite 4
         self.c.showPage()
         # Page 4 content → watermark → footline
-        precipitation_page = insert_page_precipitation(self)
+        temperature_page = insert_page2_temperature(self)
         #self.draw_watermark("DRAFT")
         foot_2 = self.add_footline('gerade_even')
 # -------Seitenumbruch auf  Seite 5
         self.c.showPage()
         # Page 5 content → watermark → footline
+        temperature_page = insert_page3_temperature(self)
+        #self.draw_watermark("DRAFT")
+        foot_2 = self.add_footline('ungerade_odd')                
+# -------Seitenumbruch auf  Seite 6
+        self.c.showPage()
+        # Page 6 content → watermark → footline
+        precipitation_page = insert_page_precipitation(self)
+        #self.draw_watermark("DRAFT")
+        foot_2 = self.add_footline('gerade_even')
+# -------Seitenumbruch auf  Seite 7
+        self.c.showPage()
+        # Page 7 content → watermark → footline
+        precipitation_page = insert_page2_precipitation(self)
+        #self.draw_watermark("DRAFT")
+        foot_2 = self.add_footline('ungerade_odd')        
+# -------Seitenumbruch auf  Seite 8
+        self.c.showPage()
+        # Page 8 content → watermark → footline
+        precipitation_page = insert_page_wind(self)
+        #self.draw_watermark("DRAFT")
+        foot_2 = self.add_footline('gerade_even')
+# -------Seitenumbruch auf  Seite 
+        self.c.showPage()
+        # Page 9 content → watermark → footline
         compound_event_page = insert_page_compound_event(self)
         #self.draw_watermark("DRAFT")
         foot_2 = self.add_footline('ungerade_odd') 
-# -------Seitenumbruch auf  Seite 6
+# -------Seitenumbruch auf  Seite 
         self.c.showPage()
-        # Page 6 List of indices → watermark → footline
+        # Page 10 content → watermark → footline
+        compound_event_page = insert_page2_compound_event(self)
+        #self.draw_watermark("DRAFT")
+        foot_2 = self.add_footline('gerade_even') 
+# -------Seitenumbruch auf  Seite 11
+        self.c.showPage()
+        # Page 11 List of indices → watermark → footline
         from page_indice_list import return_glossar, insert_glossar_page
         glossar_dict = return_glossar(self.sprache)
         variables=['TG','TN','TX','TR26','SU35','SU40','RRm','DD','RR1', 'R20mm', 'FG','FGmax','SU40_du3_DD_du5','SU40_du3_TR26_du3','HSx3','HSf3','DSf','DSx5']
         #variables = ['TG','TX','TN','SU35','SU40','TR','RRm','R5mm','R10mm']
         insert_glossar_page(self, glossar_dict, variables)
         #self.draw_watermark("DRAFT")
-        foot_2 = self.add_footline('gerade_even') 
-# -------Seitenumbruch auf  Seite 7
+        foot_2 = self.add_footline('ungerade_odd') 
+# -------Seitenumbruch auf  Seite 12
         self.c.showPage()
-        # Page 7 list of Simulations and data → watermark → footline
+        # Page 12 list of Simulations and data → watermark → footline
         insert_page_with_models_data(self)
         #self.draw_watermark("DRAFT")
-        foot_2 = self.add_footline('ungerade_odd') 
-# -------Seitenumbruch auf  Seite 8
+        foot_2 = self.add_footline('gerade_even') 
+# -------Seitenumbruch auf  Seite 13
         self.c.showPage()
-        # hierfehlt das Bild für die rcps
-        # Page 8 scenario / robustness → watermark → footline
+        # Page 13 scenario / robustness → watermark → footline
         # folgene funktionen sind aus page scenario_robust.py:
         insert_page_explain(self)
         #insert_page_robustinfo(self)
         #self.draw_watermark("DRAFT")
-        foot_2 = self.add_footline('gerade_even') 
-# -------Seitenumbruch auf  Seite 9
+        foot_2 = self.add_footline('ungerade_odd') 
+# -------Seitenumbruch auf  Seite 14
         self.c.showPage()
         #a lot of files are missing
-        # Page 9 how to read → watermark → footline
+        # Page 14 how to read → watermark → footline
         insert_page_reading_instructions(self)
         #self.draw_watermark("DRAFT")
-        foot_2 = self.add_footline('ungerade_odd') 
-# -------Impressum-Seite einfügen
+        foot_2 = self.add_footline('gerade_even') 
+# -------Impressum-Seite einfügen Seite 15
         self.c.showPage()
-        # Page 10 Impressum → watermark → footline
-        impressum_page = insert_impressum(self)
+        # Page 15 Impressum → watermark → footline
+        insert_impressum(self)
         #self.draw_watermark("DRAFT")
-        foot_2 = self.add_footline('gerade_even')
+        foot_2 = self.add_footline('ungerade_odd')
+# -------Impressum-Seite einfügen Seite 16
+        self.c.showPage()
+        # Page 16 Impressum → watermark → footline
+        insert_page_back(self)
+        #self.draw_watermark("DRAFT")
+        #foot_2 = self.add_footline('gerade_even')
         print('Fertig mit der Erstellung des Dokuments')
-
 

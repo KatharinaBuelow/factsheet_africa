@@ -89,9 +89,8 @@ def insert_page_with_table(self):
             "minimales et maximales observées parmi l'ensemble des modèles. Le degré de robustesse du signal de changement "
             "climatique est représenté par l'intensité de la trame grise."    
         )               
-    caption = '<para><span name=Helvetica color=black size='+str(self.schrift_caption)+'>'+caption_text+'</span></para>'
-    caption = Paragraph(caption, styles['Justify'])
+    caption = Paragraph(caption_text, self.caption_style)
+    _, cap_height = caption.wrapOn(self.c, available_width, self.height)
 
-    cap_width, cap_height = caption.wrapOn(self.c, available_width, self.height)
     caption_y = einfuegehoehe_table - map_image.drawHeight- self.kleiner_abstand - cap_height
     caption.drawOn(self.c, self.text_offset_links, caption_y)

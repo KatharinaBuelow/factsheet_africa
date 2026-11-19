@@ -117,7 +117,7 @@ def insert_page_reading_instructions(self):
     # with the figure on the left and the text on the right
     # they are allined at their middle, so that the figure and text are centered vertically
     
-    top_y = einfuegehoehe - self.kleiner_abstand *3
+    top_y = einfuegehoehe - self.kleiner_abstand *3.5
     image_y = top_y - map_image.drawHeight
     map_image.drawOn(self.c, self.text_offset_links, image_y)
     # Place col2_text right beside the box_theorie and align vertical center

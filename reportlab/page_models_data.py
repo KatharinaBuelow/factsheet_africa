@@ -95,17 +95,18 @@ def insert_page_with_models_data(self):
     # -----------------------------------------
     # Caption
     # -----------------------------------------
-    table2 ='<b>Tabelle 3:</b> List of climate simulations used.'
-    
-    caption_size = max(self.schrift_caption, self.schrift_fliesstext)
-    caption_table2 = '<para><span name=Helvetica color=black size='+str(caption_size)+'>'+table2+'</span></para>'
-    caption_table2 = Paragraph(caption_table2, styles['Justify'])
-    _, caption_h = caption_table2.wrapOn(self.c, self.width - self.text_offset_links - self.text_offset_rechts, self.height)
-    caption_table2.drawOn(self.c, self.text_offset_links, einfuegehoehe - caption_h)
+    caption_text ='<b>Tabelle 3:</b> List of climate simulations used.'
+
+    caption = Paragraph(caption_text, self.caption_style)
+    _, cap_height = caption.wrapOn(self.c, self.width - self.text_offset_links - self.text_offset_rechts, self.height)
+
+    einfuegehoehe = einfuegehoehe - cap_height - self.kleiner_abstand*0.1
+    caption.drawOn(self.c, self.text_offset_links, einfuegehoehe)
+
     self.story.append(table)
     self.story.append(Spacer(1, 12))
 
-    einfuegehoehe= einfuegehoehe - caption_h - self.kleiner_abstand * 2
+    einfuegehoehe= einfuegehoehe - self.kleiner_abstand * 2
 
     # --------------------------------------
     # Data source section
@@ -113,7 +114,7 @@ def insert_page_with_models_data(self):
     title_text2 = "DATA SOURCE" if self.sprache == 'english' else "DATENQUELLE"
     title2_h = self.draw_header(title_text2, einfuegehoehe)
 
-    einfuegehoehe = einfuegehoehe - title2_h - self.kleiner_abstand
+    einfuegehoehe = einfuegehoehe - title2_h - self.kleiner_abstand 
 
     # Suggestion: build paragraph text as one complete string to avoid unclosed tags
     if self.sprache == 'english':

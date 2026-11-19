@@ -50,24 +50,25 @@ def insert_page_precipitation(self):
 
     # Caption-Texte vorab definieren und Höhen bestimmen
     caption_text = (
-        "<b>Figure 4:</b> Projected evolution of mean annual precipitation [mm/day] for " + self.region + " from 1971 to 2098 based on CORDEX AFR22 \
+        "<b>Figure 8:</b> Projected evolution of mean annual precipitation [mm/day] for " + self.region + " from 1971 to 2098 based on CORDEX AFR22 \
         regional climate model realizations under RCP2.6 (blue) and RCP8.5 (red) scenarios. Solid lines represent the ensemble median, \
         while shaded areas indicate the range between minimum and maximum values across all models, illustrating uncertainty. "
     )
-    caption = '<para><span name=Helvetica color=black size='+str(self.schrift_caption)+'>'+caption_text+'</span></para>'
-    caption = Paragraph(caption_text, styles['Justify'])
+
+    caption = Paragraph(caption_text, self.caption_style)
     _, cap_height = caption.wrapOn(self.c, available_width, self.height)
+        
 
     # Zweite Grafik: ts_DD_anomaly (Tage > 40°C) darunter platzieren und skalieren
     caption_text2 = (
-        "<b>Figure 5:</b> Projected evolution of mean annual number of dry days (daily precipitation amount < 1 mm) for " + self.region + " \
+        "<b>Figure 9:</b> Projected evolution of mean annual number of dry days (daily precipitation amount < 1 mm) for " + self.region + " \
         from 1971 to 2098 based on CORDEX AFR22 \
         regional climate model realizations under RCP2.6 (blue) and RCP8.5 (red) scenarios. Solid lines represent the ensemble median, \
         while shaded areas indicate the range between minimum and maximum values across all models, illustrating uncertainty."
     )
-    caption2 = '<para><span name=Helvetica color=black size='+str(self.schrift_caption)+'>'+caption_text2+'</span></para>'
-    caption2 = Paragraph(caption2, styles['Justify'])
+    caption2 = Paragraph(caption_text2, self.caption_style)
     _, cap_height2 = caption2.wrapOn(self.c, available_width, self.height)
+    
 
     # Verfügbarer Platz: gleichmäßig verteilen
     gaps_between_blocks = 3  # gap after summary, between caption1 and image2, and before final bottom margin

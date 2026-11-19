@@ -82,9 +82,17 @@ def insert_glossar_page(self, glossar_dict, variables):
                         ('BACKGROUND', (0, 0), (-1, -1), (colors.Color(255 / 255., 255 / 255., 255 / 255., 1)))])
     _, table_height = table.wrapOn(self.c, self.width, self.height)
     table.drawOn(self.c, self.text_offset_links, einfuegehoehe_top - 0.25 * cm - table_height)
+    einfuegehoehe = einfuegehoehe_top - 0.25 * cm - table_height
 
-        #table.drawOn(self.c, self.text_offset_links + 0.25*cm, einfuegehoehe_top -0.25 * cm - numpy.sum(heights))
-# Katharina noch bearbeiten für 2 Sprache
+    # -----------------------------------------
+    # Caption
+    # -----------------------------------------
+    caption_text = "<b>Tabelle 2:</b> List of climate indicators and their definitions."
+    caption = Paragraph(caption_text, self.caption_style)
+    _, cap_height = caption.wrapOn(self.c, self.width - self.text_offset_links - self.text_offset_rechts, self.height)
+
+    einfuegehoehe = einfuegehoehe - cap_height - self.kleiner_abstand
+    caption.drawOn(self.c, self.text_offset_links, einfuegehoehe)    
 
 def return_glossar_en(english=True):
     glossar_dict = {

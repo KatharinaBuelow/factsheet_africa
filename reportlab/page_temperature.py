@@ -10,6 +10,7 @@ def insert_page_temperature(self):
     """
     Create a page with temperature and heatdays projections for the specified region.
     """
+   
     # Beispielbild und Text
     # Zuerst: Seitentitel und Zusammenfassungstext über der Grafik
     einfuegehoehe_top = self.height - 2 * cm
@@ -27,7 +28,7 @@ def insert_page_temperature(self):
     if self.sprache == 'english':
         summary_text = (
             "<para><span name=Helvetica size="+str(self.schrift_fliesstext)+">"
-            "The graphs show the projected evolution of mean annual temperature and mean number of heat days (Maximum temperature > 40°C) \
+            "The graphs show the projected evolution of mean annual temperature and mean annual maximum temperature \
             for "+self.region+" from 1971 to 2098, based on CORDEX AFR22\
             regional climate model realizations under two emission scenarios: RCP2.6 (blue) and RCP8.5 (red). The solid lines represent \
             the median of the model ensemble for each scenario, while the shaded areas indicate the range between the minimum and maximum \
@@ -40,8 +41,7 @@ def insert_page_temperature(self):
     else:
         summary_text = (
             "<para><span name=Helvetica size="+str(self.schrift_fliesstext)+">"
-            "Les graphiques montrent l'évolution projetée de la température moyenne annuelle et du "
-            "nombre moyen de jours de forte chaleur (température maximale > 40°C) pour "+self.region+" "
+            "Les graphiques montrent l'évolution projetée de la température moyenne annuelle et de la température maximale annuelle moyenne pour "+self.region+" "
             "entre 1971 et 2098, sur la base des simulations des modèles climatiques régionaux CORDEX "
             "AFR22 selon deux scénarios d'émissions : RCP2.6 (bleu) et RCP8.5 (rouge). Les lignes continues "
             "représentent la médiane de l'ensemble des modèles pour chaque scénario, tandis que les zones ombrées "
@@ -81,33 +81,34 @@ def insert_page_temperature(self):
             "des modèles, tandis que les zones ombrées indiquent l'intervalle compris entre les valeurs minimales "
             "et maximales de l'ensemble des modèles, illustrant l'incertitude des projections."
     )
-    caption = '<para><span name=Helvetica color=black size='+str(self.schrift_caption)+'>'+caption_text+'</span></para>'
-    caption = Paragraph(caption, styles['Justify'])
     
-    caption = Paragraph(caption_text, styles['Justify'])
+    caption = Paragraph(caption_text, self.caption_style)
     _, cap_height = caption.wrapOn(self.c, available_width, self.height)
 
     # Zweite Grafik: ts_SU40_anomaly (Tage tmax> 40°C) darunter platzieren und skalieren
     
     if self.sprache == 'english':
         caption_text2 = (
-            "<b>Figure 3:</b> Projected evolution of mean annual number of heatdays (maximum temperature >40 °C) for " + self.region + " \
+            "<b>Figure 3:</b> Projected evolution of mean annual maximum temperature for " + self.region + " \
             from 1971 to 2098 based on CORDEX AFR22 \
             regional climate model realizations under RCP2.6 (blue) and RCP8.5 (red) scenarios. Solid lines represent the ensemble median, \
             while shaded areas indicate the range between minimum and maximum values across all models, illustrating uncertainty."
         )
     else:
         caption_text2 = (
-            "<b>Figure 3:</b> Évolution projetée du nombre moyen annuel de jours de forte chaleur (température maximale > 40 °C) "
+            "<b>Figure 3:</b> Évolution projetée du nombre moyen annuel température maximale  "
             "pour " + self.region + " entre 1971 et 2098, sur la base des simulations des modèles climatiques régionaux CORDEX "
             "AFR22 selon les scénarios RCP2.6 (bleu) et RCP8.5 (rouge). Les lignes continues représentent la médiane de l'ensemble "
             "des modèles, tandis que les zones ombrées indiquent l'intervalle compris entre les valeurs minimales et maximales "
             "de l'ensemble des modèles, illustrant l'incertitude des projections."
         )
-    caption2 = '<para><span name=Helvetica color=black size='+str(self.schrift_caption)+'>'+caption_text2+'</span></para>'
-    caption2 = Paragraph(caption2, styles['Justify'])
-    _, cap_height2 = caption2.wrapOn(self.c, available_width, self.height)
+    #caption2 = '<para><span name=Helvetica color=black size='+str(self.schrift_caption)+'>'+caption_text2+'</span></para>'
+    #caption2 = Paragraph(caption2, styles['Justify'])
+    #_, cap_height2 = caption2.wrapOn(self.c, available_width, self.height)
 
+    caption2 = Paragraph(caption_text2, self.caption_style)
+    _, cap_height2 = caption2.wrapOn(self.c, available_width, self.height)
+    
     # Verfügbarer Platz: gleichmäßig verteilen
     gaps_between_blocks = 3  # gap after summary, between caption1 and image2, and before final bottom margin
     gap_size = self.kleiner_abstand
@@ -120,7 +121,7 @@ def insert_page_temperature(self):
     aspect1 = ih1 / float(iw1)
     target_height1 = min(16.5 * cm, image_height_each_max, available_width * aspect1)
 
-    img_reader2 = utils.ImageReader(self.ts_su40_anomaly)
+    img_reader2 = utils.ImageReader(self.ts_TX_anomaly)
     iw2, ih2 = img_reader2.getSize()
     aspect2 = ih2 / float(iw2)
     target_height2 = min(16.5 * cm, image_height_each_max, available_width * aspect2)
@@ -139,7 +140,7 @@ def insert_page_temperature(self):
 
     # Zweites Bild zeichnen, unter Caption 1
     second_start_y = caption_y - cap_height - gap_size
-    map_image2 = get_image(self.ts_su40_anomaly, height=equal_height)
+    map_image2 = get_image(self.ts_TX_anomaly, height=equal_height)
     map_image2.wrapOn(self.c, self.width, self.height)
     img2_y = second_start_y - map_image2.drawHeight
     map_image2.drawOn(self.c, self.text_offset_links, img2_y)

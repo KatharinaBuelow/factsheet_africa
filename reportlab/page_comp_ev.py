@@ -71,7 +71,7 @@ def insert_page_compound_event(self):
     if region_norm in ("ivory coast", "côte d'ivoire"):
         print("[compound] Using Ivory Coast caption")
         caption_text = (
-            "<b>Figure 6:</b> Projected concurrent occurrence of heatwaves (Tmax > 40 °C) and tropical nights (Minimum Temperature > 26°C)\
+            "<b>Figure 13:</b> Projected concurrent occurrence of heatwaves (Tmax > 40 °C) and tropical nights (Minimum Temperature > 26°C)\
              in "+self.region+" lasting at least 3 days. The figure shows the annual mean number of such events derived from ERA5 for the reference "
             "period 1991-2020 (grey shading) and the ensemble median change relative to 1991-2020 "
             "for two future periods (2031-2060 and 2069-2098) under the RCP2.6 and RCP8.5 emission scenarios. "
@@ -80,16 +80,17 @@ def insert_page_compound_event(self):
         )
     else:
         caption_text = (
-            "<b>Figure 6:</b> Projected concurrent occurrence of heat days (Tmax > 40 °C) and dry days (RR < 1 mm/day)\
+            "<b>Figure 13:</b> Projected concurrent occurrence of heat days (Tmax > 40 °C) and dry days (RR < 1 mm/day)\
             in West Africa lasting at least 3 and 7 days. The figure shows the annual mean number of such events derived from ERA5 for the reference "
             "period 1991-2020 (grey shading) and the ensemble median change relative to 1991-2020 "
             "for two future periods (2031-2060 and 2069-2098) under the RCP2.6 and RCP8.5 emission scenarios. "
             "The colour scale indicates the expected number of such events per year. "
             "The non-hatched regions indicate robust projected changes, whereas hatched regions indicate areas where projected changes are not robust."
         )
-    caption = '<para><span name=Helvetica color=black size='+str(self.schrift_caption)+'>'+caption_text+'</span></para>'
-    caption = Paragraph(caption_text, styles['Justify'])
+  
+    caption = Paragraph(caption_text, self.caption_style)
     _, cap_height = caption.wrapOn(self.c, available_width, self.height)
+    
 
     # Verfügbarer Platz: für eine Grafik + eine Caption
     gap_size = self.kleiner_abstand

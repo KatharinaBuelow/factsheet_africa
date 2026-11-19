@@ -226,8 +226,8 @@ def insert_title_page(self):
     img_y = self.text_offset_unten -0.2 * cm
     map_image.drawOn(self.c, self.text_offset_links, img_y)
     # Place col2_text right beside the box_era5 at the same height as the top of era5 box
-    col2_width = self.width - self.text_offset_links - self.text_offset_rechts - map_image.drawWidth - 1*cm
     col2_x = self.text_offset_links + map_image.drawWidth + 0.5*cm
+    col2_width = self.width - self.text_offset_rechts - col2_x
     col2_y = img_y + map_image.drawHeight  # Top of era5 box
 
     p2 = Paragraph(col2_text, styles['Justify'])

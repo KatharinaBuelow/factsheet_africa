@@ -52,10 +52,16 @@ title_image = f"/Users/Buelow/github/factsheet_africa/PLOTS/country/FS_{region.r
 box_era5 = f"/Users/Buelow/github/factsheet_africa/PLOTS/ERA5_anomaly/ERA5_Annual_anomaly_deviation_to_1991_2020_{region.replace(' ', '_')}_nc.png"
 table_cc = f"/Users/Buelow/github/factsheet_africa/PLOTS/table/Table_{region.replace(' ', '_')}_median_1200.png"
 ts_TG_anomaly = f"/Users/Buelow/github/factsheet_africa/PLOTS/AFR22_timeseries/TG/TG_{region.replace(' ', '_')}_timeseries_box_minmax_p15p85_oT.png"
-ts_su40_anomaly = f"/Users/Buelow/github/factsheet_africa/PLOTS/AFR22_timeseries/SU40/SU40_{region.replace(' ', '_')}_timeseries_box_minmax_p15p85_oT.png"
+ts_TN_anomaly = f"/Users/Buelow/github/factsheet_africa/PLOTS/AFR22_timeseries/TN/TN_{region.replace(' ', '_')}_timeseries_box_minmax_p15p85_oT.png"
+ts_TX_anomaly = f"/Users/Buelow/github/factsheet_africa/PLOTS/AFR22_timeseries/TX/TX_{region.replace(' ', '_')}_timeseries_box_minmax_p15p85_oT.png"
+ts_TR26_anomaly = f"/Users/Buelow/github/factsheet_africa/PLOTS/AFR22_timeseries/TR26/TR26_{region.replace(' ', '_')}_timeseries_box_minmax_p15p85_oT.png"
+ts_SU35_anomaly = f"/Users/Buelow/github/factsheet_africa/PLOTS/AFR22_timeseries/SU35/SU35_{region.replace(' ', '_')}_timeseries_box_minmax_p15p85_oT.png"
+ts_SU40_anomaly = f"/Users/Buelow/github/factsheet_africa/PLOTS/AFR22_timeseries/SU40/SU40_{region.replace(' ', '_')}_timeseries_box_minmax_p15p85_oT.png"
 ts_RRm_anomaly = f"/Users/Buelow/github/factsheet_africa/PLOTS/AFR22_timeseries/RRm/RRm_{region.replace(' ', '_')}_timeseries_box_minmax_p15p85_oT.png"
 ts_DD_anomaly = f"/Users/Buelow/github/factsheet_africa/PLOTS/AFR22_timeseries/DD/DD_{region.replace(' ', '_')}_timeseries_box_minmax_p15p85_oT.png"
+ts_RR1_anomaly = f"/Users/Buelow/github/factsheet_africa/PLOTS/AFR22_timeseries/RR1/RR1_{region.replace(' ', '_')}_timeseries_box_minmax_p15p85_oT.png"
 ts_R20mm_anomaly = f"/Users/Buelow/github/factsheet_africa/PLOTS/AFR22_timeseries/R20mm/R20mm_{region.replace(' ', '_')}_timeseries_box_minmax_p15p85_oT.png"
+ts_FG_anomaly = f"/Users/Buelow/github/factsheet_africa/PLOTS/AFR22_timeseries/FG/FG_{region.replace(' ', '_')}_timeseries_box_minmax_p15p85_oT.png"
 hori_SU40_abs = '/Users/Buelow/github/factsheet_africa/PLOTS/horizontal-plots-exposure/SU40_absolut_West_Africa_1200.png'
 copev_su40_tr26='/Users/Buelow/github/factsheet_africa/PLOTS/AFR22_compound_events_diff_era5/Compev_SU40_du3_TR26_du3_median_diff_Burkina_Faso_1200_oT.png'
 copev_su40_DD='/Users/Buelow/github/factsheet_africa/PLOTS/AFR22_compound_events_diff_era5/Compev_SU40_du7_DD_du7_median_diff_Burkina_Faso_1200_oT.png'
@@ -66,10 +72,11 @@ cs_schwarz = colors.Color(0 / 255., 0 / 255., 0 / 255., 1)
 doc = FactSheet(final_pdf_name, version, region, sector, gerics_logo, wascal_logo, bmbf_logo, hereon_logo, 
                 timeseries_theorie, box_theorie,\
                 basic_color, sprache, cs_orange, cs_schwarz, \
-                title_image, box_era5, table_cc, anzahl_simulationen, \
-                ts_TG_anomaly, ts_su40_anomaly, ts_RRm_anomaly, \
-                ts_DD_anomaly, ts_R20mm_anomaly, hori_SU40_abs, \
-                copev_su40_DD,copev_su40_tr26, rcp_image)
+                title_image, box_era5, table_cc,\
+                ts_TG_anomaly, ts_TN_anomaly, ts_TX_anomaly, ts_TR26_anomaly, ts_SU35_anomaly, ts_SU40_anomaly,\
+                ts_RRm_anomaly, ts_DD_anomaly, ts_R20mm_anomaly, ts_RR1_anomaly, ts_FG_anomaly,\
+                hori_SU40_abs, copev_su40_DD, copev_su40_tr26,\
+                rcp_image)
 
 doc.createDocument()
 doc.savePDF()
