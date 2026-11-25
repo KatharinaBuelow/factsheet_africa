@@ -8,7 +8,7 @@ GERICS Climate Factsheet for Africa. It also includes the scripts used
 for data processing, enabling the reproduction of the graphics and
 tables presented in the GERICS factsheet.
 
-Also see [documentation]()
+Also see [documentation](https://katharinabuelow.github.io/factsheet_africa/)
 
 <img src="PLOTS/country/FS_Burkina_Faso.png" alt="map" width="300">
 
